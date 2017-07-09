@@ -100,7 +100,7 @@ function entry()
   count = 0;
   init_particles();
   Velocity.entry();
-  PoseFilter.corner_init();
+  --PoseFilter.corner_init();
 end
 
 function init_particles_manual_placement()
@@ -474,31 +474,48 @@ imuangle = Body.get_sensor_imuAngle();
   end
 
   -- line update
-  if vcm.get_line_detect() == 1 then
-    local v = vcm.get_line_v();
-    local a = vcm.get_line_angle();
-
-    PoseFilter.line(v, a);--use longest line in the view
+  if vcm.get_line_detect() == 1 and vcm.get_circle_detect() == 0 and vcm.get_corner_detect() ==0 then
+		if vcm.get_line_lengthB() > 2.2 and vcm.get_line_lengthB() < 4 then
+    	local v = vcm.get_line_v();
+			local a = vcm.get_line_angle();
+			PoseFilter.topLineUpdate(v, a);--use longest line in the view
+		end
   end
 
+  --circle detection
+  if vcm.get_circle_detect() == 1 then
+    local  x = vcm.get_circle_y(); --x and y are flipped because vision reports them backwards
+    local  y = vcm.get_circle_x();
+    local  v = {};
+    local  a = vcm.get_circle_angle();
+    v[1]=x;
+    v[2]=y;
+    --print('Circle Update');
+    --print("x:" .. x, "y:" .. y);
+    -- PoseFilter.circle(v,a);
+  end
+
+  --corner detection
   if vcm.get_corner_detect() == 1 then
-    local v=vcm.get_corner_v();
-    PoseFilter.corner(v);
+    --L corner
+    if vcm.get_corner_type() == 1 then
+        local v=vcm.get_corner_v();
+        local a=vcm.get_corner_angle();
+        -- PoseFilter.cornerL(v,a);
+    --T corner
+    elseif vcm.get_corner_type() == 2 then
+        local v=vcm.get_corner_v();
+        local a=vcm.get_corner_angle();
+        -- PoseFilter.cornerT(v,a);
+    end
   end
 
-  if vcm.get_landmark_detect() == 1 then
-    local color = vcm.get_landmark_color();
-    local v = vcm.get_landmark_v();
-    if color == Config.color.yellow then
-        PoseFilter.landmark_yellow(v);
-	goal_led={1,1,0.5};
-    else
-        PoseFilter.landmark_cyan(v);
-	goal_led={0,1,1};
-    end
-  else
-    if vcm.get_goal_detect() == 0 then
-      goal_led={0,0,0};
+  --Spot detection
+  if vcm.get_spot_detect() == 1 then
+    local color = vcm.get_spot_color();
+    local v = vcm.get_spot_v();
+    if color == Config.color.white then
+      -- PoseFilter.spot(v);
     end
   end
 
