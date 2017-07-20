@@ -142,5 +142,5 @@ vision.corner.length_threshold = 15;
 vision.corner.min_center_dist = 1.5;
 
 vision.ball.th_headAngle = 30*math.pi/180;  --Minimum angle of headAngle[2].
-vision.use_arbitrary_ball = false;
+vision.use_arbitrary_ball = true;
 
