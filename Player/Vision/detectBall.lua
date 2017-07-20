@@ -62,8 +62,8 @@ function detectArbitraryBall()
 																													Vision.labelA.dataBall, 
 																													Vision.labelA.m, 
 																													Vision.labelA.n, 
-																													27*math.pi/180
-																													);
+headAngle[2]
+																												);
 
   if (not ballPropsB or #ballPropsB == 0) then return ball; end
 
@@ -79,7 +79,7 @@ function detectArbitraryBall()
 		local totalCntr = ballPropsB[i].blCntr + ballPropsB[i].bkCntr + ballPropsB[i].wtCntr;
 
 		-- calculate the probability from those returned value
-		if(ballPropsB[i].radiusRate < 0.3) then
+		if(ballPropsB[i].radiusRate < 0.5) then
 			check_passed = false;
 		end
 	
@@ -108,7 +108,7 @@ function detectArbitraryBall()
 			
 			statsResult = ImageProc.bounding_field_stats(Vision.labelA.data, Vision.labelA.m, Vision.labelA.n, colorField, checkBox);
 			--print("backgroundRatio", statsResult.backgroundRatio)
-			if(statsResult.backgroundRatio < 0.3) then
+			if(statsResult.backgroundRatio < 0.5) then
 				check_passed = false;
 			end
 		end
