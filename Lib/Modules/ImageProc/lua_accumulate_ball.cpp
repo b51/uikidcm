@@ -432,10 +432,10 @@ int lua_accumulate_ball(std::vector <Candidate> &ballCandidates, uint8_t *label,
 
     int totalCntr = bkCntr + wtCntr + blCntr;
     float rate = (float)(blCntr+bkCntr)/totalCntr;
-    if (rate < 0.9 && rate > 0.1)
+    if (rate < 0.8 && rate > 0.2)
     {
       rate = (float)wtCntr / totalCntr;
-      if (rate > 0.9 || rate < 0.1)
+      if (rate > 0.8 || rate < 0.2)
      	  continue;
     }
     else
