@@ -62,7 +62,7 @@ function detectArbitraryBall()
 																													Vision.labelA.dataBall, 
 																													Vision.labelA.m, 
 																													Vision.labelA.n, 
-headAngle[2]
+headAngle[2]+5*math.pi/180
 																												);
 
   if (not ballPropsB or #ballPropsB == 0) then return ball; end
@@ -79,13 +79,13 @@ headAngle[2]
 		local totalCntr = ballPropsB[i].blCntr + ballPropsB[i].bkCntr + ballPropsB[i].wtCntr;
 
 		-- calculate the probability from those returned value
-		if(ballPropsB[i].radiusRate < 0.5) then
+		if(ballPropsB[i].radiusRate < 0.5 or tolalCntr < 50 ) then
 			check_passed = false;
 		end
 	
 		if(check_passed) then
 			fillRate = totalCntr/((ballPropsB[i].boundingBox[2]-ballPropsB[i].boundingBox[1]+1)*(ballPropsB[i].boundingBox[4]-ballPropsB[i].boundingBox[3]+1));
-			if(fillRate < 0.2) then
+			if(fillRate < 0.3) then
 				check_passed = false;
 			end
 		end
@@ -131,7 +131,8 @@ headAngle[2]
 					Kfill*(fillRate -0.75)^2 +
 					Ksquare*(squareRate - 1)^2;
 
-			print("rad,fill,square,bkg,EV:", ballPropsB[i].radiusRate, 
+			print("Id rad,fill,square,bkg,EV:",i,
+                                        ballPropsB[i].radiusRate, 
 					fillRate, 
 					squareRate, 
 					statsResult.backgroundRatio, 
