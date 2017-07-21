@@ -68,16 +68,16 @@ camera.param[6] = {key='sharpness',     val={0}};
 camera.param[7] = {key='exposure (absolute)',      val={1250}};
 ]]--
 
-camera.param[1] = {key='brightness',    val={100}};
-camera.param[2] = {key='contrast',      val={16}};
-camera.param[3] = {key='saturation',    val={60}};
-camera.param[4] = {key='gain',          val={70}};
-camera.param[5] = {key='white balance temperature', val={200}};
+camera.param[1] = {key='brightness',    val={110}};
+camera.param[2] = {key='contrast',      val={35}};
+camera.param[3] = {key='saturation',    val={35}};
+camera.param[4] = {key='gain',          val={90}};
+camera.param[5] = {key='white balance temperature', val={800}};
 camera.param[6] = {key='sharpness',     val={0}};
-camera.param[7] = {key='exposure (absolute)',      val={200}};
+camera.param[7] = {key='exposure (absolute)',      val={600}};
 if use_arbitrary_ball then
-  camera.lut_file = 'lut_170712xianmen.raw';
-  camera.lut_ball_file = 'lut_170712qiudi.raw';
+  camera.lut_file = 'lut_zhangxianmen.raw';
+  camera.lut_ball_file = 'lut_zhangqiu.raw';
 else
   camera.lut_file = 'new_darwin.raw';
 end
