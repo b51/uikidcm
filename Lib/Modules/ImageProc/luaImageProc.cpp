@@ -916,7 +916,7 @@ static const struct luaL_reg imageProc_lib [] = {
   {"connected_ballCandidates", lua_connected_ballCandidates},
   {"connected_regions_obs", lua_connected_regions_obs},
   {"goal_posts", lua_goal_posts},
-  {"goal_posts_white", lua_goal_posts_white},
+  {"goal_posts_white", lua_goal_posts_white2},
   {"tilted_goal_posts", lua_tilted_goal_posts},
   {"field_lines", lua_field_lines},
   {"field_spots", lua_field_spots},

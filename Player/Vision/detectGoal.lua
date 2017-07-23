@@ -16,9 +16,9 @@ colorCyan = Config.color.cyan;
 colorField = Config.color.field;
 colorWhite = Config.color.white;
 
-width_min_in_pixel = 2;
-width_max_in_pixel = 35;
-connect_th = 0.5;
+width_min_in_pixel = 4;
+width_max_in_pixel = 70;
+connect_th = 0.3;
 check_for_ground_whole = 0;
 
 goalSizeThresh = 50;
@@ -73,10 +73,30 @@ function detect(color)
 
   tiltAngle=0;
   vcm.set_camera_rollAngle(tiltAngle);
+
+  headPitch = Body.get_sensor_headpos()[1];
+
   --params: label data; w; h; 
   --optinal params: min_width_in_pixel; max_width_in_pixel; connect_th; max_gap_in_pixel; min_height_in_pixel 
-  postB = ImageProc.goal_posts_white(Vision.labelB.data,
-	Vision.labelB.m, Vision.labelB.n, width_min_in_pixel, width_max_in_pixel, connect_th);
+  postB = ImageProc.goal_posts_white(Vision.labelA.data,
+	Vision.labelA.m, Vision.labelA.n, headPitch, width_min_in_pixel, width_max_in_pixel, connect_th);
+--	Vision.labelA.m, Vision.labelA.n, 25*math.pi/180, width_min_in_pixel, width_max_in_pixel, connect_th);
+
+	--convert to expression in labelB, the scale is supposed to be the same for height and width
+	for i = 1, #postB do
+		postB[i].area = postB[i].area * Vision.labelB.m * Vision.labelB.n/Vision.labelA.m/Vision.labelA.n;
+		postB[i].centroid[1] = postB[i].centroid[1]*Vision.labelB.m/Vision.labelA.m;
+		postB[i].centroid[2] = postB[i].centroid[2]*Vision.labelB.m/Vision.labelA.m;
+		for j = 1,4 do
+			postB[i].boundingBox[j] = postB[i].boundingBox[j]*Vision.labelB.m/Vision.labelA.m
+		end
+
+		print(i,postB[i].area,unpack(postB[i].centroid))
+		print(unpack(postB[i].boundingBox))
+	end
+
+	--print("exiting the detectGoal test routine");
+	--os.exit();
 
   local function compare_post_area(post1, post2)
     return post1.area > post2.area

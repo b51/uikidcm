@@ -72,14 +72,15 @@ headAngle[2]+10*math.pi/180
 
 	for i = 1, #ballPropsB do
 		
-		print("cntr", ballPropsB[i].blCntr, ballPropsB[i].bkCntr, ballPropsB[i].wtCntr, ballPropsB[i].radiusRate)
-		print("bbox", ballPropsB[i].boundingBox[1], ballPropsB[i].boundingBox[2], ballPropsB[i].boundingBox[3], ballPropsB[i].boundingBox[4])
+		--print("cntr", ballPropsB[i].blCntr, ballPropsB[i].bkCntr, ballPropsB[i].wtCntr, ballPropsB[i].radiusRate)
+		--print("bbox", ballPropsB[i].boundingBox[1], ballPropsB[i].boundingBox[2], ballPropsB[i].boundingBox[3], ballPropsB[i].boundingBox[4])
 
 		local check_passed = true; 
 		local totalCntr = ballPropsB[i].blCntr + ballPropsB[i].bkCntr + ballPropsB[i].wtCntr;
 
 		-- calculate the probability from those returned value
 		if(ballPropsB[i].radiusRate < 0.5 or totalCntr < 50 ) then
+
 			check_passed = false;
 		end
 	
@@ -130,14 +131,6 @@ headAngle[2]+10*math.pi/180
 					Kground * (statsResult.backgroundRatio -1)^2 +
 					Kfill*(fillRate -0.75)^2 +
 					Ksquare*(squareRate - 1)^2;
-
-			print("Id rad,fill,square,bkg,EV:",i,
-                                        ballPropsB[i].radiusRate, 
-					fillRate, 
-					squareRate, 
-					statsResult.backgroundRatio, 
-					evaluation
-					);
 
 			if(evaluation<minEval) then
 				minEval = evaluation;
