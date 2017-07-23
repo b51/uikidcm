@@ -579,6 +579,10 @@ function add_ballfield_lut(envLut, ballLut)
 				local ind = (i-1)*64*64 + (j-1)*64 + k;
 				ta[ind] = envLut[ind];
 
+				if(ta[ind] == 8) then
+					ta[ind] = 0
+				end
+
 				if (ballLut[ind] == 8 and ta[ind] == 0) then
 					ta[ind] = ballLut[ind];
 				end
