@@ -155,29 +155,29 @@ function push_team_struct(obj,teamOffset)
   states.penalty[id]=obj.penalty;
   states.battery_level[id]=obj.battery_level;
 
-  states.goal[id]=obj.goal;
-  states.goalv11[id]=obj.goalv1[1];
-  states.goalv12[id]=obj.goalv1[2];
-  states.goalv21[id]=obj.goalv2[1];
-  states.goalv22[id]=obj.goalv2[2];
+--  states.goal[id]=obj.goal;
+--  states.goalv11[id]=obj.goalv1[1];
+--  states.goalv12[id]=obj.goalv1[2];
+--  states.goalv21[id]=obj.goalv2[1];
+--  states.goalv22[id]=obj.goalv2[2];
 
-  if obj.goalB1 then
-    states.goalB11[id]=obj.goalB1[1];
-    states.goalB12[id]=obj.goalB1[2];
-    states.goalB13[id]=obj.goalB1[3];
-    states.goalB14[id]=obj.goalB1[4];
-    states.goalB15[id]=obj.goalB1[5];
-
-    states.goalB21[id]=obj.goalB2[1];
-    states.goalB22[id]=obj.goalB2[2];
-    states.goalB23[id]=obj.goalB2[3];
-    states.goalB24[id]=obj.goalB2[4];
-    states.goalB25[id]=obj.goalB2[5];
-  end
-
-  states.landmark[id]=obj.landmark;
-  states.landmarkv1[id]=obj.landmarkv[1];
-  states.landmarkv2[id]=obj.landmarkv[2];
+--  if obj.goalB1 then
+--    states.goalB11[id]=obj.goalB1[1];
+--    states.goalB12[id]=obj.goalB1[2];
+--    states.goalB13[id]=obj.goalB1[3];
+--    states.goalB14[id]=obj.goalB1[4];
+--    states.goalB15[id]=obj.goalB1[5];
+--
+--    states.goalB21[id]=obj.goalB2[1];
+--    states.goalB22[id]=obj.goalB2[2];
+--    states.goalB23[id]=obj.goalB2[3];
+--    states.goalB24[id]=obj.goalB2[4];
+--    states.goalB25[id]=obj.goalB2[5];
+--  end
+--
+--  states.landmark[id]=obj.landmark;
+--  states.landmarkv1[id]=obj.landmarkv[1];
+--  states.landmarkv2[id]=obj.landmarkv[2];
 
   if id==1 then  
     wcm.set_robotNames_n1(obj.robotName);

@@ -355,14 +355,6 @@ function update_shm(status, headAngles)
       or ((goalCyan.detect == 1 or goalYellow.detect == 1)
           and vcm.get_debug_store_goal_detections() == 1)) then
 
-	    if webots == 1  then
-        vcm.set_camera_yuyvType(1);
-        vcm.set_image_labelA(labelA.data);
-        vcm.set_image_labelB(labelB.data);
---        vcm.set_image_labelA_obs(labelA.data_obs);
---        vcm.set_image_labelB_obs(labelB.data_obs);
-	    end
-
       if vcm.get_camera_broadcast() > 0 then --Wired monitor broadcasting
 	      if vcm.get_camera_broadcast() == 1 then
 	    --Level 1: 1/4 yuyv, labelB

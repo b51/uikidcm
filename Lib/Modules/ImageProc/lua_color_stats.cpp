@@ -152,10 +152,10 @@ int lua_color_stats(lua_State *L) {
 		
 		for (int i = i0; i <= i1; i++) {
 
-			if (im_col[i] == color) {
+			if (im_col[i] & color) {
 				// increment area size
 				area++;
-				
+
 				// update min/max row/column values
 				if (i < minI)
 					minI = i;

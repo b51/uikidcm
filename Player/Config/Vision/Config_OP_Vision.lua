@@ -8,6 +8,7 @@ color.yellow = 2;
 color.cyan = 4;
 color.field = 8;
 color.white = 16;
+color.goal_and_line = 18;
 
 vision = {};
 vision.ballColor = color.orange;

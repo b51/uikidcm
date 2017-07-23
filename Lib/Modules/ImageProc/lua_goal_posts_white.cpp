@@ -431,7 +431,7 @@ int lua_goal_posts_white2(lua_State *L) {
 	else
 		horizonPixel = (int)(tan(horizonLimit-cameraTilt)*focusLength+nj/2+0.5);
 
-	std::cout << "the horizon line is :" << horizonPixel << std::endl;
+//	std::cout << "the horizon line is :" << horizonPixel << std::endl;
 
   goal_segment_init();
   // Scan for vertical line pixels:

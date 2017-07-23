@@ -377,16 +377,16 @@ deadcount_threshold = 50;
           h_c=subplot(5,5,[6:20]);
           plot_robot( r_struct, [],2,5,r_struct.robotName);
           updated = 0;
-  	  if i<6 
+          if i<6
             h1=subplot(5,5,i);
-	    labelB = robot_team.get_labelB_wireless(i);
+	          labelB = robot_team.get_labelB_wireless(i);
             plot_label(labelB);
-	  else
+	        else
             h1=subplot(5,5,i+15);
-	    labelB = robot_team.get_labelB_wireless(i);
+	          labelB = robot_team.get_labelB_wireless(i);
             plot_label(labelB);
-	  end
-	  plot_overlay_wireless(r_struct);
+	        end
+	        plot_overlay_wireless(r_struct);
           [infostr textcolor]=robot_info(r_struct,[],3,r_struct.robotName);
 
           set(MONITOR.infoTexts(i),'String',infostr);
@@ -396,15 +396,15 @@ deadcount_threshold = 50;
 
         elseif MONITOR.deadcount(i)==deadcount_threshold
           labelB = robot_team.get_labelB_wireless(i);
-  	  if i<6 
+          if i<6
             h1=subplot(5,5,i);
             plot_label(labelB*0);
-	  else
+	        else
             h1=subplot(5,5,i+15);
             plot_label(labelB*0);
-	  end
+	        end
           set(MONITOR.infoTexts(i),'String','');
-	end
+	      end
       end
     end
     hold off;

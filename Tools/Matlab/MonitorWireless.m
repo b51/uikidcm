@@ -14,7 +14,7 @@ function MonitorWireless(team,player)
     SHM_DIR='/dev/shm';
   end
 
-  team=1;
+  team=team;
   player=1;
    
 

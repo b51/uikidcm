@@ -37,6 +37,7 @@ colorYellow = Config.color.yellow;
 colorCyan = Config.color.cyan;
 colorField = Config.color.field;
 colorWhite = Config.color.white;
+colorGoalAndLine = Config.color.goal_and_line;
 
 use_point_goal=Config.vision.use_point_goal;
 use_multi_landmark = Config.vision.use_multi_landmark or 0;
@@ -137,12 +138,20 @@ function update()
     goalYellow.detect=0;
     goalCyan.detect=0;
     tstart = unix.time();
-    goalYellow = detectGoal.detect(colorWhite);
+	  if(use_arbitrary_ball) then
+      goalYellow = detectGoal.detect(colorGoalAndLine);
+	  else
+      goalYellow = detectGoal.detect(colorWhite);
+    end
     TgoalYellow = unix.time() - tstart;
 
     if yellowGoals == 0 then
       tstart = unix.time();
+	  if(use_arbitrary_ball) then
+      goalCyan = detectGoal.detect(colorGoalAndLine);
+	  else
       goalCyan = detectGoal.detect(colorWhite);
+    end
       TgoalCyan = unix.time() - tstart;
     end
   end

@@ -31,7 +31,7 @@ dev.camera = 'OPCam';
 dev.kinematics = 'OPKinematics';
 dev.ip_wired = '192.168.2.200';
 --dev.ip_wireless = '255.255.255.255';
-dev.ip_wireless = '192.168.255.255';  --Our Router
+dev.ip_wireless = '192.168.1.255';  --Our Router
 dev.ip_wireless_port = 54321;
 dev.game_control = 'OPGameControl';
 dev.team = 'TeamBasic';
@@ -139,6 +139,8 @@ fsm.bodyAnticipate.rCloseDive = 2.0; --ball distance threshold for diving
 
 --Speak enable
 speakenable = false;
+
+listen_monitor = 1;
 
 --Fall check
 fallAngle = 50*math.pi/180;
