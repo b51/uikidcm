@@ -62,7 +62,7 @@ function detectArbitraryBall()
 																													Vision.labelA.dataBall, 
 																													Vision.labelA.m, 
 																													Vision.labelA.n, 
-headAngle[2]+5*math.pi/180
+headAngle[2]+10*math.pi/180
 																												);
 
   if (not ballPropsB or #ballPropsB == 0) then return ball; end
@@ -79,7 +79,7 @@ headAngle[2]+5*math.pi/180
 		local totalCntr = ballPropsB[i].blCntr + ballPropsB[i].bkCntr + ballPropsB[i].wtCntr;
 
 		-- calculate the probability from those returned value
-		if(ballPropsB[i].radiusRate < 0.5 or tolalCntr < 50 ) then
+		if(ballPropsB[i].radiusRate < 0.5 or totalCntr < 50 ) then
 			check_passed = false;
 		end
 	
@@ -151,7 +151,7 @@ headAngle[2]+5*math.pi/180
 	  --os.exit()
 		return ball;
 	end
-	--print("best ball fitted is", minEval, minId)
+	print("best ball fitted is", minEval, minId)
 
 	ball.propsA = {};
 	ball.propsA.centroid = {(ballPropsB[minId].boundingBox[1]+ballPropsB[minId].boundingBox[2])/2, (ballPropsB[minId].boundingBox[3]+ballPropsB[minId].boundingBox[4])/2};
