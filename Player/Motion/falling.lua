@@ -51,17 +51,19 @@ function update()
 			fState = 'gaitReset'
 		end
 	elseif(fState == 'gaitReset') then
-		if(t-t0 > 4*reset_timeout + falling_timeout) then
-			local gaitReset = Body.get_state_gaitReset();
-			local isComplete = Body.get_state_gaitResetPending();
-			if(gaitReset[1] == 0 and isComplete[1] == 0) then
-				print('gait reset is completed', t)
-				fState = 'start'
-				return 'done'
-			end
+	if(t-t0 > 4*reset_timeout + falling_timeout) then
+		local gaitReset = Body.get_state_gaitReset();
+		local isComplete = Body.get_state_gaitResetPending();
+		if(gaitReset[1] == 0 and isComplete[1] == 0) then
+			print('gait reset is completed', t)
+			fState = 'start'
+			return 'done'
 		end
 	end
 end
+
+end
+
 
 function exit()
   local qSensor = Body.get_sensor_position();

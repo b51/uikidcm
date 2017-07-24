@@ -159,7 +159,7 @@ function update()
   ----------------------tse------------------------------
   ----[[            -- for Technical Challenge Throw-in (off fall_down_check)
   if (maxImuAngle > fallAngle and fall==1) then
-		print('falling event detected', maxImuAngle);
+   print('falling event detected',maxImuAngle);
     sm:add_event("fall");
     mcm.set_walk_isFallDown(1); --Notify world to reset heading 
   else

@@ -44,7 +44,7 @@ speak.enable = false;
 
 -- Game Parameters
 game = {};
-game.teamNumber = 9;   
+game.teamNumber = 22;
 
 --Default role: 0 for goalie, 1 for attacker, 2 for defender
 game.role = 1;
@@ -53,7 +53,7 @@ game.role = 1;
 game.teamColor = 0; --Blue team, attacking Yellow goal
 --game.teamColor = 1; --Red team, attacking Cyan goal
 game.robotName = robotName;
-game.playerID = 4;
+game.playerID = 3;
 game.robotID = game.playerID;
 game.nPlayers = 5;
 --------------------
@@ -144,7 +144,7 @@ listen_monitor = 1;
 
 --Fall check
 fallAngle = 50*math.pi/180;
-falling_timeout = 0.3;
+falling_timeout = 5.0;
 
 led_on = 0; --turn off eye led
 led_on = 1; --turn on eye led
