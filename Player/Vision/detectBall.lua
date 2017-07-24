@@ -95,7 +95,9 @@ headAngle[2]+10*math.pi/180
 			if(squareRate > 1) then
 				squareRate = 1/squareRate;
 			end
-			if(squareRate <0.4) then
+			if (squareRate <0.4) then
+                          check_passed = false;
+                        elseif(squareRate <0.65 and headAngle[2] > 55*math.pi/180) then
 				check_passed = false;
 			end
 		end 
@@ -131,13 +133,13 @@ headAngle[2]+10*math.pi/180
 					Kfill*(fillRate -0.75)^2 +
 					Ksquare*(squareRate - 1)^2;
 
-			print("Id rad,fill,square,bkg,EV:",i,
+			--[[print("Id rad,fill,square,bkg,EV:",i,
                                         ballPropsB[i].radiusRate, 
 					fillRate, 
 					squareRate, 
 					statsResult.backgroundRatio, 
 					evaluation
-					);
+					);]]
 
 			if(evaluation<minEval) then
 				minEval = evaluation;
@@ -151,7 +153,7 @@ headAngle[2]+10*math.pi/180
 	  --os.exit()
 		return ball;
 	end
-	print("best ball fitted is", minEval, minId)
+	--print("best ball fitted is", minEval, minId)
 
 	ball.propsA = {};
 	ball.propsA.centroid = {(ballPropsB[minId].boundingBox[1]+ballPropsB[minId].boundingBox[2])/2, (ballPropsB[minId].boundingBox[3]+ballPropsB[minId].boundingBox[4])/2};
