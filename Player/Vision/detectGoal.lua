@@ -93,8 +93,8 @@ function detect(color)
 			postB[i].boundingBox[j] = postB[i].boundingBox[j]*Vision.labelB.m/Vision.labelA.m
 		end
 
-		print(i,postB[i].area,unpack(postB[i].centroid))
-		print(unpack(postB[i].boundingBox))
+		--print(i,postB[i].area,unpack(postB[i].centroid))
+		--print(unpack(postB[i].boundingBox))
 	end
 
 	--print("exiting the detectGoal test routine");
