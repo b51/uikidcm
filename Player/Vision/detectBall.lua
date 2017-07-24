@@ -133,14 +133,6 @@ headAngle[2]+10*math.pi/180
 					Kfill*(fillRate -0.75)^2 +
 					Ksquare*(squareRate - 1)^2;
 
-			--[[print("Id rad,fill,square,bkg,EV:",i,
-                                        ballPropsB[i].radiusRate, 
-					fillRate, 
-					squareRate, 
-					statsResult.backgroundRatio, 
-					evaluation
-					);]]
-
 			if(evaluation<minEval) then
 				minEval = evaluation;
 				minId = i;
