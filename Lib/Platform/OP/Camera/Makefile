@@ -22,7 +22,7 @@ endif
 %.o: %.c
 	$(CC) $(CXXFLAGS) $(INCLUDES) -o $@ -c $<
 
-camera: timeScalar.o OPCam.o v4l2.o
+camera: timeScalar.o OPCam.o v4l2.o JPGApi.o LogMsg.o
 	$(LD) $(LDFLAGS) -o $(LIBNAME).$(SHLIBEXT) $(LIBOPTS) $^ $(LIB_DIR) -lm $(LIBRT)
 
 clean:
