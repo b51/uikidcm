@@ -21,11 +21,29 @@ typedef struct {
   double joint[20];
 } CAMERA_STATUS;
 
-#define VIDEO_DEVICE "/dev/video0"
+#define VIDEO_DEVICE "/dev/video1"
 
 /* Exposed C functions to Lua */
 typedef unsigned char uint8;
 typedef unsigned int uint32;
+
+unsigned long cur_ts = 0;
+unsigned long last_ts = 0;
+
+int save(void* data, int size) {
+    static int i = 0;
+    char fn[128];
+    snprintf(fn, sizeof(fn), "./save-%03d.jpg", i++);
+    FILE* fp = fopen(fn, "w");
+    if (fp) {
+        fwrite(data, 1, size, fp);
+        fclose(fp);
+    }
+}
+
+unsigned long timeval2ul(struct timeval ts) {
+    return (ts.tv_sec * 1000) + (ts.tv_usec / 1000);
+}
 
 /* for testing with a single image only */
 //uint32 fileBuf[320*480*2];
@@ -54,13 +72,21 @@ static int lua_get_width(lua_State *L){
 
 static int lua_get_image(lua_State *L) {
   static int count = 0;
+  struct buffer *img_buf;
   int buf_num = v4l2_read_frame();
   if( buf_num < 0 ){
     lua_pushnumber(L,buf_num);
     return 1;
   }
 
-  uint32* image = (uint32*)v4l2_get_buffer(buf_num, NULL);
+  img_buf = v4l2_get_buffer(buf_num, NULL);
+  save(img_buf->start, img_buf->length);
+  cur_ts = timeval2ul(img_buf->timestamp);
+  printf("ts = %lu\n", cur_ts - last_ts);
+  last_ts = cur_ts;
+  uint32* image = (uint32*)img_buf->start;
+
+  //uint32* image = (uint32*)v4l2_get_buffer(buf_num, NULL);
   
   // Increment the count
   count++;

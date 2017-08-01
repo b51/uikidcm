@@ -16,6 +16,7 @@
 #include <map>
 #include <string.h>
 #include <stdint.h>
+#include "v4l2.h"
 
 // Logitech UVC controls
 #ifndef V4L2_CID_FOCUS
@@ -38,16 +39,11 @@
 
 int video_fd = -1;
 int nbuffer = 2;
-char invert = 0;
+int invert = 0;
 int width = 640;
 int height = 480;
 
 uint8_t* yuyv_rotate(uint8_t* frame, int width, int height);
-
-struct buffer {
-  void * start;
-  size_t length;
-};
 
 std::map<std::string, struct v4l2_queryctrl> ctrlMap;
 std::map<std::string, struct v4l2_querymenu> menuMap;
@@ -140,7 +136,6 @@ int v4l2_set_ctrl(const char *name, int value) {
     return -1;
   }
 
-
   int v4l2_cid_base=0x00980900;
 
   fprintf(stderr, "Setting ctrl %s, id %d\n", name,(ictrl->second).id-v4l2_cid_base);
@@ -150,7 +145,6 @@ int v4l2_set_ctrl(const char *name, int value) {
   int ret=xioctl(video_fd, VIDIOC_S_CTRL, &ctrl);
   return ret;
 }
-
 
 //added to manually set parameters not shown on query lists
 int v4l2_set_ctrl_by_id(int id, int value){
@@ -164,8 +158,6 @@ int v4l2_set_ctrl_by_id(int id, int value){
   int ret=xioctl(video_fd, VIDIOC_S_CTRL, &ctrl);
   return ret;
 }
-
-
 
 int v4l2_get_ctrl(const char *name, int *value) {
   std::string key(name);
@@ -277,7 +269,8 @@ int v4l2_init(int resolution) {
   video_fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   video_fmt.fmt.pix.width       = width;
   video_fmt.fmt.pix.height      = height;
-  video_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
+  video_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
+  //video_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
   //video_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_UYVY; // iSight
   video_fmt.fmt.pix.field       = V4L2_FIELD_ANY;
   if (xioctl(video_fd, VIDIOC_S_FMT, &video_fmt) == -1)
@@ -364,14 +357,14 @@ int v4l2_stream_off() {
   return 0;
 }
 
-void * v4l2_get_buffer(int index, size_t *length) {
+struct buffer * v4l2_get_buffer(int index, size_t *length) {
   if (length != NULL)
     *length = buffers[index].length;
   if( invert==1 ) {
-    return (void *) 
-	yuyv_rotate( (uint8_t*)buffers[index].start, width, height );
+    buffers[index].start = 
+	    yuyv_rotate( (uint8_t*)buffers[index].start, width, height );
   }
-  return buffers[index].start;
+  return &buffers[index];
 }
 
 int v4l2_read_frame() {
@@ -396,6 +389,7 @@ int v4l2_read_frame() {
   // process image
   // Give out the pointer, and hope they give it back to us soon!
   void *ptr = buffers[buf.index].start;
+  buffers[buf.index].timestamp = buf.timestamp;
 
   if (xioctl(video_fd, VIDIOC_QBUF, &buf) == -1){
     fprintf(stderr, "QBUF Problem %d\n", errno);
@@ -460,7 +454,7 @@ uint8_t* yuyv_rotate(uint8_t* frame, int width, int height) {
   //SJ: I maintain a second buffer here
   //So that we do not directly rewrite on camera buffer address
 
-  static uint8_t frame2[640*480*4];
+  static uint8_t frame2[1280*720*4];
 
   //printf("WIDTH HEIGHT:%d %d\n",width,height);
 
