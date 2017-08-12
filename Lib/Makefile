@@ -3,7 +3,6 @@
 CWD= $(shell pwd)
 include $(CWD)/Makefile.inc
 
-
 LUAEXT= lua
 ifeq ($(OSTYPE),darwin)
 REGEX=\( -regex '.*.$(LUAEXT)' -or -regex '.*.$(SHLIBEXT)' -or -regex '.*.sh' \)
@@ -31,25 +30,15 @@ ifeq ($(CTCDIR),)
   ifeq ($(OSTYPE),linux)
     SHLIBEXT= so
   endif
-
-  #ifeq ($(OSTYPE),darwin)
-  #  SHLIBEXT= dylib
-  #  REGEX=\( -regex '.*.$(LUAEXT)' -or -regex '.*.$(SHLIBEXT)' -or -regex '.*.sh' \)
-  #endif
   else
     SHLIBEXT= so
-  #ifeq ($(OSTYPE),darwin)
-  #  REGEX=\( -regex '.*.$(LUAEXT)' -or -regex '.*.$(SHLIBEXT)' -or -regex '.*.sh' \)
-  #endif
 endif
 
 export CTCDIR
 
 all none:
 	@echo "Please do:"
-	@echo "\tmake setup_PLATFORM"
-	@echo "where PLATFORM is one of following:"
-	@echo "\t$(PLATFORMS)"
+	@echo "\tmake setup_robot"
 
 colortable:
 	@echo "Compiling Colortable Mex Files...\n"
@@ -61,45 +50,9 @@ matlab:
 	@cd $(MATLABDIR) && make && cd $(CWD)
 	@echo "\n"
 
-nao:
-	@echo "Compiling Nao Lua/C++ Libraries...\n"
-	@cd $(NAODIR) && make && cd $(CWD)
-	@echo "\n"
-
-naov4:
-	@echo $(CTCDIR)
-	@echo "Compiling Nao V4 Lua/C++ Libraries...\n"
-	@cd $(NAOV4DIR) && make && cd $(CWD)
-	@echo "\n"
-
-naoqi:
-	@echo "Compiling Custom Naoqi Modules...\n"
-	@cd $(NAOQIDIR) && make && cd $(CWD)
-	@echo "\n"
-
-hp:
-	@echo "Compiling HP Lua/C++ Libraries...\n"
-	@cd $(HPDIR) && make && cd $(CWD)
-	@echo "\n"
-
-op:
+robot:
 	@echo "Compiling Darwin OP Lua/C++ Libraries...\n"
-	@cd $(OPDIR) && make && cd $(CWD)
-	@echo "\n"
-
-webots_nao:
-	@echo "Compiling Webots Lua/C++ Libraries...\n"
-	@cd $(WEBOTSNAODIR) && make && cd $(CWD)
-	@echo "\n"
-
-webots_op:
-	@echo "Compiling Webots OP Lua/C++ Libraries...\n"
-	@cd $(WEBOTSOPDIR) && make && cd $(CWD)
-	@echo "\n"
-
-webot:
-	@echo "Compiling Webots Lua/C++ Libraries...\n"
-	@cd $(WEBOTSDIR) && make && cd $(CWD)
+	@cd $(ROBOTDIR) && make && cd $(CWD)
 	@echo "\n"
 
 image:
@@ -122,65 +75,10 @@ velocity::
 	@cd $(VELODIR) && make && cd $(CWD)
 	@echo "\n"
 
-setup_nao: nao setup_util setup_image setup_comm
-	@echo "Setting up Nao Lua/C++ Libraries...\n"
-	mkdir -p $(INSTDIR)
-	find $(NAODIR) $(REGEX) -exec cp -v {} $(INSTDIR) \;
-	rm -f $(PLAYERDIR)/Config/Config.lua
-	cd $(PLAYERDIR)/Config && ln -s Config_Nao.lua Config.lua && cd $(CWD)
-	find $(UTILDIR) $(REGEX) -exec cp -v {} $(NAODEPLUA51DIR) \;
-	rm -f $(NAODEPLUA51DIR)/*;
-	@echo "\n"
-
-setup_naov4: naov4 setup_util setup_image setup_comm
-	@echo "Setting up Nao V4 Lua/C++ Libraries...\n"
-	mkdir -p $(INSTDIR)
-	find $(NAOV4DIR) $(REGEX) -exec cp -v {} $(INSTDIR) \;
-	rm -f $(PLAYERDIR)/Config/Config.lua
-	cd $(PLAYERDIR)/Config && ln -s Config_NaoV4.lua Config.lua && cd $(CWD)
-#	find $(UTILDIR) $(REGEX) -exec cp -v {} $(NAODEPLUA51DIR) \;
-	rm -f $(NAODEPLUA51DIR)/*;
-	@echo "\n"
-
-setup_webots_nao: webots_nao setup_util setup_image setup_webots
-	@echo "Setting up Webots Lua/C++ Libraries...\n"
-	mkdir -p $(INSTDIR)
-	find $(WEBOTSNAODIR) $(REGEX) -exec cp -v {} $(INSTDIR) \;
-	rm -f $(PLAYERDIR)/Config/Config.lua
-	cd $(PLAYERDIR)/Config && ln -s Config_WebotsNao.lua Config.lua && cd $(CWD)
-	@echo "\n"
-
-setup_webots_op: webots_op setup_util setup_image setup_webots
-	@echo "Setting up Webots Lua/C++ Libraries...\n"
-	mkdir -p $(INSTDIR)
-	find $(WEBOTSOPDIR) $(REGEX) -exec cp -v {} $(INSTDIR) \;
-	rm -f $(PLAYERDIR)/Config/Config.lua
-	cd $(PLAYERDIR)/Config && ln -s Config_WebotsOP.lua Config.lua && cd $(CWD)
-	@echo "\n"
-
-setup_op: op setup_util setup_image setup_comm
+setup_robot: robot setup_util setup_image setup_comm
 	@echo "Setting up Darwin OP Lua/C++ Libraries...\n"
 	mkdir -p $(INSTDIR)
-	find $(OPDIR) $(REGEX) -exec cp -v {} $(INSTDIR) \;
-	rm -f $(PLAYERDIR)/Config/Config.lua
-	cd $(PLAYERDIR)/Config && ln -s Config_OP.lua Config.lua && cd $(CWD)
-	@echo "\n"
-
-setup_webots_cont: webot
-	@echo "Setting up WebotsController Lua/C++ Libraries...\n"
-	mkdir -p $(WEBOTSCONTDIR)
-	find $(WEBOTSDIR)/Controller $(REGEX) -exec cp -v {} $(WEBOTSCONTDIR) \;
-	cd $(WEBOTSCONTDIR) && ln -sf $(PLAYERDIR) Player && cd $(CWD)
-	cd $(WEBOTSCONTDIR) && ln -sf lua_set.sh nao_team_0 && cd $(CWD)
-	cd $(WEBOTSCONTDIR) && ln -sf lua_set.sh nao_team_1 && cd $(CWD)
-	cd $(WEBOTSCONTDIR) && ln -sf lua_set.sh darwin-op_team_0 && cd $(CWD)
-	cd $(WEBOTSCONTDIR) && ln -sf lua_set.sh darwin-op_team_1 && cd $(CWD)
-	@echo "\n"
-
-setup_webots: setup_webots_cont
-	@echo "Setting up Webots Lua/C++ Libraries...\n"
-	mkdir -p $(INSTDIR)
-	find $(WEBOTSDIR) $(REGEX) -exec cp -v {} $(INSTDIR) \;
+	find $(ROBOTDIR) $(REGEX) -exec cp -v {} $(INSTDIR) \;
 	@echo "\n"
 
 setup_image: image
@@ -210,25 +108,9 @@ setup_velocity: velocity
 #	cp $(VELODIR)/testmodel.xml $(INSTDIR)/../Vision/
 	@echo "\n"
 
-setup_naoqi: naoqi setup_util
-	@echo "Setting up NaoQi module...\n"
-	mkdir -p $(INSTDIR)
-	rsync -avr --exclude=".*" $(NAOQIDIR)/build/sdk/lib/naoqi/* ../Install/naoqi/lib/naoqi/
-	@echo "\n"
-
 clean:
 	cd $(IMAGEDIR) && make clean && cd $(CWD)
 	cd $(COMMDIR) && make clean && cd $(CWD)
 	cd $(UTILDIR) && make clean && cd $(CWD)
-#	cd $(WEBOTSDIR) && make clean && cd $(CWD)
-#	cd $(VELODIR) && make clean && cd $(CWD)
-#	cd $(NAODIR) && make clean && cd $(CWD)
-#	cd $(NAOV4DIR) && make clean && cd $(CWD)
-#	cd $(NAOQIDIR) && make clean && cd $(CWD)
-#	cd $(WEBOTSNAODIR) && make clean && cd $(CWD)
-#	cd $(WEBOTSOPDIR) && make clean && cd $(CWD)
-#	cd $(WEBOTSCONTDIR) && make clean && cd $(CWD)
-#	rm -rf $(WEBOTSCONTDIR) 
-	cd $(OPDIR) && make clean && cd $(CWD)
-	cd $(PLAYERDIR)/Config && rm -f Config.lua && cd $(CWD)
+	cd $(ROBOTDIR) && make clean && cd $(CWD)
 	cd $(PLAYERDIR) && rm -rf Lib && cd $(CWD)
