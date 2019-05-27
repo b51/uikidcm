@@ -21,7 +21,7 @@ typedef struct {
   double joint[20];
 } CAMERA_STATUS;
 
-#define VIDEO_DEVICE "/dev/video0"
+#define VIDEO_DEVICE "/dev/video1"
 
 /* Exposed C functions to Lua */
 typedef unsigned char uint8;
@@ -114,12 +114,15 @@ static int lua_camera_status(lua_State *L) {
 }
 
 static int lua_init(lua_State *L){
-  int res = luaL_checknumber(L, 1);
+  // 1st Input: Width of the image
+  int w = luaL_checkint(L, 1);
+  // 2rd Input: Height of the image
+  int h = luaL_checkint(L, 2);
 //  int res = 1;
   if (!init) {
     if ( v4l2_open(VIDEO_DEVICE) == 0){
       init = 1;
-      v4l2_init( res );
+      v4l2_init(w, h);
       v4l2_stream_on();
       cameraStatus = (CAMERA_STATUS *)malloc(sizeof(CAMERA_STATUS));// Allocate our camera statu
     }

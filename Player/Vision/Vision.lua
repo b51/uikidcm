@@ -10,6 +10,7 @@ end
 --Added for webots fast simulation
 use_gps_only = Config.use_gps_only or 0;
 require('ImageProc');
+require('DLImageProc');
 require('HeadTransform');
 
 require('vcm');
@@ -152,13 +153,13 @@ function camera_init()
       print('Camera '..c..': setting '..auto_param.key..': '..auto_param.val[c]);
       Camera.set_param(auto_param.key, auto_param.val[c]);
       unix.usleep(100000);
-      print('Camera '..c..': set to '..auto_param.key..': '..Camera.get_param(auto_param.key));
+      print('Camera '..c..': check '..auto_param.key..' now is: '..Camera.get_param(auto_param.key));
     end   
     for i,param in ipairs(Config.camera.param) do
       print('Camera '..c..': setting '..param.key..': '..param.val[c]);
       Camera.set_param(param.key, param.val[c]);
       unix.usleep(10000);
-      print('Camera '..c..': set to '..param.key..': '..Camera.get_param(param.key));
+      print('Camera '..c..': check '..param.key..' now is: '..Camera.get_param(param.key));
     end
   end
 end
@@ -227,8 +228,7 @@ function update()
     print "Re-enqueuing of a buffer error...";
     exit()
   end
-
-
+  DLImageProc.yuyv_to_bbox(vcm.get_image_yuyv(), camera.width, camera.height);
 
   -- perform the initial labeling
   if webots == 1 then
