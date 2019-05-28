@@ -48,6 +48,17 @@ camera.image = Camera.get_image();
 camera.status = Camera.get_camera_status();
 camera.switchFreq = Config.camera.switchFreq;
 camera.ncamera = Config.camera.ncamera;
+
+-- net
+net = {};
+net.input_width = Config.net.input_width;
+net.input_height = Config.net.input_height;
+net.prototxt = Config.net.prototxt;
+net.object_thresh = Config.net.thresh
+net.nms_thresh = Config.net.nms_thresh
+net.hier_thresh = Config.net.hier_thresh
+net.log_interval = Config.net.log_interval
+
 -- Initialize the Labeling
 labelA = {};
 -- labeled image is 1/4 the size of the original
@@ -198,13 +209,7 @@ function update()
   tstart = unix.time();
   
   headAngles = {Body.get_sensor_headpos()[2],Body.get_sensor_headpos()[1]};	--b51
---  compensateY = Body.get_sensor_bodypos()[3];
---  currVel = Body.get_sensor_velocity();
---  if currVel[1] == 0 and currVel[2] == 0 and currVel[3] == 0 then
---  	compensateY = 0;
---  end
-  --print("compensateY is :",compensateY);
-  
+
   -- get image from camera
   camera.image = Camera.get_image();
   local status = Camera.get_camera_status();
@@ -228,7 +233,7 @@ function update()
     print "Re-enqueuing of a buffer error...";
     exit()
   end
-  DLImageProc.yuyv_to_bbox(vcm.get_image_yuyv(), camera.width, camera.height);
+  camera.rgb = DLImageProc.yuyv_to_rgb(vcm.get_image_yuyv(), camera.width, camera.height);
 
   -- perform the initial labeling
   if webots == 1 then

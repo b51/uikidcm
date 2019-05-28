@@ -158,7 +158,7 @@ static int lua_rgb_to_yuyv(lua_State* L) {
 }
 
 // Only labels every other pixel
-static int lua_yuyv_to_bbox(lua_State* L) {
+static int lua_yuyv_to_rgb(lua_State* L) {
   // static std::vector<uint8_t> rgb;
 
   // 1st Input: Original YUYV-format input image
@@ -174,60 +174,19 @@ static int lua_yuyv_to_bbox(lua_State* L) {
   int h = luaL_checkint(L, 3);
 
   // rgb will be tripple size of the original image
-
-  /*****************************
-  FILE* stream;
-  if ((stream = fopen("abc.yuyv", "wb")) == NULL)
-  {
-    fprintf(stderr, "Cannot open output file.\n");
-    return 1;
-  }
-  fwrite(yuyv, sizeof(uint8_t), w * h * 2, stream);
-  fclose(stream);
-  *******************************/
-
   unsigned char rgb[w * h * 3];
-  /**********************
-  for (int i = 0; i < h / 2; i++)
-    for (int j = 0; j < w; j++) {
-      int y0 = yuyv[i * w * 4 + j * 4 + 0];
-      int y1 = yuyv[i * w * 4 + j * 4 + 2];
-      int cr = yuyv[i * w * 4 + j * 4 + 1];
-      int cb = yuyv[i * w * 4 + j * 4 + 3];
-      // int y0 = yuyv[i * w + j * 2 + 0];
-      // int y1 = yuyv[i * w + j * 2 + 1];
-      // int cr = yuyv[w * h + i * w + j];
-      // int cb = yuyv[w * h + w * h / 2 + i * w + j];
-
-      rgb[i * w * 6 + j * 6 + 0] =
-          clamp(1.164f * (y0 - 16) + 1.596f * (cr - 128), 0.0f, 255.0f);
-      rgb[i * w * 6 + j * 6 + 1] =
-          clamp(1.164f * (y0 - 16) - 0.813f * (cr - 128) - 0.391f * (cb - 128),
-                0.0f, 255.0f);
-      rgb[i * w * 6 + j * 6 + 2] =
-          clamp(1.164f * (y0 - 16) + 2.018f * (cb - 128), 0.0f, 255.0f);
-      rgb[i * w * 6 + j * 6 + 3] =
-          clamp(1.164f * (y1 - 16) + 1.596f * (cr - 128), 0.0f, 255.0f);
-      rgb[i * w * 6 + j * 6 + 4] =
-          clamp(1.164f * (y1 - 16) - 0.813f * (cr - 128) - 0.391f * (cb - 128),
-                0.0f, 255.0f);
-      rgb[i * w * 6 + j * 6 + 5] =
-          clamp(1.164f * (y1 - 16) + 2.018f * (cb - 128), 0.0f, 255.0f);
-    }
-  ****************************/
-
   gpuConvertYUYVtoRGB((unsigned char*)yuyv, rgb, w, h);
-  cv::Mat img = cv::Mat(h, w, CV_8UC3, rgb);
-  cv::imshow("rgb", img);
-  cv::waitKey(1);
+  // cv::Mat img = cv::Mat(h, w, CV_8UC3, rgb);
+  // cv::imshow("rgb", img);
+  // cv::waitKey(1);
 
-  // Pushing light data
-  // lua_pushlightuserdata(L, &rgb[0]);
+  // Pushing rgb data
+  lua_pushlightuserdata(L, &rgb[0]);
   return 1;
 }
 
 static const struct luaL_reg dl_imageProc_lib[] = {
-    {"yuyv_to_bbox", lua_yuyv_to_bbox},
+    {"yuyv_to_rgb", lua_yuyv_to_rgb},
     {"subsample_yuyv2yuv", lua_subsample_yuyv2yuv},
     {"subsample_yuyv2yuyv", lua_subsample_yuyv2yuyv},
     {NULL, NULL}};
