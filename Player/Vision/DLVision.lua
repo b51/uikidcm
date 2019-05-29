@@ -12,7 +12,7 @@ require('mcm');
 require('Body');
 
 require('Camera');
-require('Detection');
+require('DLDetection');
 
 if (Config.camera.width ~= Camera.get_width()
     or Config.camera.height ~= Camera.get_height()) then
@@ -45,10 +45,10 @@ net = {};
 net.width = Config.net.width;
 net.height = Config.net.height;
 net.prototxt = Config.net.prototxt;
-net.object_thresh = Config.net.thresh
+net.model = Config.net.model;
+net.object_thresh = Config.net.object_thresh
 net.nms_thresh = Config.net.nms_thresh
 net.hier_thresh = Config.net.hier_thresh
-net.log_interval = Config.net.log_interval
 
 saveCount = 0;
 
@@ -71,11 +71,12 @@ function entry()
 
   -- Start the HeadTransform machine
   HeadTransform.entry();
-
-  -- Initiate Detection
-  Detection.entry();
-
   camera_init();
+  DLDetection.detector_yolo_init(net.prototxt,
+                                 net.model,
+                                 net.object_thresh,
+                                 net.nms_thresh,
+                                 net.hier_thresh);
 end
 
 function camera_init()
@@ -101,6 +102,8 @@ function update()
   headAngles = {Body.get_sensor_headpos()[2],Body.get_sensor_headpos()[1]};	--b51
 
   -- get image from camera
+  -- TODO(b51): YUYV only reach 10 fps under 1280x720 resolution
+  --            Sholud speed up by getting MJPEG instead then decode to YUYV
   camera.image = Camera.get_image();
 
   local status = Camera.get_camera_status();
@@ -133,8 +136,9 @@ function update()
                                                   net.width,
                                                   net.height));
 
+  -- TODO(b51): Return bboxes need to be added
+  DLDetection.bboxes_detect(dlvcm.get_image_rgb4net());
   update_shm(status, headAngles)
-
 --  Detection.update();
 --  dlvcm.refresh_debug_message();
 

@@ -63,11 +63,8 @@ function update(sel,headAngles)
   --Now bodyHeight, Tilt, camera pitch angle bias are read from vcm 
 --  compY = compY or 0;
   bodyHeight=vcm.get_camera_bodyHeight();
-  --print("bodyHeight :"..bodyHeight);		--b51
   bodyTilt=vcm.get_camera_bodyTilt();
-  --print("bodyTilt :"..bodyTilt*180/math.pi);
   pitch0 =  mcm.get_headPitchBias();
-  --print("pitch0 :"..pitch0*180/math.pi);
 --[[
   vcm.add_debug_message(string.format(
   "HeadTrasnform update:\n bodyHeight %.2f bodyTilt %d pitch0 %d headangle %d %d\n",

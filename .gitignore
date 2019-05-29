@@ -75,3 +75,5 @@ Player/Data/*.txt
 
 sample.yuyv
 tempResult
+
+!libdarknet.so
