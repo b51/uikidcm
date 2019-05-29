@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(DLImageProc
+project(ImagePreProc
   VERSION 0.1.0)
 
 add_definitions(-std=c++11)
@@ -26,12 +26,12 @@ find_package(CUDA REQUIRED)
 ## Build ##
 ###########
 
-cuda_add_library(DLImageProc SHARED
-  luaDLImageProc.cc
+cuda_add_library(ImagePreProc SHARED
+  luaImagePreProc.cc
   yuv2rgb.cu
 )
 
-target_link_libraries(DLImageProc
+target_link_libraries(ImagePreProc
   ${OpenCV_LIBS}
   ${CUDA_LIBS}
   -Wl,--no-whole-archive

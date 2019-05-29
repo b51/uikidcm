@@ -225,29 +225,6 @@ extern "C"
 int luaopen_OPCam (lua_State *L) {
   luaL_register(L, "camera", camera_lib);
 
-  // Resolution = 1 means VGA (640x480)
-//  int res = luaL_checkint(L, 2);
-  //int res = 1;
-
-//  if (!init) {
-//    if ( v4l2_open(VIDEO_DEVICE) == 0){
-//      init = 1;
-//      v4l2_init( res );
-//      v4l2_stream_on();
-//      cameraStatus = (CAMERA_STATUS *)malloc(sizeof(CAMERA_STATUS));// Allocate our camera statu
-//
-			/************* Read Image From File******************
-			char *fileName = "./sample.yuyv";
-			image= fileBuf;
-			int fd = open(fileName, O_RDONLY);
-			std::cout << "fd = ((((((((((((((((: " << fd << std::endl;
-			read(fd, image, 614400);
-			close(fd);
-			*******************************************/
-//      /// TODO: free this
-//    }
-//  }
-//
   return 1;
 }
 

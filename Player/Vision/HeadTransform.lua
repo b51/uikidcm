@@ -87,8 +87,8 @@ function update(sel,headAngles)
   --pitch0 is Robot specific head angle bias (for OP)
   tNeck = tNeck*Transform.rotZ(headAngles[1])*Transform.rotY(headAngles[2]+pitch0);
   	--print("headAngles[1], headAngles[2], pitch0 :"..headAngles[1], headAngles[2], pitch0);
+    --print("cameraPos[sel][1], cameraPos[sel][2], cameraPos[sel][3] :"..cameraPos[sel][1], cameraPos[sel][2], cameraPos[sel][3]);
   tHead = tNeck*Transform.trans(cameraPos[sel][1], cameraPos[sel][2], cameraPos[sel][3]);
-  	--print("cameraPos[sel][1], cameraPos[sel][2], cameraPos[sel][3] :"..cameraPos[sel][1], cameraPos[sel][2], cameraPos[sel][3]);
   tHead = tHead*Transform.rotY(cameraAngle[sel][2]);
 
   --update camera position

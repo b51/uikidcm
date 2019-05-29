@@ -10,7 +10,7 @@ end
 --Added for webots fast simulation
 use_gps_only = Config.use_gps_only or 0;
 require('ImageProc');
-require('DLImageProc');
+require('ImagePreProc');
 require('HeadTransform');
 
 require('vcm');
@@ -213,6 +213,7 @@ function update()
   -- get image from camera
   camera.image = Camera.get_image();
   local status = Camera.get_camera_status();
+  print("status "..status.select)
   if status.count ~= lastImageCount[status.select+1] then
     lastImageCount[status.select+1] = status.count;
   else
@@ -233,7 +234,7 @@ function update()
     print "Re-enqueuing of a buffer error...";
     exit()
   end
-  camera.rgb = DLImageProc.yuyv_to_rgb(vcm.get_image_yuyv(), camera.width, camera.height);
+  camera.rgb = ImagePreProc.yuyv_to_rgb(vcm.get_image_yuyv(), camera.width, camera.height);
 
   -- perform the initial labeling
   if webots == 1 then
@@ -617,90 +618,3 @@ function split_ball_lut(envLut, ballLut)
 
   return ta;
 end
-
---[[
-function substract_lut(lut1, lut2, color1, color2)
-  local lut = {};
-  local validPoints = {};
-
-  for i = 1, 64 do
-    lut[i] = {};
-    for j = 1, 64 do
-      lut[i][j] = {};
-      for k = 1, 64 do
-        if lut1[i][j][k] == color1 then
-          if lut2[i][j][k] ~= color2 then
-            lut[i][j][k] = color1;
-            validPoints = vector.new({i, j, k, color1});
-          else
-            lut[i][j][k] = 0;
-          end
-        else
-          lut[i][j][k] = 0;
-        end
-      end
-    end
-  end
-  return validPoints, lut; 
-end
-
--- Create lutBall, include all ball color; lutWhite, include white and green; and lutBlack, only include black;
-function create_diff_lut()
-  local lutBall = {};
-  local lutWhite = {};
-  local lutBlack = {};
-  local vpBall = {};
-  local vpWhite = {};
-  local vpBlack = {};
-  local x = 1;
-  local y = 1;
-
-  for i = 1, 64 do
-    lutBall[i] = {};
-    lutWhite[i] = {};
-    lutBlack[i] = {};
-    for j = 1, 64 do
-      lutBall[i][j] = {};
-      lutWhite[i][j] = {};
-      lutBlack[i][j] = {};
-      for k = 1, 64 do
-        if camera.lut_ball[(i-1)*64*64 + (j-1)*64 + k] ~= 0 then
-          lutBall[i][j][k] = camera.lut_ball[(i-1)*64*64 + (j-1)*64 + k];
-          vpBall[x] = vector.new({i, j, k, camera.lut_ball[(i-1)*64*64 + (j-1)*64 + k]});
-          x = x + 1;
-        else
-          lutBall[i][j][k] = 0;
-        end
-
-        if camera.lut[(i-1)*64*64 + (j-1)*64 + k] ~= 0 then
-          lutWhite[i][j][k] = camera.lut[(i-1)*64*64 + (j-1)*64 + k];
-          vpWhite[y] = vector.new({i, j, k, camera.lut[(i-1)*64*64 + (j-1)*64 + k]});
-          y = y + 1;
-        else
-          lutWhite[i][j][k] = 0;
-        end
-
-        lutBlack[i][j][k] = 0;
-      end
-    end
-  end
-  vpBlack, lutBlack = create_black_lut(lutBlack);
-
-  return vpBall, lutBall, vpWhite, lutWhite, vpBlack, lutBlack;
-end
-
--- this function can be omitted because it is an rect area
-function create_black_lut(stage, tag, blackWidth, blackDepth)
-	local ta = carray.new(stage*stage*stage);
-	local uvRange=fix([(stage-blackWidth)/2,(stage+blackWidth)/2]);
-
-for i = uvRange(1):uvRange(2)
-    for j = uvRange(1):uvRange(2)
-        for k = 1:blackDepth
-            lut(i,j,k)=uint8(tag);
-            validPoints=[validPoints;i,j,k,lut(i,j,k)];
-  
-  return ta;
-end
---]]
-

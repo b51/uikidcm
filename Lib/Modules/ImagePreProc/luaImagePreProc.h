@@ -10,6 +10,6 @@ extern "C"
 
 
 extern "C"
-int luaopen_DLImageProc(lua_State *L);
+int luaopen_ImagePreProc(lua_State *L);
 
 #endif

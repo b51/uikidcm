@@ -23,6 +23,7 @@ loadconfig('Vision/Config_OP_Vision')
 
 --Location Specific Camera Parameters--
 loadconfig('Vision/Config_OP_Camera_Grasp')
+loadconfig('Net/Config_Yolo_Net')
 
 -- Device Interface Libraries
 dev = {};

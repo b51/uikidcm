@@ -173,6 +173,7 @@ function init_shm_segment(fenv, name, shared, shsize)
           end
         fenv['set_'..shtable..'_'..k] =
           function(val)
+            print("set "..k.." "..val)
             return shmHandle:set(k, {string.byte(val, 1, string.len(val))});
           end
       elseif (type(v) == 'number') then
