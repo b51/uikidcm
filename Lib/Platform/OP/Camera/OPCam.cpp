@@ -27,10 +27,7 @@ typedef struct {
 typedef unsigned char uint8;
 typedef unsigned int uint32;
 
-/* for testing with a single image only */
-//uint32 fileBuf[320*480*2];
 uint32* image = NULL;
-/* end of testing */
 
 CAMERA_STATUS *cameraStatus = NULL;
 int init = 0;
@@ -51,7 +48,6 @@ static int lua_get_width(lua_State *L){
   return 1;
 }
 
-
 static int lua_get_image(lua_State *L) {
   static int count = 0;
   int buf_num = v4l2_read_frame();
@@ -59,9 +55,8 @@ static int lua_get_image(lua_State *L) {
     lua_pushnumber(L,buf_num);
     return 1;
   }
-
   uint32* image = (uint32*)v4l2_get_buffer(buf_num, NULL);
-  
+
   // Increment the count
   count++;
 
@@ -69,16 +64,7 @@ static int lua_get_image(lua_State *L) {
   cameraStatus->count = count;
   cameraStatus->time = time_scalar();
   cameraStatus->select = 0;
-/*
-  std::pair<double *, std::size_t> ret;
-  ret = sensorShm->find<double>("position");
-  double *p = ret.first;
-  if (p != NULL) {
-    for (int ji = 0; ji < 20; ji++) {
-      cameraStatus->joint[ji] = p[ji];
-    }
-  }
-*/
+
   // Zeros for now
   for (int ji = 0; ji < 20; ji++) {
     cameraStatus->joint[ji] = 0;

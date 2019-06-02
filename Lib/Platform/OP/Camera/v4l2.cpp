@@ -222,17 +222,18 @@ int v4l2_init_mmap() {
   buffers.resize(req.count);
   for (int i = 0; i < req.count; i++) {
     struct v4l2_buffer buf;
+    memset(&buf, 0x00, sizeof(v4l2_buffer));
     buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     buf.memory = V4L2_MEMORY_MMAP;
     buf.index = i;
     if (xioctl(video_fd, VIDIOC_QUERYBUF, &buf) == -1)
       return v4l2_error("VIDIOC_QUERYBUF");
-    buffers[i].length = buf.length;
     buffers[i].start = mmap(NULL, // start anywhere
                             buf.length,
                             PROT_READ | PROT_WRITE, // required
                             MAP_SHARED,             // recommended
                             video_fd, buf.m.offset);
+    buffers[i].length = buf.length;
     if (buffers[i].start == MAP_FAILED)
       return v4l2_error("mmap");
   }
@@ -268,8 +269,8 @@ int v4l2_init(int w, int h) {
   video_fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   video_fmt.fmt.pix.width = width;
   video_fmt.fmt.pix.height = height;
-  video_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
-  // video_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_UYVY; // iSight
+  video_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
+  //video_fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
   video_fmt.fmt.pix.field = V4L2_FIELD_ANY;
   if (xioctl(video_fd, VIDIOC_S_FMT, &video_fmt) == -1)
     v4l2_error("VIDIOC_S_FMT");
@@ -319,6 +320,26 @@ int v4l2_init(int w, int h) {
   }
   fprintf(stdout, "===============================================\n");
   fprintf(stdout, "\n");
+
+  //////////////////////////////////
+  struct v4l2_fmtdesc fmt;
+  struct v4l2_capability cap;
+  struct v4l2_format stream_fmt;
+  int ret;
+
+  //当前视频设备支持的视频格式
+  memset(&fmt,0,sizeof(fmt));
+  fmt.index = 0;
+  fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+
+  while((ret = ioctl(video_fd, VIDIOC_ENUM_FMT, &fmt)) == 0) {
+    fmt.index++;
+    printf("{pixelformat = %c%c%c%c},description = '%s'\n",
+            fmt.pixelformat & 0xff,(fmt.pixelformat >> 8)&0xff,
+            (fmt.pixelformat >> 16) & 0xff,(fmt.pixelformat >> 24)&0xff,
+            fmt.description);
+  }
+  //////////////////////////////////
 
   // Initialize memory map
   v4l2_init_mmap();
