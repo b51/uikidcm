@@ -32,7 +32,7 @@ camera = {};
 camera.width = Camera.get_width();
 camera.height = Camera.get_height();
 camera.npixel = camera.width*camera.height;
-camera.image = Camera.get_image();
+camera.jpeg = Camera.get_image();
 camera.status = Camera.get_camera_status();
 camera.switchFreq = Config.camera.switchFreq;
 camera.ncamera = Config.camera.ncamera;
@@ -72,11 +72,11 @@ function entry()
   -- Start the HeadTransform machine
   HeadTransform.entry();
   camera_init();
-  DLDetection.detector_yolo_init(net.prototxt,
-                                 net.model,
-                                 net.object_thresh,
-                                 net.nms_thresh,
-                                 net.hier_thresh);
+  --DLDetection.detector_yolo_init(net.prototxt,
+  --                               net.model,
+  --                               net.object_thresh,
+  --                               net.nms_thresh,
+  --                               net.hier_thresh);
 end
 
 function camera_init()
@@ -101,10 +101,9 @@ function update()
   tstart = unix.time();
   headAngles = {Body.get_sensor_headpos()[2],Body.get_sensor_headpos()[1]};	--b51
 
-  -- get image from camera
-  -- TODO(b51): YUYV only reach 10 fps under 1280x720 resolution
-  --            Sholud speed up by getting MJPEG instead then decode to YUYV
-  camera.image = Camera.get_image();
+  -- get mjpeg image from camera
+  -- jpeg = {size, data}
+  camera.jpeg = Camera.get_image();
 
   local status = Camera.get_camera_status();
   if status.count ~= lastImageCount[status.select+1] then
@@ -117,15 +116,18 @@ function update()
   count = count + 1;
   HeadTransform.update(status.select, headAngles);
 
-  dlvcm.set_image_yuyv(camera.image)
+  dlvcm.set_image_jpeg(camera.jpeg.data)
+  dlvcm.set_image_jpegSize(camera.jpeg.size)
 
-  if camera.image == -2 then
+  if camera.jpeg.data == -2 then
     print "Re-enqueuing of a buffer error...";
     exit()
   end
-
+  -- TODO(b51): now image in mjpeg format, need decode to rgb
   -- Convert yuyv to rgb
-  dlvcm.set_image_rgb(ImagePreProc.yuyv_to_rgb(dlvcm.get_image_yuyv(),
+  --[[
+  dlvcm.set_image_rgb(ImagePreProc.yuyv_to_rgb(dlvcm.get_image_jpeg(),
+                                               dlvcm.get_image_jpegSize(),
                                                camera.width, 
                                                camera.height));
 
@@ -135,6 +137,7 @@ function update()
                                                   camera.height,
                                                   net.width,
                                                   net.height));
+                                                  --]]
 
   -- TODO(b51): Return bboxes need to be added
   DLDetection.bboxes_detect(dlvcm.get_image_rgb4net());

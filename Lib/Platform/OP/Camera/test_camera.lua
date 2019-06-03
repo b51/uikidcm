@@ -6,5 +6,7 @@ Camera.init(width, height);
 print(Camera.get_width());
 print(Camera.get_height());
 while true do
-  Camera.get_image();
+  jpeg  = Camera.get_image();
+  print(jpeg.size)
+  print(jpeg.data)
 end

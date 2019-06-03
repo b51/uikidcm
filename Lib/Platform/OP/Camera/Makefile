@@ -22,8 +22,8 @@ endif
 %.o: %.c
 	$(CC) $(CXXFLAGS) $(INCLUDES) -o $@ -c $<
 
-camera: timeScalar.o OPCam.o v4l2.o
-	$(LD) $(LDFLAGS) -o $(LIBNAME).$(SHLIBEXT) $(LIBOPTS) $^ $(LIB_DIR) -lm $(LIBRT)
+camera: timeScalar.o OPCam.o camera.o
+	$(LD) $(LDFLAGS) -o $(LIBNAME).$(SHLIBEXT) $(LIBOPTS) $^ $(LIB_DIR) -lm -lglog $(LIBRT)
 
 clean:
 	rm -f *.$(SHLIBEXT) *.o

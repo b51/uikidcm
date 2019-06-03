@@ -47,11 +47,11 @@ file(GLOB NvClassesSrc
 
 cuda_add_library(OPCam SHARED
   OPCam.cpp
-  v4l2.cpp
+  camera.cc
   timeScalar.cc
-  ImageDecode.cc
-  yuv2rgb.cu
-  ${NvClassesSrc}
+  #ImageDecode.cc
+  #yuv2rgb.cu
+  #${NvClassesSrc}
 )
 
 target_link_libraries(OPCam
