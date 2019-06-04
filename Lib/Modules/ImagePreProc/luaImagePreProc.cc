@@ -21,24 +21,27 @@ extern "C" {
 }
 #endif
 
-#include <algorithm>
-#include <iostream>
 #include <math.h>
 #include <stdint.h>
+#include <algorithm>
+#include <iostream>
 #include <string>
 #include <vector>
-
-#include "yuv2rgb.cuh"
 
 #include <fstream>
 #include <opencv2/opencv.hpp>
 
-// Downsample camera YUYV image for monitor
-//
+#include "ImageDecode.h"
+#include "yuv2rgb.cuh"
+#include <glog/logging.h>
+
+ImageDecode image_decode;
+
 float clamp(float val, float mn, float mx) {
   return (val >= mn) ? ((val <= mx) ? val : mx) : mn;
 }
 
+// Downsample camera YUYV image for monitor
 static int lua_subsample_yuyv2yuyv(lua_State* L) {
   static std::vector<uint32_t> yuyv_array;
 
@@ -149,35 +152,52 @@ static int lua_rgb_to_yuyv(lua_State* L) {
 
       // Construct Y6U6V6 index
       // SJ: only convert every other pixels (to make m/2 by n yuyv matrix)
-      if (j % 2 == 0)
-        yuyv[count++] = (v << 24) | (y << 16) | (u << 8) | y;
+      if (j % 2 == 0) yuyv[count++] = (v << 24) | (y << 16) | (u << 8) | y;
     }
   }
   lua_pushlightuserdata(L, &yuyv[0]);
   return 1;
 }
 
-// Only labels every other pixel
 static int lua_yuyv_to_rgb(lua_State* L) {
-  // static std::vector<uint8_t> rgb;
-
   // 1st Input: Original YUYV-format input image
   uint8_t* yuyv = (uint8_t*)lua_touserdata(L, 1);
   if ((yuyv == NULL) || !lua_islightuserdata(L, 1)) {
     return luaL_error(L, "Input YUYV not light user data");
   }
-
   // 2nd Input: Width of the image
   int w = luaL_checkint(L, 2);
-
   // 3rd Input: Height of the image
   int h = luaL_checkint(L, 3);
-
   // rgb will be tripple size of the original image
   unsigned char rgb[w * h * 3];
-  gpuConvertYUYVtoRGB((unsigned char*)yuyv, rgb, w, h);
-
+  // yuyv get directory from camera has PACKED yuv422 format
+  e_yuyv_type type = YUYV_PACKED;
+  gpuConvertYUYVtoRGB(type, (unsigned char*)yuyv, rgb, w, h);
   // Pushing rgb data
+  lua_pushlightuserdata(L, &rgb[0]);
+  return 1;
+}
+
+static int lua_mjpg_to_rgb(lua_State* L) {
+  // 1st Input: Original MJPEG-format input image
+  uint8_t* mjpg = (uint8_t*)lua_touserdata(L, 1);
+  if ((mjpg == NULL) || !lua_islightuserdata(L, 1)) {
+    return luaL_error(L, "Input YUYV not light user data");
+  }
+  // 2nd Input: mjpeg buffer size
+  int size = luaL_checkint(L, 2);
+  // 3rd Input: Width of the image
+  int w = luaL_checkint(L, 3);
+  // 4th Input: Height of the image
+  int h = luaL_checkint(L, 4);
+  // rgb will be tripple size of the original image
+  unsigned char rgb[w * h * 3];
+  image_decode.DecodeYUV2BGR(mjpg, size, rgb);
+  // Pushing rgb data
+  cv::Mat img(h, w, CV_8UC3, rgb);
+  cv::imshow("img", img);
+  cv::waitKey(1);
   lua_pushlightuserdata(L, &rgb[0]);
   return 1;
 }
@@ -210,8 +230,19 @@ static int lua_rgb_resize(lua_State* L) {
   return 1;
 }
 
+static int lua_init(lua_State* L) {
+  uint8_t* mjpg = (uint8_t*)lua_touserdata(L, 1);
+  if ((mjpg == NULL) || !lua_islightuserdata(L, 1)) {
+    return luaL_error(L, "Input YUYV not light user data");
+  }
+  int size = luaL_checkint(L, 2);
+  image_decode.Init(mjpg, size);
+}
+
 static const struct luaL_reg imagePreProc_lib[] = {
+    {"init", lua_init},
     {"yuyv_to_rgb", lua_yuyv_to_rgb},
+    {"mjpg_to_rgb", lua_mjpg_to_rgb},
     {"rgb_resize", lua_rgb_resize},
     {"subsample_yuyv2yuv", lua_subsample_yuyv2yuv},
     {"subsample_yuyv2yuyv", lua_subsample_yuyv2yuyv},

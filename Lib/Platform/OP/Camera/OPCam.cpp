@@ -14,8 +14,9 @@
 #include "camera.h"
 #include "timeScalar.h"
 
-#define JPEG_HEADA (0xFF)
-#define JPEG_HEADB (0xD8)
+#define JPEG_FLAG (0xFF)
+#define JPEG_HEAD (0xD8)
+#define JPEG_TAIL (0xD9)
 
 typedef struct {
   int count;
@@ -68,13 +69,20 @@ static int lua_get_image(lua_State* L) {
   unsigned long jpgSize = 0;
   unsigned char* jpgBuffer;
   jpgBuffer = (unsigned char*)frame.data;
-  if (JPEG_HEADA != jpgBuffer[0] || JPEG_HEADB != jpgBuffer[1]) {
+  if (JPEG_FLAG != jpgBuffer[0] || JPEG_HEAD != jpgBuffer[1]) {
     LOG(WARNING) << "jpgBuffer error!";
     camera_queue_frame(cam, &frame);
     return 0;
   }
 
   jpgSize = frame.buf.bytesused;
+  // work around of "Premature end of JPEG file" Warning
+  for (size_t i = jpgSize; i > jpgSize / 2; i--) {
+    if (jpgBuffer[i] == JPEG_TAIL && jpgBuffer[i - 1] == JPEG_FLAG) {
+      jpgSize = i + 1;
+      break;
+    }
+  }
   camera_queue_frame(cam, &frame);
   count++;
 
@@ -147,7 +155,6 @@ static int lua_init(lua_State* L) {
     unsigned char* jpgBuffer;
     jpgBuffer = (unsigned char*)frame.data;
     jpgSize = frame.buf.bytesused;
-    // image_decode->Init(jpgBuffer, jpgSize);
     ret = camera_queue_frame(cam, &frame);
     if (ret) {
       printf("camera dqueue buffer error.");

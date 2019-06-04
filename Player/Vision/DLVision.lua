@@ -32,7 +32,7 @@ camera = {};
 camera.width = Camera.get_width();
 camera.height = Camera.get_height();
 camera.npixel = camera.width*camera.height;
-camera.jpeg = Camera.get_image();
+camera.mjpg = Camera.get_image();
 camera.status = Camera.get_camera_status();
 camera.switchFreq = Config.camera.switchFreq;
 camera.ncamera = Config.camera.ncamera;
@@ -72,6 +72,7 @@ function entry()
   -- Start the HeadTransform machine
   HeadTransform.entry();
   camera_init();
+  ImagePreProc.init(camera.mjpg.data, camera.mjpg.size);
   --DLDetection.detector_yolo_init(net.prototxt,
   --                               net.model,
   --                               net.object_thresh,
@@ -101,9 +102,9 @@ function update()
   tstart = unix.time();
   headAngles = {Body.get_sensor_headpos()[2],Body.get_sensor_headpos()[1]};	--b51
 
-  -- get mjpeg image from camera
-  -- jpeg = {size, data}
-  camera.jpeg = Camera.get_image();
+  -- get mjpg image from camera
+  -- mjpg = {size, data}
+  camera.mjpg = Camera.get_image();
 
   local status = Camera.get_camera_status();
   if status.count ~= lastImageCount[status.select+1] then
@@ -116,22 +117,21 @@ function update()
   count = count + 1;
   HeadTransform.update(status.select, headAngles);
 
-  dlvcm.set_image_jpeg(camera.jpeg.data)
-  dlvcm.set_image_jpegSize(camera.jpeg.size)
-
-  if camera.jpeg.data == -2 then
+  if camera.mjpg.data == -2 then
     print "Re-enqueuing of a buffer error...";
     exit()
   end
-  -- TODO(b51): now image in mjpeg format, need decode to rgb
-  -- Convert yuyv to rgb
-  --[[
-  dlvcm.set_image_rgb(ImagePreProc.yuyv_to_rgb(dlvcm.get_image_jpeg(),
-                                               dlvcm.get_image_jpegSize(),
+
+  dlvcm.set_image_mjpg(camera.mjpg.data)
+  dlvcm.set_image_mjpgSize(camera.mjpg.size)
+  -- Convert mjpg to rgb
+  dlvcm.set_image_rgb(ImagePreProc.mjpg_to_rgb(dlvcm.get_image_mjpg(),
+                                               dlvcm.get_image_mjpgSize(),
                                                camera.width, 
                                                camera.height));
 
   -- Resize rgb fro net input
+  --[[
   dlvcm.set_image_rgb4net(ImagePreProc.rgb_resize(dlvcm.get_image_rgb(),
                                                   camera.width,
                                                   camera.height,
