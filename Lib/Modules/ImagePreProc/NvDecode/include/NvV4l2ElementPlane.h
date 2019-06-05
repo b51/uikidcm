@@ -125,6 +125,26 @@ public:
     int setFormat(struct v4l2_format & format);
 
     /**
+     * Maps the NvMMBuffer to NvBuffer for V4L2_MEMORY_DMABUF.
+     *
+     * @param[in] v4l2_buf Address of the NvBuffer to which the NvMMBuffer is mapped.
+     * @param[in] dmabuff_fd Index to the field that holds NvMMBuffer attributes.
+     * @return 0 for success, -1 otherwise.
+     */
+
+    int mapOutputBuffers(struct v4l2_buffer &v4l2_buf, int dmabuff_fd);
+
+    /**
+     * Unmaps the NvMMBuffer for V4L2_MEMORY_DMABUF.
+     *
+     * @param[in] index for the current buffer index.
+     * @param[in] dmabuff_fd Index to the field that holds NvMMBuffer attributes.
+     * @return 0 for success, -1 otherwise.
+     */
+
+    int unmapOutputBuffers(int index, int dmabuff_fd);
+
+    /**
      * Gets the cropping rectangle for the plane.
      *
      * Calls @b VIDIOC_G_CROP \c IOCTL internally.
@@ -428,7 +448,6 @@ public:
      *                 argument in the \c dqThreadCallback method.
      * @return 0 for success, -1 otherwise.
      */
-    void dqFrame(int index, NvBuffer** buffer);
     int startDQThread(void *data);
     /**
      * Force stops the DQ Thread if it is running.
@@ -439,6 +458,7 @@ public:
      *
      * @return 0 for success, -1 otherwise.
      */
+    void dqFrame(int index, NvBuffer** buffer);
     int stopDQThread();
     /**
      * Waits for the DQ Thread to stop.

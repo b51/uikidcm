@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2016-2018, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -118,7 +118,19 @@ NvJPEGDecoder::decodeToFd(int &fd, unsigned char * in_buf,
     }
 
     jpeg_start_decompress (&cinfo);
-    jpeg_read_raw_data (&cinfo, NULL, cinfo.comp_info[0].v_samp_factor * DCTSIZE);
+    if ((cinfo.output_width % (cinfo.max_h_samp_factor * DCTSIZE))
+        && pixel_format == V4L2_PIX_FMT_YUV420M)
+    {
+        COMP_ERROR_MSG("decodeToFd() failed, please run decodeToBuffer()");
+        jpeg_finish_decompress(&cinfo);
+        profiler.finishProcessing(buffer_id, false);
+        return -1;
+    }
+    else
+    {
+        jpeg_read_raw_data (&cinfo, NULL, cinfo.comp_info[0].v_samp_factor * DCTSIZE);
+    }
+
     jpeg_finish_decompress(&cinfo);
 
     width = cinfo.image_width;
@@ -137,14 +149,6 @@ NvJPEGDecoder::decodeToBuffer(NvBuffer ** buffer, unsigned char * in_buf,
         unsigned long in_buf_size, uint32_t *pixfmt, uint32_t * width,
         uint32_t * height)
 {
-    unsigned char **line[3];
-    unsigned char *y[4 * DCTSIZE] = { NULL, };
-    unsigned char *u[4 * DCTSIZE] = { NULL, };
-    unsigned char *v[4 * DCTSIZE] = { NULL, };
-    int i, j;
-    int lines, v_samp[3];
-    unsigned char *base[3], *last[3];
-    int stride[3];
     NvBuffer *out_buf = NULL;
     uint32_t pixel_format = 0;
     uint32_t buffer_id;
@@ -198,7 +202,149 @@ NvJPEGDecoder::decodeToBuffer(NvBuffer ** buffer, unsigned char * in_buf,
             cinfo.image_height, 0);
     out_buf->allocateMemory();
 
+    cinfo.do_fancy_upsampling = FALSE;
+    cinfo.do_block_smoothing = FALSE;
+    cinfo.out_color_space = cinfo.jpeg_color_space;
+    cinfo.dct_method = JDCT_FASTEST;
+    cinfo.bMeasure_ImageProcessTime = FALSE;
+    cinfo.raw_data_out = TRUE;
     jpeg_start_decompress (&cinfo);
+
+    /* For some widths jpeglib requires more horizontal padding than I420
+     * provides. In those cases we need to decode into separate buffers and then
+     * copy over the data into our final picture buffer, otherwise jpeglib might
+     * write over the end of a line into the beginning of the next line,
+     * resulting in blocky artifacts on the left side of the picture. */
+    if (cinfo.output_width % (cinfo.max_h_samp_factor * DCTSIZE))
+    {
+        COMP_DEBUG_MSG("indirect decoding using extra buffer copy");
+        decodeIndirect(out_buf, pixel_format);
+    }
+    else
+    {
+        decodeDirect(out_buf, pixel_format);
+    }
+
+    jpeg_finish_decompress(&cinfo);
+    if (width)
+    {
+        *width= cinfo.image_width;
+    }
+    if (height)
+    {
+        *height= cinfo.image_height;
+    }
+    if (pixfmt)
+    {
+        *pixfmt = pixel_format;
+    }
+    *buffer = out_buf;
+
+    COMP_DEBUG_MSG("Succesfully decoded Buffer " << buffer);
+
+    profiler.finishProcessing(buffer_id, false);
+
+    return 0;
+}
+
+void
+NvJPEGDecoder::decodeIndirect(NvBuffer *out_buf, uint32_t pixel_format)
+{
+    unsigned char *y_rows[16] = { NULL, };
+    unsigned char *u_rows[16] = { NULL, };
+    unsigned char *v_rows[16] = { NULL, };
+    unsigned char **scanarray[3] = { y_rows, u_rows, v_rows };
+    int i, j, k;
+    int lines;
+    unsigned char *base[3] = { NULL, };
+    unsigned char *last[3] = { NULL, };
+    int stride[3];
+    int width, height;
+    int r_v, r_h, width_32, read_rows;
+
+    r_v = cinfo.comp_info[0].v_samp_factor;
+    r_h = cinfo.comp_info[0].h_samp_factor;
+    width = cinfo.image_width;
+    height = cinfo.image_height;
+    read_rows = r_v * DCTSIZE;
+
+    for (i = 0; i < 3; i++)
+    {
+        stride[i] = out_buf->planes[i].fmt.stride;
+        base[i] = out_buf->planes[i].data;
+        last[i] = base[i] + (stride[i] * (out_buf->planes[i].fmt.height - 1));
+    }
+    width_32 = (width + 31) & 0xFFFFFFE0;
+    for (i = 0; i < read_rows; i++) {
+        y_rows[i] = new unsigned char [width_32];
+        u_rows[i] = new unsigned char [width_32];
+        v_rows[i] = new unsigned char [width_32];
+    }
+    for (i = 0; i < height; i += read_rows)
+    {
+        lines = jpeg_read_raw_data (&cinfo, scanarray, read_rows);
+        if (lines > 0)
+        {
+            for (j = 0, k = 0; j < read_rows; j += r_v, k++)
+            {
+                if (base[0] <= last[0])
+                {
+                    memcpy ((void*)base[0], (void*)y_rows[j],
+                        stride[0]*sizeof(unsigned char));
+                    base[0] += stride[0];
+                }
+                if (r_v == 2)
+                {
+                    if (base[0] <= last[0])
+                    {
+                        memcpy ((void*)base[0], (void*)y_rows[j + 1],
+                            stride[0]*sizeof(unsigned char));
+                        base[0] += stride[0];
+                    }
+                }
+                if (base[1] <= last[1] && base[2] <= last[2])
+                {
+                    if (r_h == 2 ||
+                        pixel_format == V4L2_PIX_FMT_YUV444M)
+                    {
+                        memcpy ((void*)base[1], (void*)u_rows[k],
+                            stride[1]*sizeof(unsigned char));
+                        memcpy ((void*)base[2], (void*)v_rows[k],
+                            stride[2]*sizeof(unsigned char));
+                    }
+                }
+                if (r_v == 2 || (k & 1) != 0 ||
+                    pixel_format == V4L2_PIX_FMT_YUV444M)
+                {
+                    base[1] += stride[1];
+                    base[2] += stride[2];
+                }
+            }
+        }
+        else
+        {
+            COMP_ERROR_MSG("jpeg_read_raw_data() returned 0");
+        }
+    }
+    for (i = 0; i < read_rows; i++)
+    {
+        delete[] y_rows[i];
+        delete[] u_rows[i];
+        delete[] v_rows[i];
+    }
+}
+
+void
+NvJPEGDecoder::decodeDirect(NvBuffer *out_buf, uint32_t pixel_format)
+{
+    unsigned char **line[3];
+    unsigned char *y[4 * DCTSIZE] = { NULL, };
+    unsigned char *u[4 * DCTSIZE] = { NULL, };
+    unsigned char *v[4 * DCTSIZE] = { NULL, };
+    int i, j;
+    int lines, v_samp[3];
+    unsigned char *base[3], *last[3];
+    int stride[3];
 
     line[0] = y;
     line[1] = u;
@@ -256,25 +402,4 @@ NvJPEGDecoder::decodeToBuffer(NvBuffer ** buffer, unsigned char * in_buf,
             COMP_DEBUG_MSG( "jpeg_read_raw_data() returned 0\n");
         }
     }
-
-    jpeg_finish_decompress(&cinfo);
-    if (width)
-    {
-        *width= cinfo.image_width;
-    }
-    if (height)
-    {
-        *height= cinfo.image_height;
-    }
-    if (pixfmt)
-    {
-        *pixfmt = pixel_format;
-    }
-    *buffer = out_buf;
-
-    COMP_DEBUG_MSG("Succesfully decoded Buffer " << buffer);
-
-    profiler.finishProcessing(buffer_id, false);
-
-    return 0;
 }

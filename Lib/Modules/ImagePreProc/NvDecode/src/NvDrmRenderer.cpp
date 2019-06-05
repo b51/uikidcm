@@ -157,7 +157,7 @@ static int get_format_info(uint32_t drm_format, NvBOFormat *bo)
 
 NvDrmRenderer::NvDrmRenderer(const char *name, uint32_t w, uint32_t h,
                     uint32_t w_x, uint32_t w_y, uint32_t aconn, uint32_t acrtc)
-        :NvElement(name)
+        :NvElement(name, valid_fields)
 {
   drmModeRes* drm_res_info = NULL;
   drmModeConnector* drm_conn_info = NULL;
@@ -549,6 +549,7 @@ NvDrmRenderer::renderInternal(int fd)
   uint32_t fb;
   uint32_t bo_handles[4];
   uint32_t flags = 0;
+  bool frame_is_late = false;
 
   NvBufferParams params;
   NvBufDrmParams dParams;
@@ -616,6 +617,19 @@ NvDrmRenderer::renderInternal(int fd)
     last_render_time.tv_nsec += render_time_nsec;
     last_render_time.tv_sec += last_render_time.tv_nsec / 1000000000UL;
     last_render_time.tv_nsec %= 1000000000UL;
+
+    if (isProfilingEnabled())
+    {
+        struct timeval cur_time;
+        gettimeofday(&cur_time, NULL);
+        if ((cur_time.tv_sec * 1000000.0 + cur_time.tv_usec) >
+                (last_render_time.tv_sec * 1000000.0 +
+                 last_render_time.tv_nsec / 1000.0))
+        {
+            frame_is_late = true;
+        }
+    }
+
     pthread_cond_timedwait(&render_cond, &render_lock,
                            &last_render_time);
     pthread_mutex_unlock(&render_lock);
@@ -650,6 +664,8 @@ NvDrmRenderer::renderInternal(int fd)
     drmModeRmFB(drm_fd, last_fb);
 
   last_fb = fb;
+
+  profiler.finishProcessing(0, frame_is_late);
   return 0;
 
 error:

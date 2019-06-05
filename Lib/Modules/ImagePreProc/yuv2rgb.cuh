@@ -24,15 +24,17 @@
 #define __YUV2RGB_CUH__
 
 typedef enum {
-  YUYV_PACKED = 0,
-  YUYV_PLANNAR
+  YUYV_422_PACKED = 0,
+  YUYV_422_PLANNAR,
+  YUYV_420_PLANNAR
 }e_yuyv_type;
 
 void gpuConvertYUYVtoRGB(e_yuyv_type type, unsigned char* src, unsigned char* dst,
                          unsigned int width, unsigned int height);
 
 
-void gpuConvertYUYVtoRGB(unsigned char* Y, unsigned char* U, unsigned char* V,
+void gpuConvertYUYVtoRGB(e_yuyv_type type,
+                         unsigned char* Y, unsigned char* U, unsigned char* V,
                          unsigned char* dst, int y_stride, int u_stride,
                          int v_stride, unsigned int width,
                          unsigned int height);

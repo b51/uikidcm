@@ -27,11 +27,64 @@ __device__ inline float clamp(float val, float mn, float mx) {
   return (val >= mn) ? ((val <= mx) ? val : mx) : mn;
 }
 
-__global__ void gpuConvertYUYVtoRGB_kernel(unsigned char* Y, unsigned char* U,
-                                           unsigned char* V, unsigned char* dst,
-                                           int y_stride, int u_stride,
-                                           int v_stride, unsigned int width,
-                                           unsigned int height) {
+/****************** For YUYV 420 Plannar ********************/
+__global__ void gpuConvertYUYV420toRGB_kernel(unsigned char* Y, unsigned char* U,
+                                              unsigned char* V, unsigned char* dst,
+                                              int y_stride, int u_stride,
+                                              int v_stride, unsigned int width,
+                                              unsigned int height) {
+  int idx = blockIdx.x * blockDim.x + threadIdx.x;
+  if (idx * 2 >= width) {
+    return;
+  }
+  for (int i = 0; i < height / 2; ++i) {
+    int y0 = Y[  (2 * i)   * y_stride + idx * 2 + 0];
+    int y1 = Y[  (2 * i)   * y_stride + idx * 2 + 1];
+    int y2 = Y[(2 * i + 1) * y_stride + idx * 2 + 0];
+    int y3 = Y[(2 * i + 1) * y_stride + idx * 2 + 1];
+    int cr = U[i * u_stride + idx];
+    int cb = V[i * v_stride + idx];
+
+    dst[(2 * i) * width * 3 + idx * 6 + 0] =
+        clamp(1.164f * (y0 - 16) + 1.596f * (cr - 128), 0.0f, 255.0f);
+    dst[(2 * i) * width * 3 + idx * 6 + 1] =
+        clamp(1.164f * (y0 - 16) - 0.813f * (cr - 128) - 0.391f * (cb - 128),
+              0.0f, 255.0f);
+    dst[(2 * i) * width * 3 + idx * 6 + 2] =
+        clamp(1.164f * (y0 - 16) + 2.018f * (cb - 128), 0.0f, 255.0f);
+
+    dst[(2 * i) * width * 3 + idx * 6 + 3] =
+        clamp(1.164f * (y1 - 16) + 1.596f * (cr - 128), 0.0f, 255.0f);
+    dst[(2 * i) * width * 3 + idx * 6 + 4] =
+        clamp(1.164f * (y1 - 16) - 0.813f * (cr - 128) - 0.391f * (cb - 128),
+              0.0f, 255.0f);
+    dst[(2 * i) * width * 3 + idx * 6 + 5] =
+        clamp(1.164f * (y1 - 16) + 2.018f * (cb - 128), 0.0f, 255.0f);
+
+    dst[(2 * i + 1) * width * 3 + idx * 6 + 0] =
+        clamp(1.164f * (y2 - 16) + 1.596f * (cr - 128), 0.0f, 255.0f);
+    dst[(2 * i + 1) * width * 3 + idx * 6 + 1] =
+        clamp(1.164f * (y2 - 16) - 0.813f * (cr - 128) - 0.391f * (cb - 128),
+              0.0f, 255.0f);
+    dst[(2 * i + 1 ) * width * 3 + idx * 6 + 2] =
+        clamp(1.164f * (y2 - 16) + 2.018f * (cb - 128), 0.0f, 255.0f);
+
+    dst[(2 * i + 1) * width * 3 + idx * 6 + 3] =
+        clamp(1.164f * (y3 - 16) + 1.596f * (cr - 128), 0.0f, 255.0f);
+    dst[(2 * i + 1) * width * 3 + idx * 6 + 4] =
+        clamp(1.164f * (y3 - 16) - 0.813f * (cr - 128) - 0.391f * (cb - 128),
+              0.0f, 255.0f);
+    dst[(2 * i + 1) * width * 3 + idx * 6 + 5] =
+        clamp(1.164f * (y3 - 16) + 2.018f * (cb - 128), 0.0f, 255.0f);
+  }
+}
+
+/****************** For YUYV 422 Plannar ********************/
+__global__ void gpuConvertYUYV422toRGB_kernel(unsigned char* Y, unsigned char* U,
+                                              unsigned char* V, unsigned char* dst,
+                                              int y_stride, int u_stride,
+                                              int v_stride, unsigned int width,
+                                              unsigned int height) {
   int idx = blockIdx.x * blockDim.x + threadIdx.x;
   if (idx * 2 >= width) {
     return;
@@ -39,8 +92,8 @@ __global__ void gpuConvertYUYVtoRGB_kernel(unsigned char* Y, unsigned char* U,
   for (int i = 0; i < height; ++i) {
     int y0 = Y[i * y_stride + idx * 2 + 0];
     int y1 = Y[i * y_stride + idx * 2 + 1];
-    int cr = U[i * u_stride / 2 + idx];
-    int cb = V[i * v_stride / 2 + idx];
+    int cr = U[i * u_stride + idx];
+    int cb = V[i * v_stride + idx];
 
     dst[i * width * 3 + idx * 6 + 0] =
         clamp(1.164f * (y0 - 16) + 1.596f * (cr - 128), 0.0f, 255.0f);
@@ -60,7 +113,8 @@ __global__ void gpuConvertYUYVtoRGB_kernel(unsigned char* Y, unsigned char* U,
   }
 }
 
-void gpuConvertYUYVtoRGB(unsigned char* Y, unsigned char* U, unsigned char* V,
+void gpuConvertYUYVtoRGB(e_yuyv_type type,
+                         unsigned char* Y, unsigned char* U, unsigned char* V,
                          unsigned char* dst, int y_stride, int u_stride,
                          int v_stride, unsigned int width,
                          unsigned int height) {
@@ -104,8 +158,13 @@ void gpuConvertYUYVtoRGB(unsigned char* Y, unsigned char* U, unsigned char* V,
   }
   unsigned int blockSize = 1024;
   unsigned int numBlocks = (width / 2 + blockSize - 1) / blockSize;
-  gpuConvertYUYVtoRGB_kernel<<<numBlocks, blockSize>>>(
-      d_Y, d_U, d_V, d_dst, y_stride, u_stride, v_stride, width, height);
+  if (type == YUYV_420_PLANNAR) {
+    gpuConvertYUYV420toRGB_kernel<<<numBlocks, blockSize>>>(
+        d_Y, d_U, d_V, d_dst, y_stride, u_stride, v_stride, width, height);
+  } else if (type == YUYV_422_PLANNAR) {
+    gpuConvertYUYV422toRGB_kernel<<<numBlocks, blockSize>>>(
+        d_Y, d_U, d_V, d_dst, y_stride, u_stride, v_stride, width, height);
+  }
   cudaStreamAttachMemAsync(NULL, dst, 0, cudaMemAttachHost);
   cudaStreamSynchronize(NULL);
   if (!YIsMapped) {
@@ -119,6 +178,7 @@ void gpuConvertYUYVtoRGB(unsigned char* Y, unsigned char* U, unsigned char* V,
   }
 }
 
+/****************** For YUYV 422 Packed/Plannar ********************/
 __global__ void gpuConvertYUYVtoRGB_kernel(e_yuyv_type type, unsigned char* src,
                                            unsigned char* dst,
                                            unsigned int width,
@@ -128,7 +188,7 @@ __global__ void gpuConvertYUYVtoRGB_kernel(e_yuyv_type type, unsigned char* src,
     return;
   }
 
-  if (type == YUYV_PACKED) {
+  if (type == YUYV_422_PACKED) {
     for (int i = 0; i < height; ++i) {
       int y0 = src[i * width * 2 + idx * 4 + 0];
       int y1 = src[i * width * 2 + idx * 4 + 2];
@@ -151,7 +211,7 @@ __global__ void gpuConvertYUYVtoRGB_kernel(e_yuyv_type type, unsigned char* src,
       dst[i * width * 3 + idx * 6 + 5] =
           clamp(1.164f * (y1 - 16) + 2.018f * (cb - 128), 0.0f, 255.0f);
     }
-  } else if (type == YUYV_PLANNAR) {
+  } else if (type == YUYV_422_PLANNAR) {
     for (int i = 0; i < height; ++i) {
       int y0 = src[i * width + idx * 2 + 0];
       int y1 = src[i * width + idx * 2 + 1];

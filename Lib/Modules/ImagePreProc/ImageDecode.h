@@ -18,7 +18,6 @@
 #include <opencv2/opencv.hpp>
 
 #include "NvLogging.h"
-#include "NvUtils.h"
 #include "jpeg_decode.h"
 #include "yuv2rgb.cuh"
 
@@ -53,12 +52,12 @@ static void init_cuda(int w, int h) {
 /**
  * Set ctx to default
  */
-static void set_defaults(jpeg_context_t* ctx) {
-  memset(ctx, 0, sizeof(jpeg_context_t));
+static void set_defaults(context_t* ctx) {
+  memset(ctx, 0, sizeof(context_t));
   ctx->use_fd = true;
 }
 
-static void abort(jpeg_context_t* ctx) {
+static void abort(context_t* ctx) {
   ctx->got_error = true;
   ctx->conv->abort();
 }
@@ -106,7 +105,7 @@ static bool conv_capture_dqbuf_thread_callback(struct v4l2_buffer* v4l2_buf,
                                                NvBuffer* shared_buffer,
                                                void* arg) {
   static int yuvSaveCount = 0;
-  jpeg_context_t* ctx = (jpeg_context_t*)arg;
+  context_t* ctx = (context_t*)arg;
 
   if (!v4l2_buf) {
     cerr << "Failed to dequeue buffer from conv capture plane" << endl;
@@ -176,7 +175,7 @@ class ImageDecode {
   boost::mutex* capture_dqbuf_go_mutex_;
   boost::condition capture_dqbuf_ready_cond_, capture_dqbuf_done_cond_;
 
-  jpeg_context_t ctx_;
+  context_t ctx_;
 };
 
 #endif

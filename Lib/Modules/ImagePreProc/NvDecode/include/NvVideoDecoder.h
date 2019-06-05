@@ -102,8 +102,7 @@ public:
      * Informs the decoder that input buffers may not contain complete frames.
      *
      * Calls the VIDIOC_S_EXT_CTRLS IOCTL internally with Control ID
-     * V4L2_CID_MPEG_VIDEO_DISABLE_COMPLETE_FRAME_INPUT. Must be called before
-     * setFormat on any of the planes.
+     * V4L2_CID_MPEG_VIDEO_DISABLE_COMPLETE_FRAME_INPUT.
      *
      * @return 0 for success, -1 otherwise.
      */
@@ -159,10 +158,13 @@ public:
      */
     int enableMetadataReporting();
 
+    int checkifMasteringDisplayDataPresent(v4l2_ctrl_video_displaydata &displaydata);
+    int MasteringDisplayData(v4l2_ctrl_video_hdrmasteringdisplaydata *hdrmasteringdisplaydata);
+
     /**
      * Gets metadata for the decoded capture plane buffer.
      *
-     * Calls the VIDIOC_S_EXT_CTRLS IOCTL internally with Control ID
+     * Calls the VIDIOC_G_EXT_CTRLS IOCTL internally with Control ID
      * V4L2_CID_MPEG_VIDEODEC_METADATA. Must be called for a buffer that has
      * been dequeued from the capture plane. The returned metadata corresponds
      * to the last dequeued buffer with index @a buffer_index.
@@ -176,6 +178,44 @@ public:
      */
     int getMetadata(uint32_t buffer_index,
         v4l2_ctrl_videodec_outputbuf_metadata &metadata);
+
+    /**
+     * Gets metadata for the decoder output plane buffer.
+     *
+     * Calls the VIDIOC_G_EXT_CTRLS IOCTL internally with Control ID
+     * V4L2_CID_MPEG_VIDEODEC_INPUT_METADATA. Must be called for a buffer that has
+     * been dequeued from the output plane. The returned metadata corresponds
+     * to the last dequeued buffer with index @a buffer_index.
+     *
+     * @param[in] buffer_index Index of the output plane buffer whose metadata
+     *              is required.
+     * @param[in,out] input_metadata Reference to the metadata structure
+     *              v4l2_ctrl_videodec_inputbuf_metadata to be filled.
+     *
+     * @return 0 for success, -1 otherwise.
+     */
+    int getInputMetadata(uint32_t buffer_index,
+        v4l2_ctrl_videodec_inputbuf_metadata &input_metadata);
+
+    /**
+     * Issues Poll on the device which blocks until :
+     * a) Either there is something to dequeue from capture or output plane or any events.
+     * b) Poll was interrupted by a call to the device using V4L2_CID_SET_POLL_INTERRUPT
+     * c) Application has already interrupted polling by V4L2_CID_SET_POLL_INTERRUPT
+     */
+    int DevicePoll(v4l2_ctrl_video_device_poll *devicepoll);
+
+    /**
+     * Sets the polling interrupt, now if the application calls Poll, the device should
+     * not block, in other words polling is disabled.
+     */
+    int SetPollInterrupt();
+
+    /**
+     * Clears the polling interrupt, now if the application calls Poll, the device should
+     * block until the event is triggered, in other words polling is enabled.
+     */
+    int ClearPollInterrupt();
 
 private:
     /**

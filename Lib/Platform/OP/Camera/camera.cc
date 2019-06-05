@@ -278,8 +278,6 @@ int camera_set_format(camera_t* dev, unsigned int w, unsigned int h,
   fprintf(stdout, "+------------+\n");
   fprintf(stdout, "width: %u\n", fmt.fmt.pix.width);
   fprintf(stdout, "height: %u\n", fmt.fmt.pix.height);
-
-  fprintf(stdout, "\n");
   fprintf(stdout, "========== Camera avaliable settings ==========\n");
   memset(&queryctrl, 0, sizeof(queryctrl));
   queryctrl.id = V4L2_CTRL_FLAG_NEXT_CTRL;
@@ -301,8 +299,6 @@ int camera_set_format(camera_t* dev, unsigned int w, unsigned int h,
     exit(EXIT_FAILURE);
   }
   fprintf(stdout, "===============================================\n");
-  fprintf(stdout, "\n");
-
   return 0;
 }
 

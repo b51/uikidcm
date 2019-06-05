@@ -34,7 +34,7 @@ void ImageDecode::Init(unsigned char* jpgBuffer, unsigned long jpgSize) {
 }
 
 void ImageDecode::DecodeYUV2BGR(unsigned char* jpgBuffer, unsigned long jpgSize,
-                           unsigned char* bgrBuffer) {
+                                unsigned char* bgrBuffer) {
   rgbBuffer_ = bgrBuffer;
   /*-- Imege decode --*/
   ret_ = ctx_.jpegdec->decodeToFd(fd_, jpgBuffer, jpgSize, pixfmt_, width_,
@@ -79,30 +79,8 @@ void ImageDecode::DecodeYUV2BGR(unsigned char* jpgBuffer, unsigned long jpgSize,
   unsigned char* U = (unsigned char*)buffers->planes[1].data;
   unsigned char* V = (unsigned char*)buffers->planes[2].data;
 
-  LOG(INFO) << "\n"
-            << " buf type : " << buffers->buf_type << std::endl
-            << " Y stride : " << buffers->planes[0].fmt.stride << std::endl
-            << " U stride : " << buffers->planes[1].fmt.stride << std::endl
-            << " V stride : " << buffers->planes[2].fmt.stride << std::endl
-            << " Y size   : " << buffers->planes[0].fmt.sizeimage << std::endl
-            << " U size   : " << buffers->planes[1].fmt.sizeimage << std::endl
-            << " V size   : " << buffers->planes[2].fmt.sizeimage << std::endl
-            << " Y widt   : " << buffers->planes[0].fmt.width << std::endl
-            << " U widt   : " << buffers->planes[1].fmt.width << std::endl
-            << " V widt   : " << buffers->planes[2].fmt.width << std::endl
-            << " Y heig   : " << buffers->planes[0].fmt.height << std::endl
-            << " U heig   : " << buffers->planes[1].fmt.height << std::endl
-            << " V heig   : " << buffers->planes[2].fmt.height << std::endl
-            << " Y used   : " << buffers->planes[0].bytesused << std::endl
-            << " U used   : " << buffers->planes[1].bytesused << std::endl
-            << " V used   : " << buffers->planes[2].bytesused << std::endl
-            << " Y offs   : " << buffers->planes[0].mem_offset << std::endl
-            << " U offs   : " << buffers->planes[1].mem_offset << std::endl
-            << " V offs   : " << buffers->planes[2].mem_offset << std::endl
-            << " width    : " << width_ << std::endl
-            << " height   : " << height_ << std::endl;
-
-  gpuConvertYUYVtoRGB(Y, U, V, rgbBuffer_, buffers->planes[0].fmt.stride,
+  e_yuyv_type type = YUYV_420_PLANNAR;
+  gpuConvertYUYVtoRGB(type, Y, U, V, rgbBuffer_, buffers->planes[0].fmt.stride,
                       buffers->planes[1].fmt.stride,
                       buffers->planes[2].fmt.stride, width_, height_);
 }

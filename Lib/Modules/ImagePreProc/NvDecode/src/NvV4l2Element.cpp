@@ -124,7 +124,7 @@ NvV4l2Element::dqEvent(struct v4l2_event &ev, uint32_t max_wait_ms)
             usleep(1000);
         }
     }
-    while (ret);
+    while (ret && (output_plane.getStreamStatus() || capture_plane.getStreamStatus()));
 
     return ret;
 }

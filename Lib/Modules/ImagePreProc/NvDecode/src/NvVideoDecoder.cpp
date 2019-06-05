@@ -168,7 +168,7 @@ NvVideoDecoder::disableCompleteFrameInputBuffer()
     struct v4l2_ext_control control;
     struct v4l2_ext_controls ctrls;
 
-    RETURN_ERROR_IF_FORMATS_SET();
+    RETURN_ERROR_IF_FORMATS_NOT_SET();
 
     memset(&control, 0, sizeof(control));
     memset(&ctrls, 0, sizeof(ctrls));
@@ -251,4 +251,122 @@ NvVideoDecoder::getMetadata(uint32_t buffer_index,
 
     CHECK_V4L2_RETURN(getExtControls(ctrls),
             "Getting decoder output metadata for buffer " << buffer_index);
+}
+
+int
+NvVideoDecoder::getInputMetadata(uint32_t buffer_index,
+        v4l2_ctrl_videodec_inputbuf_metadata &dec_input_metadata)
+{
+    v4l2_ctrl_video_metadata metadata;
+    struct v4l2_ext_control control;
+    struct v4l2_ext_controls ctrls;
+
+    ctrls.count = 1;
+    ctrls.controls = &control;
+
+    metadata.buffer_index = buffer_index;
+    metadata.VideoDecHeaderErrorMetadata = &dec_input_metadata;
+
+    control.id = V4L2_CID_MPEG_VIDEODEC_INPUT_METADATA;
+    control.string = (char *)&metadata;
+
+    CHECK_V4L2_RETURN(getExtControls(ctrls),
+            "Getting decoder input metadata for buffer " << buffer_index);
+}
+
+int
+NvVideoDecoder::checkifMasteringDisplayDataPresent(v4l2_ctrl_video_displaydata
+        &displaydata)
+{
+    struct v4l2_ext_control control;
+    struct v4l2_ext_controls ctrls;
+
+    ctrls.count = 1;
+    ctrls.controls = &control;
+
+    control.id = V4L2_CID_VIDEODEC_DISPLAYDATA_PRESENT;
+    control.string = (char *)&displaydata;
+
+    CHECK_V4L2_RETURN(getExtControls(ctrls),
+            "Getting decoder output displaydata for buffer ");
+}
+
+int
+NvVideoDecoder::MasteringDisplayData(v4l2_ctrl_video_hdrmasteringdisplaydata
+        *hdrmasteringdisplaydata)
+{
+    struct v4l2_ext_control control;
+    struct v4l2_ext_controls ctrls;
+
+    ctrls.count = 1;
+    ctrls.controls = &control;
+
+    control.id = V4L2_CID_VIDEODEC_HDR_MASTERING_DISPLAY_DATA;
+    control.string = (char *)hdrmasteringdisplaydata;
+
+    CHECK_V4L2_RETURN(getExtControls(ctrls),
+            "Getting decoder output hdrdisplaydata for buffer ");
+}
+
+int
+NvVideoDecoder::DevicePoll(v4l2_ctrl_video_device_poll *devicepoll)
+{
+    struct v4l2_ext_control control;
+    struct v4l2_ext_controls ctrls;
+
+    RETURN_ERROR_IF_FORMATS_NOT_SET();
+
+    memset(&control, 0, sizeof(control));
+    memset(&ctrls, 0, sizeof(ctrls));
+
+    ctrls.count = 1;
+    ctrls.controls = &control;
+
+    control.id = V4L2_CID_MPEG_VIDEO_DEVICE_POLL;
+    control.string = (char *)devicepoll;
+
+    CHECK_V4L2_RETURN(setExtControls(ctrls),
+            "Done calling video device poll ");
+}
+
+int
+NvVideoDecoder::SetPollInterrupt()
+{
+    struct v4l2_ext_control control;
+    struct v4l2_ext_controls ctrls;
+
+    RETURN_ERROR_IF_FORMATS_NOT_SET();
+
+    memset(&control, 0, sizeof(control));
+    memset(&ctrls, 0, sizeof(ctrls));
+
+    ctrls.count = 1;
+    ctrls.controls = &control;
+
+    control.id = V4L2_CID_MPEG_SET_POLL_INTERRUPT;
+    control.value = 1;
+
+    CHECK_V4L2_RETURN(setExtControls(ctrls),
+            "Setting decoder poll interrupt to 1 ");
+}
+
+int
+NvVideoDecoder::ClearPollInterrupt()
+{
+    struct v4l2_ext_control control;
+    struct v4l2_ext_controls ctrls;
+
+    RETURN_ERROR_IF_FORMATS_NOT_SET();
+
+    memset(&control, 0, sizeof(control));
+    memset(&ctrls, 0, sizeof(ctrls));
+
+    ctrls.count = 1;
+    ctrls.controls = &control;
+
+    control.id = V4L2_CID_MPEG_SET_POLL_INTERRUPT;
+    control.value = 0;
+
+    CHECK_V4L2_RETURN(setExtControls(ctrls),
+            "Setting decoder poll interrupt to 0 ");
 }

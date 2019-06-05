@@ -73,11 +73,11 @@ function entry()
   HeadTransform.entry();
   camera_init();
   ImagePreProc.init(camera.mjpg.data, camera.mjpg.size);
-  --DLDetection.detector_yolo_init(net.prototxt,
-  --                               net.model,
-  --                               net.object_thresh,
-  --                               net.nms_thresh,
-  --                               net.hier_thresh);
+  DLDetection.detector_yolo_init(net.prototxt,
+                                 net.model,
+                                 net.object_thresh,
+                                 net.nms_thresh,
+                                 net.hier_thresh);
 end
 
 function camera_init()
@@ -101,50 +101,36 @@ end
 function update()
   tstart = unix.time();
   headAngles = {Body.get_sensor_headpos()[2],Body.get_sensor_headpos()[1]};	--b51
-
   -- get mjpg image from camera
-  -- mjpg = {size, data}
+  -- mjpg format: {size, data}
   camera.mjpg = Camera.get_image();
-
   local status = Camera.get_camera_status();
   if status.count ~= lastImageCount[status.select+1] then
     lastImageCount[status.select+1] = status.count;
   else
     return false; 
   end
-
   -- Add timer measurements
   count = count + 1;
   HeadTransform.update(status.select, headAngles);
-
-  if camera.mjpg.data == -2 then
-    print "Re-enqueuing of a buffer error...";
-    exit()
-  end
-
-  dlvcm.set_image_mjpg(camera.mjpg.data)
-  dlvcm.set_image_mjpgSize(camera.mjpg.size)
   -- Convert mjpg to rgb
-  dlvcm.set_image_rgb(ImagePreProc.mjpg_to_rgb(dlvcm.get_image_mjpg(),
-                                               dlvcm.get_image_mjpgSize(),
+  local show_image = 0;
+  dlvcm.set_image_rgb(ImagePreProc.mjpg_to_rgb(camera.mjpg.data,
+                                               camera.mjpg.size,
                                                camera.width, 
                                                camera.height));
-
   -- Resize rgb fro net input
-  --[[
   dlvcm.set_image_rgb4net(ImagePreProc.rgb_resize(dlvcm.get_image_rgb(),
                                                   camera.width,
                                                   camera.height,
                                                   net.width,
-                                                  net.height));
-                                                  --]]
-
+                                                  net.height,
+                                                  show_image));
   -- TODO(b51): Return bboxes need to be added
   DLDetection.bboxes_detect(dlvcm.get_image_rgb4net());
   update_shm(status, headAngles)
 --  Detection.update();
 --  dlvcm.refresh_debug_message();
-
   return true;
 end
 

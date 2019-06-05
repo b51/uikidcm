@@ -33,7 +33,6 @@ extern "C" {
 
 #include "ImageDecode.h"
 #include "yuv2rgb.cuh"
-#include <glog/logging.h>
 
 ImageDecode image_decode;
 
@@ -172,7 +171,7 @@ static int lua_yuyv_to_rgb(lua_State* L) {
   // rgb will be tripple size of the original image
   unsigned char rgb[w * h * 3];
   // yuyv get directory from camera has PACKED yuv422 format
-  e_yuyv_type type = YUYV_PACKED;
+  e_yuyv_type type = YUYV_422_PACKED;
   gpuConvertYUYVtoRGB(type, (unsigned char*)yuyv, rgb, w, h);
   // Pushing rgb data
   lua_pushlightuserdata(L, &rgb[0]);
@@ -195,9 +194,6 @@ static int lua_mjpg_to_rgb(lua_State* L) {
   unsigned char rgb[w * h * 3];
   image_decode.DecodeYUV2BGR(mjpg, size, rgb);
   // Pushing rgb data
-  cv::Mat img(h, w, CV_8UC3, rgb);
-  cv::imshow("img", img);
-  cv::waitKey(1);
   lua_pushlightuserdata(L, &rgb[0]);
   return 1;
 }
@@ -208,7 +204,6 @@ static int lua_rgb_resize(lua_State* L) {
   if ((rgb == NULL) || !lua_islightuserdata(L, 1)) {
     return luaL_error(L, "Input RGB not light user data");
   }
-
   // 2nd Input: Width of the image
   int w = luaL_checkint(L, 2);
   // 3rd Input: Height of the image
@@ -217,14 +212,18 @@ static int lua_rgb_resize(lua_State* L) {
   int rz_w = luaL_checkint(L, 4);
   // 5th Input: Height of resized image
   int rz_h = luaL_checkint(L, 5);
+  // 6th Input: Height of resized image
+  int show_img = luaL_checkint(L, 6);
 
   unsigned char rz_rgb[rz_w * rz_h * 3];
   cv::Mat img(h, w, CV_8UC3, rgb);
   cv::Mat rz_img(h, w, CV_8UC3, rz_rgb);
   cv::resize(img, rz_img, cv::Size(rz_w, rz_h));
-  cv::imshow("rz_img", rz_img);
-  cv::waitKey(1);
-
+  // TODO(b51): Remove this after beta
+  if (show_img) {
+    cv::imshow("rz_img", rz_img);
+    cv::waitKey(1);
+  }
   // Pushing rgb data
   lua_pushlightuserdata(L, &rz_rgb[0]);
   return 1;

@@ -53,6 +53,7 @@ target_link_libraries(ImagePreProc
   ${Boost_LIBRARIES}
   ${NV_LIBS}
   ${CUDA_LIBS}
+  X11
   pthread
   drm
   glog

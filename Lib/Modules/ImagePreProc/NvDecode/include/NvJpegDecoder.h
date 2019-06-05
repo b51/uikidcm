@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, NVIDIA CORPORATION. All rights reserved.
+ * Copyright (c) 2016-2018, NVIDIA CORPORATION. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -150,6 +150,8 @@ public:
 private:
 
     NvJPEGDecoder(const char *comp_name);
+    void decodeIndirect(NvBuffer *out_buf, uint32_t pixel_format);
+    void decodeDirect(NvBuffer *out_buf, uint32_t pixel_format);
     struct jpeg_decompress_struct cinfo;
     struct jpeg_error_mgr jerr;
 
