@@ -127,7 +127,7 @@ function update()
                                                   net.height,
                                                   show_image));
   -- TODO(b51): Return bboxes need to be added
-  DLDetection.bboxes_detect(dlvcm.get_image_rgb4net());
+  DLDetection.bboxes_detect(dlvcm.get_image_rgb4net(), net.width, net.height);
   update_shm(status, headAngles)
 --  Detection.update();
 --  dlvcm.refresh_debug_message();

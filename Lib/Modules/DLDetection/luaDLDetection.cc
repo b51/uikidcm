@@ -21,18 +21,18 @@ extern "C" {
 }
 #endif
 
+#include <math.h>
+#include <stdint.h>
 #include <algorithm>
 #include <fstream>
 #include <iostream>
-#include <math.h>
 #include <memory>
-#include <stdint.h>
 #include <string>
 #include <vector>
 
 #include "DarknetDetector.h"
 
-std::shared_ptr<Detector> detector_;
+std::shared_ptr<Detector> detector;
 
 static int lua_detector_yolo_init(lua_State* L) {
   std::string prototxt(luaL_checkstring(L, 1));
@@ -47,7 +47,7 @@ static int lua_detector_yolo_init(lua_State* L) {
     darknet_detector->SetNetParams(object_thresh, nms_thresh, hier_thresh);
 
     darknet_detector->LoadModel(prototxt, model);
-    detector_ = std::move(darknet_detector);
+    detector = std::move(darknet_detector);
   }
   return 1;
 }
@@ -56,6 +56,16 @@ static int lua_bboxes_detect(lua_State* L) {
   uint8_t* rgb = (uint8_t*)lua_touserdata(L, 1);
   if ((rgb == NULL) || !lua_islightuserdata(L, 1)) {
     return luaL_error(L, "Input RGB not light user data");
+  }
+  int w = luaL_checkint(L, 2);
+  int h = luaL_checkint(L, 3);
+  std::vector<Object> objs;
+  cv::Mat img(h, w, CV_8UC3, rgb);
+  detector->Detect(img, objs);
+  for (auto obj : objs) {
+    std::cout << " frame_id : " << obj.frame_id << " label: " << obj.label
+              << " score: " << obj.score << " x: " << obj.x << " y: " << obj.y
+              << " w: " << obj.w << " h: " << obj.h << std::endl;
   }
 }
 

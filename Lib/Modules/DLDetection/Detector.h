@@ -19,8 +19,8 @@
 typedef struct {
   int x;
   int y;
-  int width;
-  int height;
+  int w;
+  int h;
 
   int frame_id;
   int label;

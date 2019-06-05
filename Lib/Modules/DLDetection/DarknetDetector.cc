@@ -77,8 +77,8 @@ bool DarknetDetector::Detect(const cv::Mat& image,
 
         obj.x = boxes[i].x;
         obj.y = boxes[i].y;
-        obj.width = boxes[i].w;
-        obj.height = boxes[i].h;
+        obj.w = boxes[i].w;
+        obj.h = boxes[i].h;
         obj.label = j;
         obj.score = probs[i][j];
 
