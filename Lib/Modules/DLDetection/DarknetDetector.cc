@@ -43,6 +43,7 @@ bool DarknetDetector::Detect(const cv::Mat& image,
   cv::resize(image, resized_image, cv::Size(net_->w, net_->h));
 
   layer output_l = net_->layers[net_->n - 1];
+  /***
   int saveint = output_l.w * output_l.h * output_l.n;
 
   box* boxes = (box*)std::malloc(saveint * sizeof(box));
@@ -57,16 +58,19 @@ bool DarknetDetector::Detect(const cv::Mat& image,
     for (int i = 0; i < saveint; i++)
       masks[i] = (float*)std::malloc((output_l.coords - 4) * sizeof(float*));
   }
+  ****/
 
   float* net_input = Mat2Float(resized_image);
-
   network_predict(net_, net_input);
+  int nboxes = 0;
+  detection* dets =
+      get_network_boxes(net_, image.cols, image.rows, object_thresh_,
+                        hier_thresh_, 0, 1, &nboxes);
+  if (nms_thresh_) {
+    do_nms_sort(dets, nboxes, output_l.classes, nms_thresh_);
+  }
 
-  get_region_boxes(output_l, image.cols, image.rows, net_->w, net_->h,
-                   object_thresh_, probs, boxes, masks, 0, 0, hier_thresh_, 1);
-
-  do_nms_sort(boxes, probs, saveint, output_l.classes, nms_thresh_);
-
+  /*
   RescaleBoxes(image, saveint, boxes);
 
   objects.clear();
@@ -86,12 +90,18 @@ bool DarknetDetector::Detect(const cv::Mat& image,
       }
     }
   }
+  */
 }
 
-void DarknetDetector::LoadModel(std::string prototxt, std::string model) {
+void DarknetDetector::LoadModel(std::string prototxt, std::string model,
+                                bool clear) {
   LOG(INFO) << prototxt;
   net_ = parse_network_cfg(const_cast<char*>(prototxt.c_str()));
   load_weights(net_, const_cast<char*>(model.c_str()));
+  if (clear) {
+    (net_->seen) = 0;
+  }
+  set_batch_network(net_, 1);
 }
 
 float* DarknetDetector::Mat2Float(const cv::Mat& image) {

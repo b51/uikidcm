@@ -26,7 +26,7 @@ public:
   DarknetDetector();
   ~DarknetDetector();
 
-  void LoadModel(std::string cfg, std::string model);
+  void LoadModel(std::string cfg, std::string model, bool clear = 0);
 
   void SetNetParams(double object_thresh = 0.24, double nms_thresh = 0.3,
                     double hier_thresh = 0.5) {

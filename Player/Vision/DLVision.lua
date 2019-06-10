@@ -81,14 +81,14 @@ function entry()
 end
 
 function camera_init()
-  for c=1,Config.camera.ncamera do 
+  for c=1,Config.camera.ncamera do
     Camera.select_camera(c-1);
     for i,auto_param in ipairs(Config.camera.auto_param) do
       print('Camera '..c..': setting '..auto_param.key..': '..auto_param.val[c]);
       Camera.set_param(auto_param.key, auto_param.val[c]);
       unix.usleep(100000);
       print('Camera '..c..': check '..auto_param.key..' now is: '..Camera.get_param(auto_param.key));
-    end   
+    end
     for i,param in ipairs(Config.camera.param) do
       print('Camera '..c..': setting '..param.key..': '..param.val[c]);
       Camera.set_param(param.key, param.val[c]);
@@ -108,7 +108,7 @@ function update()
   if status.count ~= lastImageCount[status.select+1] then
     lastImageCount[status.select+1] = status.count;
   else
-    return false; 
+    return false;
   end
   -- Add timer measurements
   count = count + 1;
@@ -117,7 +117,7 @@ function update()
   local show_image = 0;
   dlvcm.set_image_rgb(ImagePreProc.mjpg_to_rgb(camera.mjpg.data,
                                                camera.mjpg.size,
-                                               camera.width, 
+                                               camera.width,
                                                camera.height));
   -- Resize rgb fro net input
   dlvcm.set_image_rgb4net(ImagePreProc.rgb_resize(dlvcm.get_image_rgb(),
@@ -127,7 +127,10 @@ function update()
                                                   net.height,
                                                   show_image));
   -- TODO(b51): Return bboxes need to be added
+  tstart = unix.time();
   DLDetection.bboxes_detect(dlvcm.get_image_rgb4net(), net.width, net.height);
+  tduration = unix.time() - tstart;
+  print("Detection duration: "..tduration)
   update_shm(status, headAngles)
 --  Detection.update();
 --  dlvcm.refresh_debug_message();
@@ -203,15 +206,15 @@ function update_shm_fov()
   local fovTR={Config.camera.width,0};
 
   dlvcm.set_image_fovC(vector.slice(HeadTransform.projectGround(
- 	  HeadTransform.coordinatesA(fovC,0.1)),1,2));
+	  HeadTransform.coordinatesA(fovC,0.1)),1,2));
   dlvcm.set_image_fovTL(vector.slice(HeadTransform.projectGround(
- 	  HeadTransform.coordinatesA(fovTL,0.1)),1,2));
+	  HeadTransform.coordinatesA(fovTL,0.1)),1,2));
   dlvcm.set_image_fovTR(vector.slice(HeadTransform.projectGround(
- 	  HeadTransform.coordinatesA(fovTR,0.1)),1,2));
+	  HeadTransform.coordinatesA(fovTR,0.1)),1,2));
   dlvcm.set_image_fovBL(vector.slice(HeadTransform.projectGround(
- 	  HeadTransform.coordinatesA(fovBL,0.1)),1,2));
+	  HeadTransform.coordinatesA(fovBL,0.1)),1,2));
   dlvcm.set_image_fovBR(vector.slice(HeadTransform.projectGround(
- 	  HeadTransform.coordinatesA(fovBR,0.1)),1,2));
+	  HeadTransform.coordinatesA(fovBR,0.1)),1,2));
 end
 
 

@@ -77,3 +77,4 @@ sample.yuyv
 tempResult
 
 !libdarknet.so
+*.weights
