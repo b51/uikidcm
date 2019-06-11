@@ -35,11 +35,11 @@ public:
     hier_thresh_ = hier_thresh;
   }
 
-  bool Detect(const cv::Mat& image, std::vector<Object>& objects);
+  bool Detect(const cv::Mat& image, int ori_w, int ori_h, std::vector<Object>& objects);
 
 private:
-  float* Mat2Float(const cv::Mat& image);
-  void RescaleBoxes(const cv::Mat& image, int num, box* boxes);
+  float* Mat2Float(const cv::Mat& image, int ori_w, int ori_h);
+  void RescaleBoxes(const cv::Mat& image, int num, detection* dets);
 
 private:
   network* net_;

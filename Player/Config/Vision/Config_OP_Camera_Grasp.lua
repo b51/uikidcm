@@ -19,7 +19,7 @@ camera.focal_length = 1066; -- in pixels
 camera.focal_base = 1280; -- image width used in focal length calculation
 
 camera.auto_param = {};
-camera.auto_param[1] = {key='white balance temperature, auto', val={0}};
+camera.auto_param[1] = {key='white balance temperature, auto', val={1}};
 camera.auto_param[2] = {key='power line frequency',   val={1}};
 camera.auto_param[3] = {key='backlight compensation', val={1}};
 camera.auto_param[4] = {key='exposure, auto',val={1}};

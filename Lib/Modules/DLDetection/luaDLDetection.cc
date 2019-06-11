@@ -57,11 +57,13 @@ static int lua_bboxes_detect(lua_State* L) {
   if ((rgb == NULL) || !lua_islightuserdata(L, 1)) {
     return luaL_error(L, "Input RGB not light user data");
   }
-  int w = luaL_checkint(L, 2);
-  int h = luaL_checkint(L, 3);
+  int ori_w = luaL_checkint(L, 2);
+  int ori_h = luaL_checkint(L, 3);
+  int net_w = luaL_checkint(L, 4);
+  int net_h = luaL_checkint(L, 5);
   std::vector<Object> objs;
-  cv::Mat img(h, w, CV_8UC3, rgb);
-  detector->Detect(img, objs);
+  cv::Mat img(net_h, net_w, CV_8UC3, rgb);
+  detector->Detect(img, ori_w, ori_h, objs);
   for (auto obj : objs) {
     std::cout << " frame_id : " << obj.frame_id << " label: " << obj.label
               << " score: " << obj.score << " x: " << obj.x << " y: " << obj.y

@@ -128,9 +128,13 @@ function update()
                                                   show_image));
   -- TODO(b51): Return bboxes need to be added
   tstart = unix.time();
-  DLDetection.bboxes_detect(dlvcm.get_image_rgb4net(), net.width, net.height);
+  DLDetection.bboxes_detect(dlvcm.get_image_rgb4net(),
+                            camera.width,
+                            camera.height,
+                            net.width,
+                            net.height);
   tduration = unix.time() - tstart;
-  print("Detection duration: "..tduration)
+  --print("Detection duration: "..tduration)
   update_shm(status, headAngles)
 --  Detection.update();
 --  dlvcm.refresh_debug_message();

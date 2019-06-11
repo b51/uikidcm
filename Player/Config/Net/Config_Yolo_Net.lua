@@ -7,10 +7,10 @@ function get_data_path()
 end
 
 net = {};
-net.width = 128
-net.height = 128
+net.width = 416
+net.height = 416
 net.prototxt = get_data_path().."yolov3-tiny.cfg"
 net.model = get_data_path().."yolov3-tiny.weights"
-net.object_thresh = 0.24
-net.nms_thresh = 0.2
+net.object_thresh = 0.5
+net.nms_thresh = 0.4
 net.hier_thresh = 0.5

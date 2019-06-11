@@ -34,7 +34,7 @@ public:
   Detector() {}
   virtual ~Detector() {}
 
-  virtual bool Detect(const cv::Mat& image, std::vector<Object>& objects) = 0;
+  virtual bool Detect(const cv::Mat& image, int ori_w, int ori_h, std::vector<Object>& objects) = 0;
 };
 
 #endif

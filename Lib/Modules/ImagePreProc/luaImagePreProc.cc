@@ -215,9 +215,8 @@ static int lua_rgb_resize(lua_State* L) {
   // 6th Input: Height of resized image
   int show_img = luaL_checkint(L, 6);
 
-  unsigned char rz_rgb[rz_w * rz_h * 3];
   cv::Mat img(h, w, CV_8UC3, rgb);
-  cv::Mat rz_img(h, w, CV_8UC3, rz_rgb);
+  cv::Mat rz_img;
   cv::resize(img, rz_img, cv::Size(rz_w, rz_h));
   // TODO(b51): Remove this after beta
   if (show_img) {
@@ -225,7 +224,7 @@ static int lua_rgb_resize(lua_State* L) {
     cv::waitKey(1);
   }
   // Pushing rgb data
-  lua_pushlightuserdata(L, &rz_rgb[0]);
+  lua_pushlightuserdata(L, rz_img.data);
   return 1;
 }
 
