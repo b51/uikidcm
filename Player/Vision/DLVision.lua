@@ -44,6 +44,7 @@ preproc = {};
 net = {};
 net.width = Config.net.width;
 net.height = Config.net.height;
+net.ratio_fixed = Config.net.ratio_fixed;
 net.prototxt = Config.net.prototxt;
 net.model = Config.net.model;
 net.object_thresh = Config.net.object_thresh
@@ -114,7 +115,7 @@ function update()
   count = count + 1;
   HeadTransform.update(status.select, headAngles);
   -- Convert mjpg to rgb
-  local show_image = 0;
+  local show_image = 1;
   dlvcm.set_image_rgb(ImagePreProc.mjpg_to_rgb(camera.mjpg.data,
                                                camera.mjpg.size,
                                                camera.width,
@@ -125,8 +126,8 @@ function update()
                                                   camera.height,
                                                   net.width,
                                                   net.height,
+                                                  net.ratio_fixed,
                                                   show_image));
-  -- TODO(b51): Return bboxes need to be added
   tstart = unix.time();
   DLDetection.bboxes_detect(dlvcm.get_image_rgb4net(),
                             camera.width,

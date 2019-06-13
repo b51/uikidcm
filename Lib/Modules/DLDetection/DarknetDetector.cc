@@ -15,10 +15,10 @@ DarknetDetector::DarknetDetector() {}
 
 DarknetDetector::~DarknetDetector() {}
 
-void DarknetDetector::RescaleBoxes(const cv::Mat& image, int num,
+void DarknetDetector::RescaleBoxes(int ori_w, int ori_h, int num,
                                    detection* dets) {
-  int w = image.cols;
-  int h = image.rows;
+  int w = ori_w;
+  int h = ori_h;
   for (int i = 0; i < num; i++) {
     box b = dets[i].bbox;
     int x1 = (b.x - b.w / 2.) * w;
@@ -38,10 +38,12 @@ void DarknetDetector::RescaleBoxes(const cv::Mat& image, int num,
   }
 }
 
+//TODO rename ori_w to a better name and add resize to ImagePreProc
 bool DarknetDetector::Detect(const cv::Mat& image, int ori_w, int ori_h,
                              std::vector<Object>& objects) {
+  static int frame_count_ = 0;
   layer output_l = net_->layers[net_->n - 1];
-  float* net_input = Mat2Float(image, ori_w, ori_h);
+  float* net_input = Mat2Float(image);
   network_predict(net_, net_input);
   int nboxes = 0;
   detection* dets = get_network_boxes(net_, ori_w, ori_h, object_thresh_,
@@ -50,7 +52,7 @@ bool DarknetDetector::Detect(const cv::Mat& image, int ori_w, int ori_h,
     do_nms_sort(dets, nboxes, output_l.classes, nms_thresh_);
   }
 
-  RescaleBoxes(image, nboxes, dets);
+  RescaleBoxes(ori_w, ori_h, nboxes, dets);
 
   objects.clear();
   for (int i = 0; i < nboxes; i++) {
@@ -61,12 +63,14 @@ bool DarknetDetector::Detect(const cv::Mat& image, int ori_w, int ori_h,
         obj.y = dets[i].bbox.y;
         obj.w = dets[i].bbox.w;
         obj.h = dets[i].bbox.h;
+        obj.frame_id = frame_count_;
         obj.label = j;
         obj.score = dets[i].prob[j];
         objects.push_back(obj);
       }
     }
   }
+  frame_count_++;
 }
 
 void DarknetDetector::LoadModel(std::string prototxt, std::string model,
@@ -80,24 +84,29 @@ void DarknetDetector::LoadModel(std::string prototxt, std::string model,
   set_batch_network(net_, 1);
 }
 
-float* DarknetDetector::Mat2Float(const cv::Mat& image, int ori_w, int ori_h) {
-  int w = image.cols;
-  int h = image.rows;
-  int new_w = ori_w;
-  int new_h = ori_h;
-
-  cv::Mat tmp_image(h, w, CV_32FC3);
-  float* tmp_data = (float*)(tmp_image.data);
+float* DarknetDetector::Mat2Float(const cv::Mat& image) {
+  IplImage ipl = image;
+  int w = ipl.width;
+  int h = ipl.height;
+  int c = ipl.nChannels;
 
   float* rgb = (float*)std::malloc(w * h * 3 * sizeof(float));
-  image.convertTo(tmp_image, CV_32FC3, 1 / 255.);
+  unsigned char* data = (unsigned char*)ipl.imageData;
+  int step = ipl.widthStep;
 
   for (int i = 0; i < h; i++) {
-    for (int j = 0; j < w; j++) {
-      rgb[w * i + j] = tmp_data[w * i * 3 + j * 3 + 2];
-      rgb[w * i + j + w * h] = tmp_data[w * i * 3 + j * 3 + 1];
-      rgb[w * i + j + w * h * 2] = tmp_data[w * i * 3 + j * 3];
+    for (int k = 0; k < c; k++) {
+      for (int j = 0; j < w; j++) {
+        rgb[k * w * h + i * w + j] = data[i * step + j * c + k] / 255.;
+      }
     }
+  }
+
+  int size = w * h;
+  for (int i = 0; i < size; ++i) {
+    float swap = rgb[i];
+    rgb[i] = rgb[i + size * 2];
+    rgb[i + size * 2] = swap;
   }
   return rgb;
 }

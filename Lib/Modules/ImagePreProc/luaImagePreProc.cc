@@ -212,19 +212,35 @@ static int lua_rgb_resize(lua_State* L) {
   int rz_w = luaL_checkint(L, 4);
   // 5th Input: Height of resized image
   int rz_h = luaL_checkint(L, 5);
-  // 6th Input: Height of resized image
+  // 6th Input: will keep original ratio?
+  int ratio_fixed = luaL_checkint(L, 7);
+  // 7th Input: Height of resized image
   int show_img = luaL_checkint(L, 6);
-
   cv::Mat img(h, w, CV_8UC3, rgb);
-  cv::Mat rz_img;
-  cv::resize(img, rz_img, cv::Size(rz_w, rz_h));
+  cv::Mat rzd_img(rz_h, rz_w, CV_8UC3, 128);  // padded image with 128
+  if (!ratio_fixed) {
+    cv::resize(img, rzd_img, cv::Size(rz_w, rz_h));
+  } else {
+    int new_w = w;
+    int new_h = h;
+    if (((float)rz_w / w) < ((float)rz_h / h)) {
+      new_w = rz_w;
+      new_h = (h * rz_w) / w;
+    } else {
+      new_h = rz_h;
+      new_w = (w * rz_h) / h;
+    }
+    cv::Mat image_roi = rzd_img(
+        cv::Rect(((rz_w - new_w) / 2), (rz_h - new_h) / 2, new_w, new_h));
+    cv::resize(img, image_roi, cv::Size(new_w, new_h));
+  }
   // TODO(b51): Remove this after beta
   if (show_img) {
-    cv::imshow("rz_img", rz_img);
+    cv::imshow("rzd_img", rzd_img);
     cv::waitKey(1);
   }
   // Pushing rgb data
-  lua_pushlightuserdata(L, rz_img.data);
+  lua_pushlightuserdata(L, rzd_img.data);
   return 1;
 }
 

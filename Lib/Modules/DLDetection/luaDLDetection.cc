@@ -64,11 +64,13 @@ static int lua_bboxes_detect(lua_State* L) {
   std::vector<Object> objs;
   cv::Mat img(net_h, net_w, CV_8UC3, rgb);
   detector->Detect(img, ori_w, ori_h, objs);
+  /*
   for (auto obj : objs) {
     std::cout << " frame_id : " << obj.frame_id << " label: " << obj.label
               << " score: " << obj.score << " x: " << obj.x << " y: " << obj.y
               << " w: " << obj.w << " h: " << obj.h << std::endl;
   }
+  */
 }
 
 static const struct luaL_reg dlDetection_lib[] = {

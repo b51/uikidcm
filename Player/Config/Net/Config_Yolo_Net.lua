@@ -9,6 +9,7 @@ end
 net = {};
 net.width = 416
 net.height = 416
+net.ratio_fixed = 1
 net.prototxt = get_data_path().."yolov3-tiny.cfg"
 net.model = get_data_path().."yolov3-tiny.weights"
 net.object_thresh = 0.5
