@@ -31,10 +31,9 @@ extern "C" {
 #include <fstream>
 #include <opencv2/opencv.hpp>
 
-#include "ImageDecode.h"
-#include "yuv2rgb.cuh"
+#include "TurboDecode.h"
 
-ImageDecode image_decode;
+TurboDecode turbo_decode;
 
 float clamp(float val, float mn, float mx) {
   return (val >= mn) ? ((val <= mx) ? val : mx) : mn;
@@ -171,8 +170,8 @@ static int lua_yuyv_to_rgb(lua_State* L) {
   // rgb will be tripple size of the original image
   unsigned char rgb[w * h * 3];
   // yuyv get directory from camera has PACKED yuv422 format
-  e_yuyv_type type = YUYV_422_PACKED;
-  gpuConvertYUYVtoRGB(type, (unsigned char*)yuyv, rgb, w, h);
+  // e_yuyv_type type = YUYV_422_PACKED;
+  // gpuConvertYUYVtoRGB(type, (unsigned char*)yuyv, rgb, w, h);
   // Pushing rgb data
   lua_pushlightuserdata(L, &rgb[0]);
   return 1;
@@ -192,7 +191,7 @@ static int lua_mjpg_to_rgb(lua_State* L) {
   int h = luaL_checkint(L, 4);
   // rgb will be tripple size of the original image
   unsigned char rgb[w * h * 3];
-  image_decode.DecodeYUV2BGR(mjpg, size, rgb);
+  turbo_decode.DecodeMJPG2BGR(mjpg, size, rgb);
   // Pushing rgb data
   lua_pushlightuserdata(L, &rgb[0]);
   return 1;
@@ -250,7 +249,7 @@ static int lua_init(lua_State* L) {
     return luaL_error(L, "Input YUYV not light user data");
   }
   int size = luaL_checkint(L, 2);
-  image_decode.Init(mjpg, size);
+  turbo_decode.Init();
 }
 
 static const struct luaL_reg imagePreProc_lib[] = {
