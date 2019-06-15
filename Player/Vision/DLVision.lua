@@ -116,25 +116,34 @@ function update()
   HeadTransform.update(status.select, headAngles);
   -- Convert mjpg to rgb
   local show_image = 1;
-  dlvcm.set_image_rgb(ImagePreProc.mjpg_to_rgb(camera.mjpg.data,
-                                               camera.mjpg.size,
-                                               camera.width,
-                                               camera.height));
-  -- Resize rgb fro net input
-  dlvcm.set_image_rgb4net(ImagePreProc.rgb_resize(dlvcm.get_image_rgb(),
-                                                  camera.width,
-                                                  camera.height,
-                                                  net.width,
-                                                  net.height,
-                                                  net.ratio_fixed,
-                                                  show_image));
   tstart = unix.time();
-  DLDetection.bboxes_detect(dlvcm.get_image_rgb4net(),
-                            camera.width,
-                            camera.height,
-                            net.width,
-                            net.height);
+  local rgb = ImagePreProc.mjpg_to_rgb(camera.mjpg.data,
+                                       camera.mjpg.size,
+                                       camera.width,
+                                       camera.height);
+  --dlvcm.set_image_rgb(rgb);
   tduration = unix.time() - tstart;
+  print("mjpg to rgb duration: "..tduration)
+  -- Resize rgb fro net input
+  tstart = unix.time();
+  local rzd_rgb = ImagePreProc.rgb_resize(rgb,
+                                          camera.width,
+                                          camera.height,
+                                          net.width,
+                                          net.height,
+                                          net.ratio_fixed,
+                                          show_image);
+  dlvcm.set_image_rgb4net(rzd_rgb);
+  tduration = unix.time() - tstart;
+  print("rgb resize duration: "..tduration)
+  unix.usleep(10 * 1e3)
+  --tstart = unix.time();
+  --DLDetection.bboxes_detect(rzd_rgb,
+  --                          camera.width,
+  --                          camera.height,
+  --                          net.width,
+  --                          net.height);
+  --tduration = unix.time() - tstart;
   --print("Detection duration: "..tduration)
   update_shm(status, headAngles)
 --  Detection.update();

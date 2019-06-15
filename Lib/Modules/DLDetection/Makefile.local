@@ -4,7 +4,7 @@ include ../../Makefile.inc
 TARGETS = all clean
 .PHONY: $(TARGETS)
 
-all: ImagePreProc
+all: DLDetection
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ -c $<
@@ -14,9 +14,9 @@ all: ImagePreProc
 %.o: %.c
 	$(CC) $(CXXFLAGS) $(INCLUDES) -o $@ -c $<
 
-ImagePreProc: luaImagePreProc.o \
-	TurboDecode.o
-	$(LD) $(LDFLAGS) -o $@.$(SHLIBEXT) $(LIBOPTS) $^ $(LIB_DIR) -lm `pkg-config --libs opencv` -lturbojpeg -llua
+DLDetection: luaDLDetection.o \
+	DarknetDetector.o
+	$(LD) $(LDFLAGS) -o $@.$(SHLIBEXT) $(LIBOPTS) $^ $(LIB_DIR) -lm `pkg-config --libs opencv` -lturbojpeg -llua -ldarknet -lglog
 
 clean:
 	rm -f *.$(SHLIBEXT) *.o

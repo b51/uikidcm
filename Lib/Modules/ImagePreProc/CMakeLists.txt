@@ -19,7 +19,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 find_package(OpenCV REQUIRED)
 
 include_directories(
-  ${OpenCV_LIBS}
+  ${OpenCV_INCLUDE_DIRS}
 )
 
 ###########
@@ -33,6 +33,7 @@ add_library(ImagePreProc SHARED
 
 target_link_libraries(ImagePreProc
   ${OpenCV_LIBS}
+  lua
   glog
   v4l2
   turbojpeg

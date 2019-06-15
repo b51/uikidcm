@@ -9,17 +9,7 @@
  *
  ************************************************************************/
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include "lauxlib.h"
-#include "lua.h"
-#include "lualib.h"
-
-#ifdef __cplusplus
-}
-#endif
+#include "lua.hpp"
 
 #include <math.h>
 #include <stdint.h>

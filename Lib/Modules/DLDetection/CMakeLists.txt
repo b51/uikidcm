@@ -7,6 +7,7 @@ add_definitions(-std=c++11)
 option(USE_GPU "Use GPU as image inference" ON)
 
 #########################################################################
+set(CMAKE_BUILD_TYPE "Release")
 if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
   message(STATUS "No build type selected, default to ${CMAKE_BUILD_TYPE}")
@@ -59,7 +60,7 @@ target_link_libraries(${PROJECT_NAME}
   ${OpenCV_LIBS}
   ${Darknet_LIB}
   ${CUDA_LIBS}
+  lua
+  glog
   -Wl,--no-whole-archive
-  -llua
-  -lglog
 )
