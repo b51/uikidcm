@@ -1,5 +1,5 @@
-#ifndef luaNaoCam_h_DEFINED
-#define luaNaoCam_H_DEFINED
+#ifndef luaOPCam_h_DEFINED
+#define luaOPCam_H_DEFINED
 
 #include "lua.hpp"
 

@@ -10,8 +10,8 @@
  **************************************************************************************
  */
 
-#ifndef CAMERA_H_INCLUDED
-#define CAMERA_H_INCLUDED
+#ifndef camera_h_DEFINED
+#define camera_h_DEFINED
 
 #include <glog/logging.h>
 #include <linux/videodev2.h>

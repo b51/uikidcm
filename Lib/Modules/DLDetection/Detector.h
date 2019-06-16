@@ -16,25 +16,27 @@
 
 #include <opencv2/opencv.hpp>
 
-typedef struct {
+struct Object {
+  int label;
+  int frame_id;
+  float score;
   int x;
   int y;
   int w;
   int h;
 
-  int frame_id;
-  int label;
-  float score;
-} Object;
-
-enum { BALL, GOAL_POST, PENALTY_SPOT, TEAMMATE, OPPONENT_ROBOT, OBJECT_END };
+ public:
+  Object() : label(0), frame_id(0), score(0), x(0), y(0), w(0), h(0) {}
+  Object(int l) : label(l), frame_id(0), score(0), x(0), y(0), w(0), h(0) {}
+};
 
 class Detector {
-public:
+ public:
   Detector() {}
   virtual ~Detector() {}
 
-  virtual bool Detect(const cv::Mat& image, int ori_w, int ori_h, std::vector<Object>& objects) = 0;
+  virtual bool Detect(const cv::Mat& image, int ori_w, int ori_h,
+                      std::vector<Object>& objects) = 0;
 };
 
 #endif

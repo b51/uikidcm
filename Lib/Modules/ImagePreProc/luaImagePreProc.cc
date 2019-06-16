@@ -202,9 +202,9 @@ static int lua_rgb_resize(lua_State* L) {
   // 5th Input: Height of resized image
   int rz_h = luaL_checkint(L, 5);
   // 6th Input: will keep original ratio?
-  int ratio_fixed = luaL_checkint(L, 7);
+  int ratio_fixed = luaL_checkint(L, 6);
   // 7th Input: Height of resized image
-  int show_img = luaL_checkint(L, 6);
+  int show_img = luaL_checkint(L, 7);
   cv::Mat img(h, w, CV_8UC3, rgb);
   cv::Mat rzd_img(rz_h, rz_w, CV_8UC3, 128);  // padded image with 128
   if (!ratio_fixed) {

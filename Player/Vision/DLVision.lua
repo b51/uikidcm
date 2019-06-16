@@ -115,17 +115,12 @@ function update()
   count = count + 1;
   HeadTransform.update(status.select, headAngles);
   -- Convert mjpg to rgb
-  local show_image = 1;
-  tstart = unix.time();
+  local show_image = 0;
   local rgb = ImagePreProc.mjpg_to_rgb(camera.mjpg.data,
                                        camera.mjpg.size,
                                        camera.width,
                                        camera.height);
-  --dlvcm.set_image_rgb(rgb);
-  tduration = unix.time() - tstart;
-  print("mjpg to rgb duration: "..tduration)
   -- Resize rgb fro net input
-  tstart = unix.time();
   local rzd_rgb = ImagePreProc.rgb_resize(rgb,
                                           camera.width,
                                           camera.height,
@@ -134,20 +129,12 @@ function update()
                                           net.ratio_fixed,
                                           show_image);
   dlvcm.set_image_rgb4net(rzd_rgb);
-  tduration = unix.time() - tstart;
-  print("rgb resize duration: "..tduration)
-  unix.usleep(10 * 1e3)
-  --tstart = unix.time();
-  --DLDetection.bboxes_detect(rzd_rgb,
-  --                          camera.width,
-  --                          camera.height,
-  --                          net.width,
-  --                          net.height);
-  --tduration = unix.time() - tstart;
-  --print("Detection duration: "..tduration)
+  local detection = DLDetection.bboxes_detect(rzd_rgb,
+                                              camera.width,
+                                              camera.height,
+                                              net.width,
+                                              net.height);
   update_shm(status, headAngles)
---  Detection.update();
---  dlvcm.refresh_debug_message();
   return true;
 end
 

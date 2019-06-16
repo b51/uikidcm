@@ -8,8 +8,8 @@
  *     Licensed under The MIT License [see LICENSE for details]
  *
  ************************************************************************/
-#ifndef TURBO_DECODE_H_
-#define TURBO_DECODE_H_
+#ifndef TURBO_DECODE_h_DEFINED
+#define TURBO_DECODE_h_DEFINED
 
 #include <setjmp.h>
 #include <stdio.h>
