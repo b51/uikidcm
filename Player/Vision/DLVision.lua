@@ -11,8 +11,10 @@ require('dlvcm');
 require('mcm');
 require('Body');
 
+currVel = vector.zeros(3);
+
 require('Camera');
-require('DLDetection');
+require('Detection');
 
 if (Config.camera.width ~= Camera.get_width()
     or Config.camera.height ~= Camera.get_height()) then
@@ -21,9 +23,6 @@ if (Config.camera.width ~= Camera.get_width()
   print('Camera width/height = ('..Camera.get_width()..', '..Camera.get_height()..')');
   error('Config file is not set correctly for this camera. Ensure the camera width and height are correct.');
 end
-
-currVel = vector.zeros(3);
-
 dlvcm.set_image_width(Config.camera.width);
 dlvcm.set_image_height(Config.camera.height);
 
@@ -37,19 +36,11 @@ camera.status = Camera.get_camera_status();
 camera.switchFreq = Config.camera.switchFreq;
 camera.ncamera = Config.camera.ncamera;
 
--- preproc
-preproc = {};
-
 -- net
 net = {};
 net.width = Config.net.width;
 net.height = Config.net.height;
 net.ratio_fixed = Config.net.ratio_fixed;
-net.prototxt = Config.net.prototxt;
-net.model = Config.net.model;
-net.object_thresh = Config.net.object_thresh
-net.nms_thresh = Config.net.nms_thresh
-net.hier_thresh = Config.net.hier_thresh
 
 saveCount = 0;
 
@@ -72,13 +63,15 @@ function entry()
 
   -- Start the HeadTransform machine
   HeadTransform.entry();
+
+  -- Initiate Detection
+  Detection.entry();
+
+  -- Initiate OPCam
   camera_init();
+
+  -- Initiate ImagePreProc
   ImagePreProc.init(camera.mjpg.data, camera.mjpg.size);
-  DLDetection.detector_yolo_init(net.prototxt,
-                                 net.model,
-                                 net.object_thresh,
-                                 net.nms_thresh,
-                                 net.hier_thresh);
 end
 
 function camera_init()
@@ -121,20 +114,20 @@ function update()
                                        camera.width,
                                        camera.height);
   -- Resize rgb fro net input
-  local rzd_rgb = ImagePreProc.rgb_resize(rgb,
+  local rzdrgb = ImagePreProc.rgb_resize(rgb,
                                           camera.width,
                                           camera.height,
                                           net.width,
                                           net.height,
                                           net.ratio_fixed,
                                           show_image);
-  dlvcm.set_image_rgb4net(rzd_rgb);
-  local detection = DLDetection.bboxes_detect(rzd_rgb,
-                                              camera.width,
-                                              camera.height,
-                                              net.width,
-                                              net.height);
+  dlvcm.set_image_rzdrgb(rzdrgb);
   update_shm(status, headAngles)
+
+  vcm.refresh_debug_message();
+
+  Detection.update();
+  vcm.refresh_debug_message();
   return true;
 end
 

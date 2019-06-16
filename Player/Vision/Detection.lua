@@ -9,6 +9,7 @@ require('vcm');
 require('unix');
 
 -- Dependency
+require('DLDetection');
 require('detectBall');
 require('detectGoal');
 require('detectLine');
@@ -68,6 +69,20 @@ Trobot = 0;
 Tfreespace = 0;
 Tboundary = 0;
 
+camera = {};
+camera.width = Camera.get_width();
+camera.height = Camera.get_height();
+-- net
+net = {};
+net.width = Config.net.width;
+net.height = Config.net.height;
+net.ratio_fixed = Config.net.ratio_fixed;
+net.prototxt = Config.net.prototxt;
+net.model = Config.net.model;
+net.object_thresh = Config.net.object_thresh
+net.nms_thresh = Config.net.nms_thresh
+net.hier_thresh = Config.net.hier_thresh
+
 function entry()
   -- Initiate Detection
   ball = {};
@@ -109,19 +124,36 @@ function entry()
   boundary={};
   boundary.detect=0;
 
-
+  DLDetection.detector_yolo_init(net.prototxt,
+                                 net.model,
+                                 net.object_thresh,
+                                 net.nms_thresh,
+                                 net.hier_thresh);
 end
 
 
 
 function update()
-
-  if( Config.gametype == "stretcher" ) then
-    ball = detectEyes.detect(colorOrange);
-    return;
-  end
-
   -- ball detector
+  tstart = unix.time();
+  local detection = DLDetection.bboxes_detect(dlvcm.get_image_rzdrgb(),
+                                              camera.width,
+                                              camera.height,
+                                              net.width,
+                                              net.height);
+  Tdetection = unix.time() - tstart;
+  ball = detectBall.detect(detection.ball);
+  goal = detectGoal.detect(detection.goal);
+  --[[
+  print("DLDetection tim: "..Tdetection);
+  for k, v in pairs(detection) do
+    print(k..":")
+    for m, n in pairs(v) do
+      print("    "..m..": "..n)
+    end
+  end
+  --]]
+  --[[
   tstart = unix.time();
 	if(use_arbitrary_ball) then
 		ball = detectBall.detect("arbitrary");
@@ -201,6 +233,8 @@ function update()
     detectRobot.detect();
     Trobot = unix.time() - tstart;
   end
+  --]]
+
   update_shm();
 end
 

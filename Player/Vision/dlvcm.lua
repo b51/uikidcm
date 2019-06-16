@@ -39,14 +39,14 @@ shared.image.horizonDir = vector.zeros(4); -- Angle of horizon line rotation
 
 -- 3 bytes per pixel (24 bits describes 1 pixels)
 shared.image.rgb = 3*Config.camera.width*Config.camera.height;
-shared.image.rgb4net = 3*Config.net.width*Config.net.height;
+shared.image.rzdrgb = 3*Config.net.width*Config.net.height;
 
 shared.image.width = vector.zeros(1);
 shared.image.height = vector.zeros(1);
 shared.image.scaleB = vector.zeros(1);
 
 -- calculate image shm size
-shsize.image = shared.image.rgb + shared.image.rgb4net + 2^16;
+shsize.image = shared.image.rgb + shared.image.rzdrgb + 2^16;
 
 --Image field-of-view information
 shared.image.fovTL=vector.zeros(2);
