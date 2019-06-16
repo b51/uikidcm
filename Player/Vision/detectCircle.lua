@@ -19,12 +19,12 @@ function distance(x1,y1,x2,y2)
          return math.sqrt((x1-x2)^2+(y1-y2)^2);
 end
 
-function normal_line(line,i)   
+function normal_line(line,i)
   xv0 = line.v[i][1][1];
   yv0 = line.v[i][1][2];
   xv1 = line.v[i][2][1];
   yv1 = line.v[i][2][2];
-  
+
   if yv1~=yv0 and xv1~=xv0 then
   --m =(yv1-yv0)/(xv1-xv0);
   m = (xv1-xv0)/(-yv1+yv0);
@@ -33,15 +33,15 @@ function normal_line(line,i)
   minv = -1/m;
   x_mean = (-yv0-yv1)/2;
   y_mean = (xv0+xv1)/2;
-  
-  
+
+
   x_new0 = x_mean-1;
   x_new1 = x_mean +1;
   y_new0 = y_mean-1*minv;
   y_new1 = y_mean+1*minv;
- 
+
  return x_new0,x_new1,y_new0,y_new1;
- 
+
 end
 
 --gets the intersection of the normal lines
@@ -57,7 +57,7 @@ function get_intersect(xi1,yi1,xi2,yi2,xj1,yj1,xj2,yj2)
   --print(string.format("L1: %.2fX + %.2fY + %.2f = 0\n",Ai,Bi,Ci))
   --print(string.format("L2: %.2fX + %.2fY + %.2f = 0\n",Aj,Bj,Cj))
   --two lines intersect if Ai*Bj!=Aj*Bi
-  if Aj*Bi == Ai*Bj then return nil else 
+  if Aj*Bi == Ai*Bj then return nil else
     xinter = (Bi*Cj-Bj*Ci)/(Ai*Bj-Aj*Bi);
     yinter = (Aj*Ci-Ai*Cj)/(Ai*Bj-Aj*Bi);
     return {xinter, yinter}
@@ -77,9 +77,9 @@ function intersection_point(line,i,j)
   yj1 = line.v[j][2][2];
 
   xi_new0,xi_new1,yi_new0,yi_new1 = normal_line(line,i);
-  inter = get_intersect(xi_new0,yi_new0,xi_new1,yi_new1,-yj0,xj0,-yj1,xj1);   
+  inter = get_intersect(xi_new0,yi_new0,xi_new1,yi_new1,-yj0,xj0,-yj1,xj1);
   return inter;
-  
+
 end
 
 --takes in two lines and returns the acute angle between them in radians
@@ -104,7 +104,7 @@ end
 local update = function(self,p_vision,line)
    self.detect = 0;
 if line.detect == 0 or line.nLines<3 then
-     p_vision:add_debug_message("not enough lines for circle check\n"); 
+     p_vision:add_debug_message("not enough lines for circle check\n");
    return;
 end
 
@@ -128,7 +128,7 @@ for i = 1, line.nLines do
   end
 end
 
-parallel_lines, par_idx = util.max(num_parallel); 
+parallel_lines, par_idx = util.max(num_parallel);
 
 if (parallel_lines >= 3) then
   p_vision:add_debug_message("No Circle: too many parallel lines");
@@ -136,7 +136,7 @@ if (parallel_lines >= 3) then
 end
 
 
-for i=1,line.nLines do   
+for i=1,line.nLines do
      length[i]=get_line_length_circle(line,i);
      --p_vision:add_debug_message(string.format("Length %d : %f", i, length[i]));
 
@@ -159,7 +159,7 @@ centerLineExists = 1; --1 if the longest line is longer than the other lines by 
 for i = 1, line.nLines do
   --length difference less than threshold for all lines that aren't the max disqualify center line
   --0.3 is a threshold, the max diff between longest and next longest lines for the line to be considered a center line
-  if (i ~= idx) and (longest - length[i] < 0.3) then  
+  if (i ~= idx) and (longest - length[i] < 0.3) then
     centerLineExists = 0;
   end
 end
@@ -169,17 +169,17 @@ if (centerLineExists == 1) then
   for i=1,line.nLines do
     if i ~= idx then
        pt = intersection_point(line,i,idx);
-      -- print('i:'.. i .. 'pt1:' .. pt[1] .. 'pt2:' .. pt[2]);       
+      -- print('i:'.. i .. 'pt1:' .. pt[1] .. 'pt2:' .. pt[2]);
       --if pt[1]>line.v[idx][1][1] and pt[1]<line.v[idx][2][1] then --intersection point not too far
        linecount = linecount+1;
        arc[linecount]=pt;
        x_total = x_total + pt[1];
        y_total = y_total + pt[2];
-       dist[linecount]=distance(pt[1],pt[2],(-line.v[i][1][2]-line.v[i][2][2])/2,(line.v[i][1][1]+line.v[i][2][1])/2);        
+       dist[linecount]=distance(pt[1],pt[2],(-line.v[i][1][2]-line.v[i][2][2])/2,(line.v[i][1][1]+line.v[i][2][1])/2);
        dist_sum = dist[linecount]+dist_sum;
        --end
     end
-  end 
+  end
   x_mean = x_total/linecount;
   y_mean = y_total/linecount;
 
@@ -197,7 +197,7 @@ p_vision:add_debug_message(string.format("Center Coordinates: (%f, %f)", x_mean,
   var = sum/(linecount*get_line_length_circle(line,idx));
   self.var = var;
   --end of case with center line
-else 
+else
   p_vision:add_debug_message("No Center Line Detected \n");
   return;
   --[[
@@ -239,7 +239,7 @@ else
 
   sum = 0;
   for i=1,linecount do
-    if (dist[i]) then 
+    if (dist[i]) then
       sum=sum+(dist[i]-dist_mean)^2;
     end
   end
@@ -265,7 +265,7 @@ if var<var_threshold then
   p_vision:add_debug_message("Circle Detected");
 p_vision:add_debug_message(string.format("Center Coordinates: (%f, %f)", x_mean, y_mean));
 --p_vision:add_debug_message(string.format("V Coordinates: (%f, %f)", v_circle[1], v_circle[2]));
-  
+
   --p_vision:add_debug_message(string.format("circle var:%f, angle:%d",var,angle*180/math.pi));
 else
   p_vision:add_debug_message(string.format("circle variance failed: %f\n",var));
@@ -300,4 +300,3 @@ return self;
 end
 
 return detectCircle
-     

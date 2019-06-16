@@ -35,7 +35,7 @@ function check_blob(color1,propsB)
     check_passed = false;
   else
     fill_rate = dArea / Vision.bboxArea(propsA.boundingBox);
-    if fill_rate < min_fill_extent then 
+    if fill_rate < min_fill_extent then
       check_passed = false;
     end
   end
@@ -60,26 +60,26 @@ function detect(color1,color2)
   landmark.detect=0;
 
   -- Check that we have enough of the upper/lower and of the middle colors
-  if (Vision.colorCount[color1] < 2 * min_areaA) then 
+  if (Vision.colorCount[color1] < 2 * min_areaA) then
     vcm.add_debug_message(string.format("Color1 count fail, %d\n",Vision.colorCount[color1]));
-    return landmark; 
+    return landmark;
   end
-  if (Vision.colorCount[color2] < min_areaA ) then 
+  if (Vision.colorCount[color2] < min_areaA ) then
     vcm.add_debug_message(string.format("Color2 count fail, %d\n",Vision.colorCount[color2]));
-    return landmark; 
+    return landmark;
   end
 
   -- Find the blobs of each color
   -- TODO: this eats CPU.  Haven't we already run these connected regions?
   landmarkPropsB1= ImageProc.connected_regions(
-  	  Vision.labelB.data,Vision.labelB.m,Vision.labelB.n,color1);
+	  Vision.labelB.data,Vision.labelB.m,Vision.labelB.n,color1);
   landmarkPropsB2= ImageProc.connected_regions(
-  	  Vision.labelB.data,Vision.labelB.m,Vision.labelB.n,color2);
+	  Vision.labelB.data,Vision.labelB.m,Vision.labelB.n,color2);
 
   -- If we not seen two of the top/bottom color or one of the middle color, then exit
-  if #landmarkPropsB1<2 or #landmarkPropsB2<1 then 
+  if #landmarkPropsB1<2 or #landmarkPropsB2<1 then
     vcm.add_debug_message("Blob number check fail\n");
-    return landmark; 
+    return landmark;
   end
 
   --Check
@@ -106,8 +106,8 @@ function detect(color1,color2)
 
   if blob_index1 < 2 or blob_index2 < 1 then
     vcm.add_debug_message("Fitered blob number check fail\n");
-    return landmark; 
-  end 
+    return landmark;
+  end
 
 max_blob_num = 5;
 
@@ -126,7 +126,7 @@ max_blob_num = 5;
         check_passed = false;
       end
       --Area ratio check
-      if blobs1[i][1]/blobs1[j][1]> th_arearatio or 
+      if blobs1[i][1]/blobs1[j][1]> th_arearatio or
          blobs1[j][1]/blobs1[i][1]> th_arearatio then
         check_passed = false;
       end
@@ -139,7 +139,7 @@ max_blob_num = 5;
 
   if blob_pair_index<1 then
     vcm.add_debug_message("No good blob pairs\n");
-    return landmark; 
+    return landmark;
   end
 
   --Check all blobs with color2
@@ -154,11 +154,11 @@ max_blob_num = 5;
       area12 = blobs1[b1_index2][1];
       area2=blobs2[j][1];
 
-      if area11/area2> th_arearatio or 
+      if area11/area2> th_arearatio or
          area2/area11> th_arearatio then
         check_passed = false;
       end
-      if area12/area2> th_arearatio or 
+      if area12/area2> th_arearatio or
          area2/area12> th_arearatio then
         check_passed = false;
       end
@@ -172,7 +172,7 @@ max_blob_num = 5;
       local a32 = cent12-cent2;
       local d21 = math.sqrt(a21[1]^2+a21[2]^2);
       local d32 = math.sqrt(a32[1]^2+a32[2]^2);
-      
+
       if d21/d32 > th_distratio or d32/d21>th_distratio then
         check_passed = false;
       end
@@ -185,7 +185,7 @@ max_blob_num = 5;
       if check_passed then
         height = 0.45; --each  stripe is 15cm
         landmark.detect = 1;
-        landmark.centroid = cent2;	
+        landmark.centroid = cent2;
 	landmark.cent11 = cent11;
 	landmark.cent12 = cent12;
         landmark.scale =  math.max( d32*3/height,d21*3/height);
@@ -204,7 +204,7 @@ max_blob_num = 5;
 	landmark.centroid, landmark.scale);
 
   landmark.detect = 1;
-  if color1==colorYellow then 
+  if color1==colorYellow then
     v[1]=v[1]*distanceFactorYellow;
     v[2]=v[2]*distanceFactorYellow;
   else
@@ -224,4 +224,3 @@ max_blob_num = 5;
 
   return landmark;
 end
-

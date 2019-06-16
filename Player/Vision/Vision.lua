@@ -113,7 +113,7 @@ function entry()
   -- Initiate Detection
   Detection.entry();
 
-  --set to switch cameras. 
+  --set to switch cameras.
   -- Load the lookup table
 
 	if(use_arbitrary_ball) then
@@ -158,14 +158,14 @@ function entry()
 end
 
 function camera_init()
-  for c=1,Config.camera.ncamera do 
+  for c=1,Config.camera.ncamera do
     Camera.select_camera(c-1);
     for i,auto_param in ipairs(Config.camera.auto_param) do
       print('Camera '..c..': setting '..auto_param.key..': '..auto_param.val[c]);
       Camera.set_param(auto_param.key, auto_param.val[c]);
       unix.usleep(100000);
       print('Camera '..c..': check '..auto_param.key..' now is: '..Camera.get_param(auto_param.key));
-    end   
+    end
     for i,param in ipairs(Config.camera.param) do
       print('Camera '..c..': setting '..param.key..': '..param.val[c]);
       Camera.set_param(param.key, param.val[c]);
@@ -177,9 +177,9 @@ end
 
 function camera_init_naov4()
   for c=1,Config.camera.ncamera do
-    Camera.select_camera(c-1);   
-    Camera.set_param('Brightness', Config.camera.brightness);     
-    Camera.set_param('White Balance, Automatic', 1); 
+    Camera.select_camera(c-1);
+    Camera.set_param('Brightness', Config.camera.brightness);
+    Camera.set_param('White Balance, Automatic', 1);
     Camera.set_param('Auto Exposure',0);
     for i,param in ipairs(Config.camera.param) do
       Camera.set_param(param.key, param.val[c]);
@@ -189,7 +189,7 @@ function camera_init_naov4()
     Camera.set_param('Auto Exposure',0);
     local expo = Camera.get_param('Exposure');
     local gain = Camera.get_param('Gain');
-    Camera.set_param('Auto Exposure',1);   
+    Camera.set_param('Auto Exposure',1);
     Camera.set_param('Auto Exposure',0);
     --Camera.set_param ('Exposure', 255);
     Camera.set_param ('Exposure', expo);
@@ -200,14 +200,14 @@ end
 
 
 function update()
-  --If we are only using gps info, skip whole vision update 	
+  --If we are only using gps info, skip whole vision update
   if use_gps_only>0 then
     update_gps_only();
     return true;
   end
 
   tstart = unix.time();
-  
+
   headAngles = {Body.get_sensor_headpos()[2],Body.get_sensor_headpos()[1]};	--b51
 
   -- get image from camera
@@ -217,7 +217,7 @@ function update()
   if status.count ~= lastImageCount[status.select+1] then
     lastImageCount[status.select+1] = status.count;
   else
-    return false; 
+    return false;
   end
   -- Add timer measurements
   count = count + 1;
@@ -276,7 +276,7 @@ function update()
   local cmd = vcm.get_camera_command();
   if (cmd == -1) then
     if (count % camera.switchFreq == 0) then
-       Camera.select_camera(1-Camera.get_select()); 
+       Camera.select_camera(1-Camera.get_select());
     end
   else
     if (cmd >= 0 and cmd < camera.ncamera) then
@@ -304,17 +304,17 @@ function update_gps_only()
   --TODO: camera select
 --  HeadTransform.update(status.select, headAngles);
   HeadTransform.update(0, headAngles);
-  
+
   --update FOV
   update_shm_fov()
 
   --Get GPS coordinate of robot and ball
   gps_pose = wcm.get_robot_gpspose();
-  ballGlobal=wcm.get_robot_gps_ball();  
-  
+  ballGlobal=wcm.get_robot_gps_ball();
+
   --Check whether ball is inside FOV
   ballLocal = util.pose_relative(ballGlobal,gps_pose);
- 
+
   --Get the coordinates of FOV boundary
   local v_TL = vcm.get_image_fovTL();
   local v_TR = vcm.get_image_fovTR();
@@ -337,7 +337,7 @@ print("Check 4:",
      check_side(v_BL, v_BR, ballLocal) );
 --]]
 
-  --Check whether ball is within FOV boundary 
+  --Check whether ball is within FOV boundary
   if check_side(v_TR, v_TL, ballLocal) < 0 and
      check_side(v_TL, v_BL, ballLocal) < 0 and
      check_side(v_BR, v_TR, ballLocal) < 0 and
@@ -410,15 +410,15 @@ function update_shm_fov()
   local fovTR={Config.camera.width,0};
 
   vcm.set_image_fovC(vector.slice(HeadTransform.projectGround(
- 	  HeadTransform.coordinatesA(fovC,0.1)),1,2));
+	  HeadTransform.coordinatesA(fovC,0.1)),1,2));
   vcm.set_image_fovTL(vector.slice(HeadTransform.projectGround(
- 	  HeadTransform.coordinatesA(fovTL,0.1)),1,2));
+	  HeadTransform.coordinatesA(fovTL,0.1)),1,2));
   vcm.set_image_fovTR(vector.slice(HeadTransform.projectGround(
- 	  HeadTransform.coordinatesA(fovTR,0.1)),1,2));
+	  HeadTransform.coordinatesA(fovTR,0.1)),1,2));
   vcm.set_image_fovBL(vector.slice(HeadTransform.projectGround(
- 	  HeadTransform.coordinatesA(fovBL,0.1)),1,2));
+	  HeadTransform.coordinatesA(fovBL,0.1)),1,2));
   vcm.set_image_fovBR(vector.slice(HeadTransform.projectGround(
- 	  HeadTransform.coordinatesA(fovBR,0.1)),1,2));
+	  HeadTransform.coordinatesA(fovBR,0.1)),1,2));
 end
 
 
@@ -502,7 +502,7 @@ function writeSplittedBallLut(fname,lutContents)
   end
 
 	f:write("\n");
-	
+
 end
 
 function load_general_lut(fname)
@@ -522,7 +522,7 @@ function load_general_lut(fname)
   for i = 1,string.len(s) do
     ta[i] = string.byte(s,i,i);
   end
-	
+
 	return ta;
 end
 

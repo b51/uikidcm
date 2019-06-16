@@ -75,7 +75,7 @@ function entry()
 
   ballYellow={};
   ballYellow.detect=0;
-	
+
   ballCyan={};
   ballCyan.detect=0;
 
@@ -96,7 +96,7 @@ function entry()
 
   corner = {};
   corner.detect = 0;
-  
+
   spot = {};
   spot.detect = 0;
 
@@ -115,7 +115,7 @@ end
 
 
 function update()
-  
+
   if( Config.gametype == "stretcher" ) then
     ball = detectEyes.detect(colorOrange);
     return;
@@ -163,7 +163,7 @@ function update()
     Tline = unix.time() - tstart;
     if enableCorner == 1 then
       corner = detectCorner.detect(line);
-      Tcorner = unix.time() - Tline - tstart; 
+      Tcorner = unix.time() - Tline - tstart;
     end
   end
 
@@ -264,7 +264,7 @@ function update_shm()
     max_real_length = 0;
     max_index=1;
 
-    for i=1,line.nLines do 
+    for i=1,line.nLines do
       v1x[i]=line.v[i][1][1];
       v1y[i]=line.v[i][1][2];
       v2x[i]=line.v[i][2][1];
@@ -283,7 +283,7 @@ function update_shm()
       end
     end
 
-    --TODO: check line length 
+    --TODO: check line length
 
     vcm.set_line_v1x(v1x);
     vcm.set_line_v1y(v1y);
@@ -372,10 +372,10 @@ function print_time()
       if (landmarkCyan.detect == 1) then
         print ('landmarkCyan detected')
       end
-      print ('cyan landmark detecting time:   '..TlandmarkCyan) 
+      print ('cyan landmark detecting time:   '..TlandmarkCyan)
       if (landmarkYellow.detect == 1) then
         print ('landmarkYellow detected')
-      end  
+      end
       print ('yellow landmark detecting time: '..TlandmarkYellow..'\n')
     end
    if (enable_freespace_detection == 1) then

@@ -33,18 +33,18 @@ function detect(color)
 
   -- Get label handle
   labelB = Vision.labelB;
- 
+
   if enable_lut_for_obstacle == 1 then
     FreeB = ImageProc.field_occupancy(labelB.data_obs,labelB.m,labelB.n);
   else
     FreeB = ImageProc.field_occupancy(labelB.data,labelB.m,labelB.n);
   end
-  
+
   for i = 1,labelB.m do
     local pbound = vector.new({i,labelB.n-FreeB.range[i]});
 		freespace.pboundB[i],freespace.pboundB[i+labelB.m] = pbound[1],pbound[2];
     local vbound = HeadTransform.rayIntersectB(pbound);
-    freespace.vboundB[i],freespace.vboundB[i+labelB.m] = vbound[1],vbound[2];   
+    freespace.vboundB[i],freespace.vboundB[i+labelB.m] = vbound[1],vbound[2];
     freespace.tboundB[i] = FreeB.flag[i];
   end
 

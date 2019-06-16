@@ -40,7 +40,7 @@ if Config.game.playerID >1  then
 else
   distanceFactor = Config.vision.goal.distanceFactorGoalie or 1 --1
 end
-	
+
 --Post dimension
 postDiameter = Config.world.postDiameter or 0.10;
 postHeight = Config.world.goalHeight or 0.80;
@@ -76,8 +76,8 @@ function detect(color)
 
   headPitch = Body.get_sensor_headpos()[1];
 
-  --params: label data; w; h; 
-  --optinal params: min_width_in_pixel; max_width_in_pixel; connect_th; max_gap_in_pixel; min_height_in_pixel 
+  --params: label data; w; h;
+  --optinal params: min_width_in_pixel; max_width_in_pixel; connect_th; max_gap_in_pixel; min_height_in_pixel
   postB = ImageProc.goal_posts_white(Vision.labelA.data,
 	Vision.labelA.m, Vision.labelA.n, headPitch, width_min_in_pixel, width_max_in_pixel, connect_th);
 
@@ -104,9 +104,9 @@ function detect(color)
     return post1.area > post2.area
   end
 
-  if (not postB) then 	
+  if (not postB) then
 --    vcm.add_debug_message("No post detected\n")
-    return goal; 
+    return goal;
   end
 
   table.sort(postB, compare_post_area)
@@ -122,7 +122,7 @@ function detect(color)
     local valid = true;
 
     --Check lower part of the goalpost for thickness
-    
+
       postStats = Vision.bboxStats(color, postB[i].boundingBox,scaleBGoal);
       boundingBoxLower={};
       boundingBoxLower[1],boundingBoxLower[2],
@@ -132,7 +132,7 @@ function detect(color)
       boundingBoxLower[3] = lower_factor * boundingBoxLower[3] + (1 - lower_factor) * boundingBoxLower[4];
 
     -- size and orientation check
-    vcm.add_debug_message(string.format("Area check: %d\n", 
+    vcm.add_debug_message(string.format("Area check: %d\n",
       postStats.area));
     if (postStats.area < th_min_area) then
       vcm.add_debug_message(string.format("Area check fail\n"));
@@ -141,14 +141,14 @@ function detect(color)
 
     if valid then
       local orientation= postStats.orientation - tiltAngle;
-        vcm.add_debug_message(string.format("Orientation check: %f\n", 
+        vcm.add_debug_message(string.format("Orientation check: %f\n",
           180*orientation/math.pi));
       if (math.abs(orientation) < th_min_orientation) then
         vcm.add_debug_message("orientation check fail\n");
         valid = false;
       end
     end
-      
+
     --fill extent check
     if postStats.boundingBox[3] == 0 then
       vcm.add_debug_message(string.format("bbox.x0: %d, bbox.x1: %d, bbox.y0: %d, bbox.y1: %d\n",
@@ -163,9 +163,9 @@ function detect(color)
       if (coords[1] > 2) then
         min_extent = th_min_fill_extent[2]
       end
-      if (extent < min_extent) then 
+      if (extent < min_extent) then
         vcm.add_debug_message(string.format("Fill extent check fail\n"));
-        valid = false; 
+        valid = false;
       end
     end
 
@@ -173,18 +173,18 @@ function detect(color)
     if valid then
       local aspect = postStats.axisMajor/postStats.axisMinor;
       vcm.add_debug_message(string.format("Aspect check: %d\n",aspect));
-      if (aspect < th_aspect_ratio[1]) or (aspect > th_aspect_ratio[2]) then 
+      if (aspect < th_aspect_ratio[1]) or (aspect > th_aspect_ratio[2]) then
         vcm.add_debug_message("Aspect check fail\n");
-        valid = false; 
+        valid = false;
       end
     end
 
     --check edge margin
     if valid then
 
-      local leftPoint= postStats.centroid[1] - 
+      local leftPoint= postStats.centroid[1] -
         postStats.axisMinor/2 * math.abs(math.cos(tiltAngle));
-      local rightPoint= postStats.centroid[1] + 
+      local rightPoint= postStats.centroid[1] +
         postStats.axisMinor/2 * math.abs(math.cos(tiltAngle));
 
       vcm.add_debug_message(string.format(
@@ -231,7 +231,7 @@ function detect(color)
 
       --proportion of the post underneath the Horizon
       local ratio = (checkpoint_top - horizonA)/checkpoint_dif;
-        vcm.add_debug_message(string.format("checkpoint_top: %f, horizonA: %d, checkpoint_dif: %f, ratio: %f\n", 
+        vcm.add_debug_message(string.format("checkpoint_top: %f, horizonA: %d, checkpoint_dif: %f, ratio: %f\n",
           checkpoint_top, horizonA, checkpoint_dif, ratio));
       --if too much of the post is under the horizon, then it can't be a post
       --if (ratio > goalHorizonCheck) then
@@ -246,12 +246,12 @@ function detect(color)
       local width = bboxA[2]-bboxA[1];
       --check two bounding boxes, one on left, one on right;
       local fieldBBoxWholeR = {};
-      local fieldBBoxWholeL = {}; 
+      local fieldBBoxWholeL = {};
       fieldBBoxWholeL[1],fieldBBoxWholeL[2],fieldBBoxWholeL[3],fieldBBoxWholeL[4]=
-        math.max(bboxA[1]-width*2,0),bboxA[1],bboxA[3],bboxA[4]; 
+        math.max(bboxA[1]-width*2,0),bboxA[1],bboxA[3],bboxA[4];
       fieldBBoxWholeR[1],fieldBBoxWholeR[2],fieldBBoxWholeR[3],fieldBBoxWholeR[4]=
         bboxA[2],math.min(bboxA[2]+width*2,Vision.labelA.m-1),bboxA[3],bboxA[4];
-      
+
       local fieldBBoxWholeStatsLGreen = ImageProc.color_stats(Vision.labelA.data,
         Vision.labelA.m, Vision.labelA.n, colorField,fieldBBoxWholeL, tiltAngle);
       local fieldBBoxWholeStatsLWhite = ImageProc.color_stats(Vision.labelA.data,
@@ -260,12 +260,12 @@ function detect(color)
         Vision.labelA.m, Vision.labelA.n, colorField, fieldBBoxWholeR, tiltAngle);
       local fieldBBoxWholeStatsRWhite = ImageProc.color_stats(Vision. labelA.data,
         Vision.labelA.m, Vision.labelA.n, colorWhite, fieldBBoxWholeR, tiltAngle);
-      
+
       green_ratio_wholeL = (fieldBBoxWholeStatsLGreen.area+fieldBBoxWholeStatsLWhite.area)/
         Vision.bboxArea(fieldBBoxWholeL);
       green_ratio_wholeR = (fieldBBoxWholeStatsRGreen.area+fieldBBoxWholeStatsRWhite.area)/
         Vision.bboxArea(fieldBBoxWholeR);
-      
+
       -- is there to much green near the post?
       if (green_ratio_wholeL>th_max_green_ratio_whole) then
         vcm.add_debug_message(string.format("Left whole check fail: %.2f > %.2f\n",green_ratio_wholeL,th_max_green_ratio_whole));
@@ -278,11 +278,11 @@ function detect(color)
     end
 
     -- ground check at the bottom of the post
-    if valid and check_for_ground>0 then 
+    if valid and check_for_ground>0 then
       local bboxA = Vision.bboxB2A(postB[i].boundingBox);
       if (bboxA[4] < th_bottom_boundingbox * Vision.labelA.n) then
 
-        -- field bounding box 
+        -- field bounding box
         local fieldBBox = {};
         fieldBBox[1] = bboxA[1] + th_ground_boundingbox[1];
         fieldBBox[2] = bboxA[2] + th_ground_boundingbox[2];
@@ -290,7 +290,7 @@ function detect(color)
         fieldBBox[4] = bboxA[4] + th_ground_boundingbox[4];
 
         local fieldBBoxStats;
-        fieldBBoxStats = ImageProc.color_stats(Vision.labelA.data, 
+        fieldBBoxStats = ImageProc.color_stats(Vision.labelA.data,
 		Vision.labelA.m,Vision.labelA.n,colorField,fieldBBox,tiltAngle);
         local fieldBBoxArea = Vision.bboxArea(fieldBBox);
 
@@ -311,7 +311,7 @@ function detect(color)
       v = HeadTransform.coordinatesA(postStats.centroid, scale);
       if v[3] < goal_height_min then
 --      vcm.add_debug_message(string.format("Height check fail:%.2f\n",v[3]));
-        valid = false; 
+        valid = false;
       end
     end
 
@@ -338,8 +338,8 @@ function detect(color)
 
 --  vcm.add_debug_message(string.format("Total %d valid posts\n", npost ));
 
-  if (npost < 1) then 
-    return goal; 
+  if (npost < 1) then
+    return goal;
   end
 
   goal.propsB = {};
@@ -354,7 +354,7 @@ function detect(color)
     scale2 = postA[i].axisMajor / postHeight;
     scale3 = math.sqrt(postA[i].area / (postDiameter*postHeight) );
 
-    if goal.propsB[i].boundingBox[3]<2 then 
+    if goal.propsB[i].boundingBox[3]<2 then
       --This post is touching the top, so we shouldn't use the height
 --      vcm.add_debug_message("Post touching the top\n");
       scale = math.max(scale1,scale3);
@@ -407,7 +407,7 @@ function detect(color)
 
     local crossbarStats = ImageProc.color_stats(Vision.labelA.data, Vision.labelA.m, Vision.labelA.n, color, bboxA,tiltAngle);
     local dxCrossbar = crossbarStats.centroid[1] - postA[1].centroid[1];
-    local crossbar_ratio = dxCrossbar/postWidth; 
+    local crossbar_ratio = dxCrossbar/postWidth;
 
 --    vcm.add_debug_message(string.format(
 --  "Crossbar stat: %.2f\n",crossbar_ratio));
@@ -437,7 +437,7 @@ function detect(color)
         -- eliminate small posts without cross bars
 --      vcm.add_debug_message(string.format(
 --  "Unknown single post size check:%d\n",postA[1].area));
-      
+
       if (postA[1].area < th_min_area_unknown_post) then
 --        vcm.add_debug_message("Post size too small");
         return goal;
@@ -445,7 +445,7 @@ function detect(color)
 
     end
   end
-  
+
 -- added for test_vision.m
   if Config.vision.copy_image_to_shm then
       vcm.set_goal_postBoundingBox1(postB[ivalidB[1]].boundingBox);

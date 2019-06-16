@@ -63,7 +63,7 @@ function update_robot(v)
     end
   end
 
-end     
+end
 
 function update_weights()
 
@@ -72,7 +72,7 @@ function update_weights()
   v1=HeadTransform.projectGround(v1,0);
   r1=v1[1]^2+v1[2]^2;
   angle1=math.atan2(v1[2],v1[1]);
-  
+
   v2=HeadTransform.coordinatesB({Vision.labelB.m,1,0,0});
   v2=HeadTransform.projectGround(v2,0);
   r2=v2[1]^2+v2[2]^2;
@@ -85,8 +85,8 @@ function update_weights()
 
   pose=wcm.get_robot_pose();
 
-  for j=1,4*map_div do     
-    for i=1,6*map_div do     
+  for j=1,4*map_div do
+    for i=1,6*map_div do
       posx = i/map_div - 3;
       posy = j/map_div - 2;
 
@@ -94,7 +94,7 @@ function update_weights()
       r2_pos = (posy-pose[2])^2 + (posx-pose[1])^2;
 
       within_fov = false;
-      if util.mod_angle(angle1-angle)>0 and 
+      if util.mod_angle(angle1-angle)>0 and
 	util.mod_angle(angle2-angle)<0 then
 	--get Approx. r and angle
 	r_min = r3;
@@ -104,7 +104,7 @@ function update_weights()
 	end
       end
       index=(i-1)*(4*map_div) + j;
---TODO: use log-odds 
+--TODO: use log-odds
       if updated[index] ==0 then
         if within_fov then
           gamma_field = 0.8;
@@ -144,7 +144,7 @@ function detect(color)
     v=HeadTransform.coordinatesB({i,j,0,0});
     v=HeadTransform.projectGround(v,0);
     r=math.sqrt(v[1]^2+v[2]^2);
-    if j>min_j and r>min_r and r<max_r then 
+    if j>min_j and r>min_r and r<max_r then
       update_robot(v);
     end
   end

@@ -26,8 +26,8 @@ function detect(color)
 	local bottomB = vector.new({nC,Vision.labelB.n});
 
     --Project to 2D coordinate
-    local topV = HeadTransform.rayIntersectB(topB); 
-    local bottomV = HeadTransform.rayIntersectB(bottomB); 
+    local topV = HeadTransform.rayIntersectB(topB);
+    local bottomV = HeadTransform.rayIntersectB(bottomB);
 
     boundary.top[nC],boundary.top[nC+nCol] = topV[1],topV[2];
     boundary.bottom[nC],boundary.bottom[nC+nCol] = bottomV[1],bottomV[2];

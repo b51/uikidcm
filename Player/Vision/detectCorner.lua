@@ -9,7 +9,7 @@ min_center_dist = Config.vision.corner.min_center_dist or 1.5;
 
 centercircle_check = Config.vision.corner.centercircle_check or 0;
 
---get the cross point of two line segements. 
+--get the cross point of two line segements.
 --(x1, y1) (x2, y2) are endpoints for the first line, (x3, y3) (x4, y4) are endpoints for the other line
 function get_crosspoint(x1,y1,x2,y2,x3,y3,x4,y4)
   local x,y;
@@ -38,7 +38,7 @@ end
 
 function get_min_dist_line(x1,y1,x2,y2,x,y)
   -- nearest point: k(x1,y1) + (1-k)(x2,y2)
-  -- dist: k^2 ((x1-x2)^2+(y1-y2)^2) +  
+  -- dist: k^2 ((x1-x2)^2+(y1-y2)^2) +
   --           2k ((x1-x2)(x2-x) + (y1-y2)+(y2-y))  + C
   k = -((x1-x2)*(x2-x) + (y1-y2)*(y2-y))/((x1-x2)^2+(y1-y2)^2);
   if k>T_thr and k<1-T_thr then
@@ -65,9 +65,9 @@ function get_min_dist(line,i,j)
   yj2=line.v[j][2][2];
 
   Cross = get_crosspoint (xi1,yi1,xi2,yi2,xj1,yj1,xj2,yj2);
-  
-  --L shape detection 
-  
+
+  --L shape detection
+
   dist11 = (xi1-xj1)*(xi1-xj1) + (yi1-yj1)*(yi1-yj1);
   dist12 = (xi1-xj2)*(xi1-xj2) + (yi1-yj2)*(yi1-yj2);
   dist21 = (xi2-xj1)*(xi2-xj1) + (yi2-yj1)*(yi2-yj1);
@@ -91,14 +91,14 @@ function get_min_dist(line,i,j)
 	disti_j1, disti_j2, distj_i1, distj_i2);
 
   if mindist==dist11 then
-    return mindist, 
+    return mindist,
 	Cross,	--corner position
 	{xi2,yi2},			--other line endpoint 1
 	{xj2,yj2},			--other line endpoint 2
 	1,
-  'i2j2';			
+  'i2j2';
   elseif mindist==dist12 then
-    return mindist, 
+    return mindist,
 	Cross,
 	{xi2,yi2},			--other line endpoint 1
 	{xj1,yj1},
@@ -112,40 +112,40 @@ function get_min_dist(line,i,j)
 	1,
   'i1j2';
   elseif mindist==dist22 then
-    return mindist, 
+    return mindist,
 	Cross,
 	{xi1,yi1},			--other line endpoint 1
 	{xj1,yj1},
 	1,
-  'i1j1';	
+  'i1j1';
   elseif mindist==disti_j1 then
-    return mindist, 
+    return mindist,
 	Cross,	--corner point
-	{xi1,yi1},			
-	{xi2,yi2},	
+	{xi1,yi1},
+	{xi2,yi2},
 	2,
-  'i';	
+  'i';
   elseif mindist==disti_j2 then
-    return mindist, 
+    return mindist,
 	Cross,	--corner point
-	{xi1,yi1},			
-	{xi2,yi2},	
+	{xi1,yi1},
+	{xi2,yi2},
 	2,
-  'i';	
+  'i';
   elseif mindist==distj_i1 then
-    return mindist, 
+    return mindist,
 	Cross,	--corner point
-	{xj1,yj1},			
-	{xj2,yj2},	
+	{xj1,yj1},
+	{xj2,yj2},
 	2,
-  'j';	
+  'j';
   else
-    return mindist, 
+    return mindist,
 	Cross,	--corner point
-	{xj1,yj1},			
-	{xj2,yj2},	
+	{xj1,yj1},
+	{xj2,yj2},
 	2,
-  'j';	
+  'j';
   end
 end
 
@@ -163,7 +163,7 @@ function detect(line)
   corner = {};
   corner.detect = 0;
 
-  if line.detect==0 or line.nLines<2 then 
+  if line.detect==0 or line.nLines<2 then
     return corner;
   end
 
@@ -192,22 +192,22 @@ function detect(line)
         vcm.add_debug_message(string.format(
 		"line %d-%d :angle %d mindist %d type %d\n",
 		i,j,ang*180/math.pi, mindist,cornertype));
-	if mindist<dist_threshold 
+	if mindist<dist_threshold
 	--get_line_length(line,i)>length_threshold and
-	--get_line_length(line,j)>length_threshold 
-  then 
-  	  linepaircount=linepaircount+1;
-  	  linepair[linepaircount]={i,j};
-	 
+	--get_line_length(line,j)>length_threshold
+  then
+	  linepaircount=linepaircount+1;
+	  linepair[linepaircount]={i,j};
+
     linepairvc[linepaircount]=vc;
 	  linepairv1[linepaircount]=v1;
 	  linepairv2[linepaircount]=v2;
-    
+
     local LabelCross = get_crosspoint(line.endpoint[i][1], line.endpoint[i][3],line.endpoint[i][2], line.endpoint[i][4],
                                              line.endpoint[j][1], line.endpoint[j][3],line.endpoint[j][2], line.endpoint[j][4]);
     linepairvc0[linepaircount]= LabelCross;
 
-    
+
     if (cornertype == 1) then
       if (info == 'i1j1' or info == 'i1j2') then
         linepairv10[linepaircount] = {line.endpoint[i][1], line.endpoint[i][3]};
@@ -219,7 +219,7 @@ function detect(line)
         linepairv20[linepaircount] = {line.endpoint[j][1], line.endpoint[j][3]};
       else
         linepairv20[linepaircount] = {line.endpoint[j][2], line.endpoint[j][4]};
-      end  
+      end
     else
       if (info == 'i') then
         linepairv10[linepaircount] = {line.endpoint[i][1], line.endpoint[i][3]};
@@ -229,7 +229,7 @@ function detect(line)
         linepairv20[linepaircount] = {line.endpoint[j][2], line.endpoint[j][4]};
       end
     end
-   
+
 
 
     linepairangle[linepaircount]=ang;
@@ -240,7 +240,7 @@ function detect(line)
     end
   end
 
-  if linepaircount==0 then 
+  if linepaircount==0 then
     return corner;
   end
 
@@ -265,7 +265,7 @@ function detect(line)
   vc0=linepairvc0[best_corner];
   v10=linepairv10[best_corner];
   v20=linepairv20[best_corner];
-  
+
   vc=linepairvc[best_corner];
   v1=linepairv1[best_corner];
   v2=linepairv2[best_corner];
@@ -291,12 +291,12 @@ function detect(line)
   corner.v2 = v2;
 
   --Center circle rejection
-  if (centercircle_check == 1) then  
+  if (centercircle_check == 1) then
     pose=wcm.get_robot_pose();
     Relative = {corner.v[1], corner.v[2], 0};
     cornerpos = util.pose_global(Relative,pose);
     center_dist = math.sqrt(cornerpos[1]^2+cornerpos[2]^2);
-    if center_dist < min_center_dist then     
+    if center_dist < min_center_dist then
       vcm.add_debug_message(string.format(
        "Corner: center circle check fail at %.2f\n",center_dist))
       return corner;
@@ -310,7 +310,7 @@ function detect(line)
      else
      vcm.add_debug_message("T-corner detected\n");
      --print (string.format('Tcorner: position: (%f, %f), position in lableB: (%f, %f). \n', vc[1], vc[2], vc0[1], vc0[2]))
-     
+
   end
 
   corner.detect = 1;

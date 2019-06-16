@@ -35,26 +35,26 @@ function detect(color1,color2)
   landmark.detect=0;
 
   -- Check that we have enough of the upper/lower and of the middle colors
-  if (Vision.colorCount[color1] < 2 * min_areaA) then 
+  if (Vision.colorCount[color1] < 2 * min_areaA) then
     vcm.add_debug_message(string.format("Color1 count fail, %d\n",Vision.colorCount[color1]));
-    return landmark; 
+    return landmark;
   end
-  if (Vision.colorCount[color2] < min_areaA ) then 
+  if (Vision.colorCount[color2] < min_areaA ) then
     vcm.add_debug_message(string.format("Color2 count fail, %d\n",Vision.colorCount[color2]));
-    return landmark; 
+    return landmark;
   end
 
   -- Find the blobs of each color
   -- TODO: this eats CPU.  Haven't we already run these connected regions?
   landmarkPropsB1= ImageProc.connected_regions(
-  	  Vision.labelB.data,Vision.labelB.m,Vision.labelB.n,color1);
+	  Vision.labelB.data,Vision.labelB.m,Vision.labelB.n,color1);
   landmarkPropsB2= ImageProc.connected_regions(
-  	  Vision.labelB.data,Vision.labelB.m,Vision.labelB.n,color2);
+	  Vision.labelB.data,Vision.labelB.m,Vision.labelB.n,color2);
 
   -- If we not seen two of the top/bottom color or one of the middle color, then exit
-  if #landmarkPropsB1<2 or #landmarkPropsB2<1 then 
+  if #landmarkPropsB1<2 or #landmarkPropsB2<1 then
     vcm.add_debug_message("Blob number check fail\n");
-    return landmark; 
+    return landmark;
   end
 
   -- Find the boundingbox stats of each blob
@@ -78,17 +78,17 @@ function detect(color1,color2)
        local B12 = vector.new(landmarkPropsB1[2].centroid);
        local B13 = vector.new(landmarkPropsB1[3].centroid);
        if math.abs(B12[1]-B13[1])<th_centroid then
-          landmark.propsA1= Vision.bboxStats(color1, 
+          landmark.propsA1= Vision.bboxStats(color1,
 	   landmarkPropsB1[3].boundingBox);
 	  checked=true;
        end
      end
      --Yellow goalpost and CYC landmark case
-     if #landmarkPropsB2>1 and not checked then 
+     if #landmarkPropsB2>1 and not checked then
        local B22 = vector.new(landmarkPropsB2[2].centroid);
-       if math.abs(B11[1]-B22[1])<th_centroid and 
+       if math.abs(B11[1]-B22[1])<th_centroid and
 	math.abs(B12[1]-B22[1])<th_centroid  then
-          landmark.propsA2= Vision.bboxStats(color2, 
+          landmark.propsA2= Vision.bboxStats(color2,
 	   landmarkPropsB2[2].boundingBox);
        end
      end
@@ -97,7 +97,7 @@ function detect(color1,color2)
   -- Find the area of each blob considered for the landmark
   local dArea1 = landmark.propsA1.area;
   local dArea2 = landmark.propsA2.area;
-  local dArea3 = landmark.propsA3.area;        
+  local dArea3 = landmark.propsA3.area;
 
 
 
@@ -138,19 +138,19 @@ function detect(color1,color2)
   fill_rate2 = dArea2 / Vision.bboxArea(landmark.propsA2.boundingBox);
   fill_rate3 = dArea3 / Vision.bboxArea(landmark.propsA3.boundingBox);
 
-  if fill_rate1 < min_fill_extent then 
+  if fill_rate1 < min_fill_extent then
     vcm.add_debug_message(string.format(
 	"Fill rate 1 check fail at %.1f", fill_rate1 ));
     return landmark;
   end
 
-  if fill_rate2 < min_fill_extent then 
+  if fill_rate2 < min_fill_extent then
     vcm.add_debug_message(string.format(
 	"Fill rate 2 check fail at %.1f", fill_rate2 ));
     return landmark;
   end
 
-  if fill_rate3 < min_fill_extent then 
+  if fill_rate3 < min_fill_extent then
     vcm.add_debug_message(string.format(
 	"Fill rate 3 check fail at %.1f", fill_rate3 ));
     return landmark;
@@ -184,7 +184,7 @@ function detect(color1,color2)
   v = HeadTransform.coordinatesA(landmarkCentroid2, scale);
 
   landmark.detect = 1;
-  if color1==colorYellow then 
+  if color1==colorYellow then
     v[1]=v[1]*distanceFactorYellow;
     v[2]=v[2]*distanceFactorYellow;
   else
@@ -204,4 +204,3 @@ function detect(color1,color2)
 
   return landmark;
 end
-

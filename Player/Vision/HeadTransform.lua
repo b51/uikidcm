@@ -50,9 +50,9 @@ focalB = focalA/scaleB;
 print('HeadTransform LabelB size: ('..labelB.m..', '..labelB.n..')');
 print('HeadTransform LabelA size: ('..labelA.m..', '..labelA.n..')');
 
-neckX    = Config.head.neckX; 
-neckZ    = Config.head.neckZ; 
-footX    = Config.walk.footX; 
+neckX    = Config.head.neckX;
+neckZ    = Config.head.neckZ;
+footX    = Config.walk.footX;
 
 function entry()
 end
@@ -60,7 +60,7 @@ end
 
 --function update(sel,headAngles,compY)
 function update(sel,headAngles)
-  --Now bodyHeight, Tilt, camera pitch angle bias are read from vcm 
+  --Now bodyHeight, Tilt, camera pitch angle bias are read from vcm
 --  compY = compY or 0;
   bodyHeight=vcm.get_camera_bodyHeight();
   bodyTilt=vcm.get_camera_bodyTilt();
@@ -68,22 +68,22 @@ function update(sel,headAngles)
 --[[
   vcm.add_debug_message(string.format(
   "HeadTrasnform update:\n bodyHeight %.2f bodyTilt %d pitch0 %d headangle %d %d\n",
-	 bodyHeight, bodyTilt*180/math.pi, pitch0*180/math.pi, 
-	 headAngles[1]*180/math.pi, 
+	 bodyHeight, bodyTilt*180/math.pi, pitch0*180/math.pi,
+	 headAngles[1]*180/math.pi,
 	(headAngles[2]+pitch0)*180/math.pi));
 ]]--
 
   -- cameras are 0 indexed so add one for use here
   sel = sel + 1;
 	--print("sel :"..sel);
-  tNeck = Transform.trans(-footX,0,bodyHeight); 
---  tNeck = Transform.trans(-footX,compY,bodyHeight);	--b51:for compensate robot Y  
+  tNeck = Transform.trans(-footX,0,bodyHeight);
+--  tNeck = Transform.trans(-footX,compY,bodyHeight);	--b51:for compensate robot Y
   tNeck = tNeck*Transform.rotY(bodyTilt);
   tNeck = tNeck*Transform.trans(neckX,0,neckZ);
 	--print("-footX, bodyTilt, neckX, neckZ :"..-footX, bodyTilt, neckX, neckZ);
   --pitch0 is Robot specific head angle bias (for OP)
   tNeck = tNeck*Transform.rotZ(headAngles[1])*Transform.rotY(headAngles[2]+pitch0);
-  	--print("headAngles[1], headAngles[2], pitch0 :"..headAngles[1], headAngles[2], pitch0);
+	--print("headAngles[1], headAngles[2], pitch0 :"..headAngles[1], headAngles[2], pitch0);
     --print("cameraPos[sel][1], cameraPos[sel][2], cameraPos[sel][3] :"..cameraPos[sel][1], cameraPos[sel][2], cameraPos[sel][3]);
   tHead = tNeck*Transform.trans(cameraPos[sel][1], cameraPos[sel][2], cameraPos[sel][3]);
   tHead = tHead*Transform.rotY(cameraAngle[sel][2]);
@@ -112,7 +112,7 @@ function update(sel,headAngles)
   ref1 = ref1 - p0;
   -- print(ref,' ',ref1);
   local v = {};
-  v[1] = -math.abs(ref1[1]) * focalA / 4 + x0A; 
+  v[1] = -math.abs(ref1[1]) * focalA / 4 + x0A;
   v[2] = ref1[3] * focalA / 4 + y0A;
   v[3] = math.abs(ref[1]) * focalA / 4 + x0A;
   v[4] = ref[3] * focalA / 4 + y0A;
@@ -137,7 +137,7 @@ function rayIntersectA(c)
   -- since it is always very far away
   if (t < 0) then
     t = -t;
-  end 
+  end
   local p = p0 + t * v;
   local uBodyOffset = mcm.get_walk_bodyOffset();
   p[1] = p[1] + uBodyOffset[1];
@@ -222,10 +222,10 @@ function ikineCam0(x,y,z,select)
   --Look at ground by default
   z = z or 0;
 
-  --Cancel out the neck X and Z offset 
+  --Cancel out the neck X and Z offset
   v = getNeckOffset();
-  x = x-v[1]; 
-  z = z-v[3]; 
+  x = x-v[1];
+  z = z-v[3];
 
   --Cancel out body tilt angle
   v = Transform.rotY(-bodyTilt)*vector.new({x,y,z,1});
@@ -241,7 +241,7 @@ function ikineCam0(x,y,z,select)
   -------------------------------------------------------------
   -- sin(pitch)x + cos (pitch) z = c , c=camera z offset
   -- pitch = atan2(x,z) - acos(b/r),  r= sqrt(x^2+z^2)
-  -- r*sin(pitch) = z *cos(pitch) + c, 
+  -- r*sin(pitch) = z *cos(pitch) + c,
   -------------------------------------------------------------
   local c=cameraPos[select][3];
   local r = math.sqrt(x^2+y^2);
@@ -262,11 +262,11 @@ function getCameraRoll()
   y0=r*math.sin(headAngles[1]);
   yaw1, pitch1=ikineCam0(x0,y0,z0,bottom);
   yaw2, pitch2=ikineCam0(x0,y0,z1,bottom);
-  tiltAngle = math.atan( (yaw2-yaw1)/(pitch1-pitch2) ); 
+  tiltAngle = math.atan( (yaw2-yaw1)/(pitch1-pitch2) );
   return tiltAngle;
 end
 
-function getCameraOffset() 
+function getCameraOffset()
     local v=vector.new({0,0,0,1});
     v=tHead*v;
     v=v/v[4];
@@ -280,7 +280,7 @@ function getNeckOffset()
   --SJ: calculate tNeck here
   --So that we can use this w/o run update
   --(for test_vision)
-  local tNeck0 = Transform.trans(-footX,0,bodyHeight); 
+  local tNeck0 = Transform.trans(-footX,0,bodyHeight);
   tNeck0 = tNeck0*Transform.rotY(bodyTilt);
   tNeck0 = tNeck0*Transform.trans(neckX,0,neckZ);
   local v=vector.new({0,0,0,1});
@@ -310,4 +310,3 @@ function projectGround(v,targetheight)
   vout[2] = vout[2];-- + uBodyOffset[2];
   return vout;
 end
-

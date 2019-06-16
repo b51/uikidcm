@@ -40,8 +40,8 @@ function detect()
 
 
   local spotPropsB = ImageProc.field_spots(Vision.labelB.data, Vision.labelB.m, Vision.labelB.n, min_area);
-  if (not spotPropsB) then 
-    return spot; 
+  if (not spotPropsB) then
+    return spot;
   end
 
   table.sort(spotPropsB, compare_spot_area)
@@ -56,7 +56,7 @@ function detect()
     local spotArea_A = Vision.bboxArea(bboxA);
     local aspect_th = aspect_ratio;
     if spotArea > max_area then
-      aspect_th = aspect_ratio*1.25;      
+      aspect_th = aspect_ratio*1.25;
     end
 
     if valid then
@@ -80,7 +80,7 @@ function detect()
       groundbbox[3]=math.max(bboxA[3]+ground_boundingbox[3],0);
       groundbbox[4]=math.min(bboxA[4]+ground_boundingbox[4],Vision.labelA.n-1);
 
-      local groundstats=ImageProc.color_stats(Vision.labelA.data, 
+      local groundstats=ImageProc.color_stats(Vision.labelA.data,
         Vision.labelA.m, Vision.labelA.n, colorField, groundbbox);
       local ambientarea = Vision.bboxArea(groundbbox)-Vision.bboxArea(bboxA);
       green_ratio = groundstats.area/ambientarea;

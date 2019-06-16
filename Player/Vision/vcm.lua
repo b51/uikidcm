@@ -28,7 +28,7 @@ shared.camera.select = vector.zeros(1);
 shared.camera.command = vector.zeros(1);
 shared.camera.ncamera = vector.zeros(1);
 
---bodyTilt and height can be changed by sit/stand 
+--bodyTilt and height can be changed by sit/stand
 shared.camera.height = vector.zeros(1);
 shared.camera.bodyTilt = vector.zeros(1);
 shared.camera.bodyHeight = vector.zeros(1);
@@ -51,11 +51,11 @@ shared.image.horizonB = vector.zeros(1);
 shared.image.horizonDir = vector.zeros(4); -- Angle of horizon line rotation
 
 -- 2 bytes per pixel (32 bits describes 2 pixels)
-shared.image.yuyv = 2*Config.camera.width*Config.camera.height; 
+shared.image.yuyv = 2*Config.camera.width*Config.camera.height;
 --Downsampled yuyv
-shared.image.yuyv2 = 2*Config.camera.width*Config.camera.height/2/2; 
+shared.image.yuyv2 = 2*Config.camera.width*Config.camera.height/2/2;
 --Downsampled yuyv 2
-shared.image.yuyv3 = 2*Config.camera.width*Config.camera.height/4/4; 
+shared.image.yuyv3 = 2*Config.camera.width*Config.camera.height/4/4;
 
 shared.image.width = vector.zeros(1);
 shared.image.height = vector.zeros(1);
@@ -67,8 +67,8 @@ shared.image.labelB = ((processed_img_width)/Config.vision.scaleB)*((processed_i
 --shared.image.labelB_obs = ((processed_img_width)/Config.vision.scaleB)*((processed_img_height)/Config.vision.scaleB);
 
 -- calculate image shm size
-shsize.image = (shared.image.yuyv + shared.image.yuyv2+ 
-	shared.image.yuyv3+shared.image.labelA + shared.image.labelB 
+shsize.image = (shared.image.yuyv + shared.image.yuyv2+
+	shared.image.yuyv3+shared.image.labelA + shared.image.labelB
 --  +shared.image.labelA_obs + shared.image.labelB_obs
   ) + 2^16;
 
@@ -175,7 +175,7 @@ shared.robot={};
 shared.robot.detect=vector.zeros(1);
 
 if enable_robot_detection>0 then
-  --SJ: Don't define the arrays if they are not used 
+  --SJ: Don't define the arrays if they are not used
   --As they will occupy monitor bandwidth
   map_div = Config.vision.robot.map_div;
   --Global map
@@ -230,7 +230,7 @@ function refresh_debug_message()
 end
 function add_debug_message(message)
   if string.len(debug_message)>1000 then
-    --something is wrong, just reset it 
+    --something is wrong, just reset it
     debug_message='';
   end
   debug_message=debug_message..message;

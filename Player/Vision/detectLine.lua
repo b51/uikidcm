@@ -27,10 +27,10 @@ lwratio = Config.vision.line.lwratio or 2
 
 function in_bbox(pointx, pointy, bbox)
   if (pointx>=bbox[1] and pointx<=bbox[2]
-   	and pointy>=bbox[3] and pointy<=bbox[4]) then
-   	return true
-  else 
-    return false 
+	and pointy>=bbox[3] and pointy<=bbox[4]) then
+	return true
+  else
+    return false
   end
 end
 
@@ -53,9 +53,9 @@ function detect()
   linePropsB = ImageProc.field_lines(Vision.labelB.data, Vision.labelB.m,
 		 Vision.labelB.n, max_width, connect_th, max_gap, min_length);
 
-  if #linePropsB==0 then 
+  if #linePropsB==0 then
     --print('linePropsB nil')
-    return line; 
+    return line;
   end
 
   line.propsB=linePropsB;
@@ -91,8 +91,8 @@ function detect()
     end
 
     if vcm.get_spot_detect() == 1 then
-    	local spotbboxB = vcm.get_spot_bboxB()
-    	if in_bbox(line.propsB[i].endpoint[1], line.propsB[i].endpoint[3], spotbboxB) or
+	local spotbboxB = vcm.get_spot_bboxB()
+	if in_bbox(line.propsB[i].endpoint[1], line.propsB[i].endpoint[3], spotbboxB) or
         in_bbox(line.propsB[i].endpoint[2], line.propsB[i].endpoint[4], spotbboxB) then
         valid = false
       end
@@ -100,26 +100,26 @@ function detect()
 
     if valid then
       local ratio = line.propsB[i].length/line.propsB[i].max_width;
-      if ratio<=lwratio then 
-      	valid = false
+      if ratio<=lwratio then
+	valid = false
       end
-    end 
+    end
 
     if valid then
       local vendpoint = {};
-    	vendpoint[1] = HeadTransform.coordinatesB(vector.new(
-  	    {line.propsB[i].endpoint[1], line.propsB[i].endpoint[3]}),1);
-    	vendpoint[2] = HeadTransform.coordinatesB(vector.new(
-  		  {line.propsB[i].endpoint[2],line.propsB[i].endpoint[4]}),1);
+	vendpoint[1] = HeadTransform.coordinatesB(vector.new(
+	    {line.propsB[i].endpoint[1], line.propsB[i].endpoint[3]}),1);
+	vendpoint[2] = HeadTransform.coordinatesB(vector.new(
+		  {line.propsB[i].endpoint[2],line.propsB[i].endpoint[4]}),1);
       linecount=linecount+1;
-    	line.length[linecount]=length;
-    	line.endpoint[linecount]= line.propsB[i].endpoint;
-    	vendpoint[1] = HeadTransform.projectGround(vendpoint[1],0);
-    	vendpoint[2] = HeadTransform.projectGround(vendpoint[2],0);
-    	line.v[linecount]={};
-    	line.v[linecount][1]=vendpoint[1];
-    	line.v[linecount][2]=vendpoint[2];
-    	local angle = math.atan2(vendpoint[1][2]-vendpoint[2][2],
+	line.length[linecount]=length;
+	line.endpoint[linecount]= line.propsB[i].endpoint;
+	vendpoint[1] = HeadTransform.projectGround(vendpoint[1],0);
+	vendpoint[2] = HeadTransform.projectGround(vendpoint[2],0);
+	line.v[linecount]={};
+	line.v[linecount][1]=vendpoint[1];
+	line.v[linecount][2]=vendpoint[2];
+	local angle = math.atan2(vendpoint[1][2]-vendpoint[2][2],
       vendpoint[1][1]-vendpoint[2][1]);
       if angle<=0 then angle=angle+math.pi end
       line.angle[linecount] = angle;

@@ -17,7 +17,7 @@ shared.camera.select = vector.zeros(1);
 shared.camera.command = vector.zeros(1);
 shared.camera.ncamera = vector.zeros(1);
 
---bodyTilt and height can be changed by sit/stand 
+--bodyTilt and height can be changed by sit/stand
 shared.camera.height = vector.zeros(1);
 shared.camera.bodyTilt = vector.zeros(1);
 shared.camera.bodyHeight = vector.zeros(1);
@@ -38,8 +38,8 @@ shared.image.horizonB = vector.zeros(1);
 shared.image.horizonDir = vector.zeros(4); -- Angle of horizon line rotation
 
 -- 3 bytes per pixel (24 bits describes 1 pixels)
-shared.image.rgb = 3*Config.camera.width*Config.camera.height; 
-shared.image.rgb4net = 3*Config.net.width*Config.net.height; 
+shared.image.rgb = 3*Config.camera.width*Config.camera.height;
+shared.image.rgb4net = 3*Config.net.width*Config.net.height;
 
 shared.image.width = vector.zeros(1);
 shared.image.height = vector.zeros(1);
@@ -147,7 +147,7 @@ shared.robot={};
 shared.robot.detect=vector.zeros(1);
 
 if enable_robot_detection>0 then
-  --SJ: Don't define the arrays if they are not used 
+  --SJ: Don't define the arrays if they are not used
   --As they will occupy monitor bandwidth
   map_div = Config.vision.robot.map_div;
   --Global map
@@ -202,7 +202,7 @@ function refresh_debug_message()
 end
 function add_debug_message(message)
   if string.len(debug_message)>1000 then
-    --something is wrong, just reset it 
+    --something is wrong, just reset it
     debug_message='';
   end
   debug_message=debug_message..message;
