@@ -137,14 +137,20 @@ function update()
   -- ball detector
   tstart = unix.time();
   local show_image = 1;
-  local detection = DLDetection.bboxes_detect(dlvcm.get_image_rzdrgb(),
+  -- bboxes_detect return values includes:
+  --      detect,     whether detected or not
+  --      score,      score of probabilities
+  --      frame_id,   image frame_id, increase by one
+  --      x, y, w, h, bounding box
+  local detection = DLDetection.bboxes_detect(vcm.get_image_rzdrgb(),
                                               camera.width,
                                               camera.height,
                                               net.width,
                                               net.height,
                                               show_image);
   Tdetection = unix.time() - tstart;
-  ball = detectBall.dldetect(detection.ball);
+  ball = detectBall.detect(detection.ball);
+  print(ball.score)
   --[[
   goal = detectGoal.detect(detection.goal);
   print("DLDetection tim: "..Tdetection);
@@ -156,14 +162,6 @@ function update()
   end
   --]]
   --[[
-  tstart = unix.time();
-	if(use_arbitrary_ball) then
-		ball = detectBall.detect("arbitrary");
-	else
-		ball = detectBall.detect(colorOrange);
-	end
-  Tball = unix.time() - tstart;
-
   -- goal detector
   if use_point_goal == 1 then
     ballYellow = detectBall.detect(colorYellow);
@@ -237,15 +235,17 @@ function update()
   end
   --]]
 
-  --update_shm();
+  update_shm();
 end
 
 function update_shm()
   vcm.set_ball_detect(ball.detect);
   if (ball.detect == 1) then
-    vcm.set_ball_centroid(ball.propsA.centroid);
-    vcm.set_ball_axisMajor(ball.propsA.axisMajor);
-    vcm.set_ball_axisMinor(ball.propsA.axisMinor);
+    vcm.set_ball_score(ball.score);
+    vcm.set_ball_x(ball.x);
+    vcm.set_ball_y(ball.y);
+    vcm.set_ball_w(ball.w);
+    vcm.set_ball_h(ball.h);
     vcm.set_ball_v(ball.v);
     vcm.set_ball_r(ball.r);
     vcm.set_ball_dr(ball.dr);

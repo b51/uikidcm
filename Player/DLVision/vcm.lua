@@ -4,10 +4,6 @@ require("shm");
 require("util");
 require("vector");
 require('Config');
--- Enable Webots specific
-if (string.find(Config.platform.name,'Webots')) then
-  webots = true;
-end
 
 -- shared properties
 shared = {};
@@ -15,13 +11,6 @@ shsize = {};
 
 processed_img_width = Config.camera.width;
 processed_img_height = Config.camera.height;
-if( webots ) then
-  processed_img_width = processed_img_width;
-  processed_img_height = processed_img_height;
-else
-  processed_img_width = processed_img_width / 2;
-  processed_img_height = processed_img_height / 2;
-end
 
 shared.camera = {};
 shared.camera.select = vector.zeros(1);
@@ -34,8 +23,6 @@ shared.camera.bodyTilt = vector.zeros(1);
 shared.camera.bodyHeight = vector.zeros(1);
 shared.camera.rollAngle = vector.zeros(1);--how much image is tilted
 
---Used for monitor to auto-switch yuyv mode
-shared.camera.yuyvType = vector.zeros(1);
 --Now we use shm to enable broadcasting from test_vision
 shared.camera.broadcast = vector.zeros(1);
 shared.camera.teambroadcast = vector.zeros(1);
@@ -50,27 +37,16 @@ shared.image.horizonA = vector.zeros(1);
 shared.image.horizonB = vector.zeros(1);
 shared.image.horizonDir = vector.zeros(4); -- Angle of horizon line rotation
 
--- 2 bytes per pixel (32 bits describes 2 pixels)
-shared.image.yuyv = 2*Config.camera.width*Config.camera.height;
---Downsampled yuyv
-shared.image.yuyv2 = 2*Config.camera.width*Config.camera.height/2/2;
---Downsampled yuyv 2
-shared.image.yuyv3 = 2*Config.camera.width*Config.camera.height/4/4;
+-- 3 bytes per pixel (24 bits describes 1 pixels)
+shared.image.rgb = 3*Config.camera.width*Config.camera.height;
+shared.image.rzdrgb = 3*Config.net.width*Config.net.height;
 
 shared.image.width = vector.zeros(1);
 shared.image.height = vector.zeros(1);
 shared.image.scaleB = vector.zeros(1);
 
-shared.image.labelA = (processed_img_width)*(processed_img_height);
-shared.image.labelB = ((processed_img_width)/Config.vision.scaleB)*((processed_img_height)/Config.vision.scaleB);
---shared.image.labelA_obs = (processed_img_width)*(processed_img_height);
---shared.image.labelB_obs = ((processed_img_width)/Config.vision.scaleB)*((processed_img_height)/Config.vision.scaleB);
-
 -- calculate image shm size
-shsize.image = (shared.image.yuyv + shared.image.yuyv2+
-	shared.image.yuyv3+shared.image.labelA + shared.image.labelB
---  +shared.image.labelA_obs + shared.image.labelB_obs
-  ) + 2^16;
+shsize.image = shared.image.rgb + shared.image.rzdrgb + 2^16;
 
 --Image field-of-view information
 shared.image.fovTL=vector.zeros(2);
@@ -79,17 +55,17 @@ shared.image.fovBL=vector.zeros(2);
 shared.image.fovBR=vector.zeros(2);
 shared.image.fovC=vector.zeros(2);
 
-shared.image.learn_lut = vector.zeros(1);
-
 shared.ball = {};
 shared.ball.detect = vector.zeros(1);
-shared.ball.centroid = vector.zeros(2); --in pixels, (x,y), of camera image
+shared.ball.score = vector.zeros(1);
+shared.ball.x = vector.zeros(1);
+shared.ball.y = vector.zeros(1);
+shared.ball.w = vector.zeros(1);
+shared.ball.h = vector.zeros(1);
 shared.ball.v = vector.zeros(4); --3D position of ball wrt body
 shared.ball.r = vector.zeros(1); --distance to ball (planar)
 shared.ball.dr = vector.zeros(1);
 shared.ball.da = vector.zeros(1);
-shared.ball.axisMajor = vector.zeros(1);
-shared.ball.axisMinor = vector.zeros(1);
 
 shared.goal = {};
 shared.goal.detect = vector.zeros(1);
@@ -147,7 +123,6 @@ shared.circle.y = vector.zeros(1);
 shared.circle.var = vector.zeros(1);
 shared.circle.angle = vector.zeros(1);
 
-
 --Corner detection
 shared.corner = {};
 shared.corner.detect = vector.zeros(1);
@@ -167,7 +142,6 @@ shared.spot.bboxB = vector.zeros(4);
 shared.spot.centroid1 = vector.zeros(2);
 shared.spot.centroid2 = vector.zeros(2);
 shared.spot.centroid3 = vector.zeros(2);
-
 
 enable_robot_detection = Config.vision.enable_robot_detection or 0;
 

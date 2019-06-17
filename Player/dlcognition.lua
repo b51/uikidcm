@@ -18,7 +18,7 @@ package.path = cwd.."/DLVision/?.lua;"..package.path;
 package.path = cwd.."/Motion/?.lua;"..package.path; 
 
 require('unix')
-require('dlvcm')
+require('vcm')
 require('gcm')
 require('wcm')
 require('mcm')
@@ -26,9 +26,9 @@ require('Body')
 require('DLVision')
 require('World')
 comm_inited = false;
-dlvcm.set_camera_teambroadcast(1);
-dlvcm.set_camera_broadcast(0);
---Now dlvcm.get_camera_teambroadcast() determines 
+vcm.set_camera_teambroadcast(1);
+vcm.set_camera_broadcast(0);
+--Now vcm.get_camera_teambroadcast() determines 
 --Whether we use wired monitoring comm or wireless team comm
 
 count = 0;
@@ -40,7 +40,7 @@ if (string.find(Config.platform.name,'Webots')) then
 end
 
 function broadcast()
-  broadcast_enable = dlvcm.get_camera_broadcast();
+  broadcast_enable = vcm.get_camera_broadcast();
   if broadcast_enable>0 then
     if broadcast_enable==1 then 
       --Mode 1, send 1/4 resolution, labeB, all info
@@ -60,7 +60,7 @@ function broadcast()
     end
     --Reset this flag at every broadcast
     --To prevent monitor running during actual game
-    --dlvcm.set_camera_broadcast(0);
+    --vcm.set_camera_broadcast(0);
   end
 end
 
@@ -90,9 +90,9 @@ function update()
   end
  
   if not comm_inited and 
-    (dlvcm.get_camera_broadcast()>0 or
-     dlvcm.get_camera_teambroadcast()>0) then
-    if dlvcm.get_camera_teambroadcast()>0 then
+    (vcm.get_camera_broadcast()>0 or
+     vcm.get_camera_teambroadcast()>0) then
+    if vcm.get_camera_teambroadcast()>0 then
       require('Team');
       require('GameControl');
       Team.entry();
@@ -106,7 +106,7 @@ function update()
   end
 
   if comm_inited and imageProcessed then
-    if dlvcm.get_camera_teambroadcast()>0 then 
+    if vcm.get_camera_teambroadcast()>0 then 
       GameControl.update();
       if nProcessedImages % 3 ==0 then
 	--10 fps team update
@@ -120,7 +120,7 @@ end
 
 -- exit 
 function exit()
-  if dlvcm.get_camera_teambroadcast()>0 then 
+  if vcm.get_camera_teambroadcast()>0 then 
     Team.exit();
     GameControl.exit();
   end

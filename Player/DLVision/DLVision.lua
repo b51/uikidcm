@@ -7,7 +7,7 @@ require('Config');
 require('ImagePreProc');
 require('HeadTransform');
 
-require('dlvcm');
+require('vcm');
 require('mcm');
 require('Body');
 
@@ -23,8 +23,8 @@ if (Config.camera.width ~= Camera.get_width()
   print('Camera width/height = ('..Camera.get_width()..', '..Camera.get_height()..')');
   error('Config file is not set correctly for this camera. Ensure the camera width and height are correct.');
 end
-dlvcm.set_image_width(Config.camera.width);
-dlvcm.set_image_height(Config.camera.height);
+vcm.set_image_width(Config.camera.width);
+vcm.set_image_height(Config.camera.height);
 
 -- camera
 camera = {};
@@ -45,10 +45,10 @@ net.ratio_fixed = Config.net.ratio_fixed;
 saveCount = 0;
 
 -- debugging settings
-dlvcm.set_debug_enable_shm_copy(Config.vision.copy_image_to_shm);
-dlvcm.set_debug_store_goal_detections(Config.vision.store_goal_detections);
-dlvcm.set_debug_store_ball_detections(Config.vision.store_ball_detections);
-dlvcm.set_debug_store_all_images(Config.vision.store_all_images);
+vcm.set_debug_enable_shm_copy(Config.vision.copy_image_to_shm);
+vcm.set_debug_store_goal_detections(Config.vision.store_goal_detections);
+vcm.set_debug_store_ball_detections(Config.vision.store_ball_detections);
+vcm.set_debug_store_all_images(Config.vision.store_all_images);
 
 -- Timing
 count = 0;
@@ -57,9 +57,9 @@ t0 = unix.time();
 
 function entry()
   --Temporary value.. updated at body FSM at next frame
-  dlvcm.set_camera_bodyHeight(Config.walk.bodyHeight);
-  dlvcm.set_camera_height(Config.walk.bodyHeight+Config.head.neckZ);
-	dlvcm.set_camera_ncamera(Config.camera.ncamera);
+  vcm.set_camera_bodyHeight(Config.walk.bodyHeight);
+  vcm.set_camera_height(Config.walk.bodyHeight+Config.head.neckZ);
+	vcm.set_camera_ncamera(Config.camera.ncamera);
 
   -- Start the HeadTransform machine
   HeadTransform.entry();
@@ -95,8 +95,7 @@ end
 function update()
   tstart = unix.time();
   headAngles = {Body.get_sensor_headpos()[2],Body.get_sensor_headpos()[1]};	--b51
-  -- get mjpg image from camera
-  -- mjpg format: {size, data}
+  -- get mjpg image from camera, mjpg format: {size, data}
   camera.mjpg = Camera.get_image();
   local status = Camera.get_camera_status();
   if status.count ~= lastImageCount[status.select+1] then
@@ -121,7 +120,7 @@ function update()
                                           net.height,
                                           net.ratio_fixed,
                                           show_image);
-  dlvcm.set_image_rzdrgb(rzdrgb);
+  vcm.set_image_rzdrgb(rzdrgb);
   update_shm(status, headAngles)
 
   vcm.refresh_debug_message();
@@ -144,48 +143,48 @@ function update_shm(status, headAngles)
   -- Update the shared memory
   -- Shared memory size argument is in number of bytes
 
---  if dlvcm.get_debug_enable_shm_copy() == 1 then
---    if ((dlvcm.get_debug_store_all_images() == 1)
+--  if vcm.get_debug_enable_shm_copy() == 1 then
+--    if ((vcm.get_debug_store_all_images() == 1)
 --      or (ball.detect == 1
---          and dlvcm.get_debug_store_ball_detections() == 1)
+--          and vcm.get_debug_store_ball_detections() == 1)
 --      or ((goalCyan.detect == 1 or goalYellow.detect == 1)
---          and dlvcm.get_debug_store_goal_detections() == 1)) then
+--          and vcm.get_debug_store_goal_detections() == 1)) then
 --
---      if dlvcm.get_camera_broadcast() > 0 then --Wired monitor broadcasting
---	      if dlvcm.get_camera_broadcast() == 1 then
+--      if vcm.get_camera_broadcast() > 0 then --Wired monitor broadcasting
+--	      if vcm.get_camera_broadcast() == 1 then
 --	    --Level 1: 1/4 yuyv, labelB
---          dlvcm.set_image_yuyv3(ImageProc.subsample_yuyv2yuyv(
---          dlvcm.get_image_yuyv(),
+--          vcm.set_image_yuyv3(ImageProc.subsample_yuyv2yuyv(
+--          vcm.get_image_yuyv(),
 --	        camera.width/2, camera.height,4));
---          dlvcm.set_image_labelB(labelB.data);
---        elseif dlvcm.get_camera_broadcast() == 2 then
+--          vcm.set_image_labelB(labelB.data);
+--        elseif vcm.get_camera_broadcast() == 2 then
 --	    --Level 2: 1/2 yuyv, labelA, labelB
---          dlvcm.set_image_yuyv2(ImageProc.subsample_yuyv2yuyv(
---          dlvcm.get_image_yuyv(),
+--          vcm.set_image_yuyv2(ImageProc.subsample_yuyv2yuyv(
+--          vcm.get_image_yuyv(),
 --          camera.width/2, camera.height,2));
---          dlvcm.set_image_labelA(labelA.data);
---          dlvcm.set_image_labelB(labelB.data);
+--          vcm.set_image_labelA(labelA.data);
+--          vcm.set_image_labelB(labelB.data);
 --	      else
 --	    --Level 3: 1/2 yuyv
---          dlvcm.set_image_yuyv2(ImageProc.subsample_yuyv2yuyv(
---          dlvcm.get_image_yuyv(),
+--          vcm.set_image_yuyv2(ImageProc.subsample_yuyv2yuyv(
+--          vcm.get_image_yuyv(),
 --          camera.width/2, camera.height,2));
 --	      end
 --
---	    elseif dlvcm.get_camera_teambroadcast() > 0 then --Wireless Team broadcasting
+--	    elseif vcm.get_camera_teambroadcast() > 0 then --Wireless Team broadcasting
 --          --Only copy labelB
---          dlvcm.set_image_labelB(labelB.data);
+--          vcm.set_image_labelB(labelB.data);
 --      end
 --    end
 --  end
 
-  dlvcm.set_image_select(status.select);
-  dlvcm.set_image_count(status.count);
-  dlvcm.set_image_time(status.time);
-  dlvcm.set_image_headAngles(headAngles);
-  dlvcm.set_image_horizonA(HeadTransform.get_horizonA());
-  dlvcm.set_image_horizonB(HeadTransform.get_horizonB());
-  dlvcm.set_image_horizonDir(HeadTransform.get_horizonDir())
+  vcm.set_image_select(status.select);
+  vcm.set_image_count(status.count);
+  vcm.set_image_time(status.time);
+  vcm.set_image_headAngles(headAngles);
+  vcm.set_image_horizonA(HeadTransform.get_horizonA());
+  vcm.set_image_horizonB(HeadTransform.get_horizonB());
+  vcm.set_image_horizonDir(HeadTransform.get_horizonDir())
 
   update_shm_fov();
 end
@@ -199,59 +198,21 @@ function update_shm_fov()
   local fovTL={0,0};
   local fovTR={Config.camera.width,0};
 
-  dlvcm.set_image_fovC(vector.slice(HeadTransform.projectGround(
+  vcm.set_image_fovC(vector.slice(HeadTransform.projectGround(
 	  HeadTransform.coordinatesA(fovC,0.1)),1,2));
-  dlvcm.set_image_fovTL(vector.slice(HeadTransform.projectGround(
+  vcm.set_image_fovTL(vector.slice(HeadTransform.projectGround(
 	  HeadTransform.coordinatesA(fovTL,0.1)),1,2));
-  dlvcm.set_image_fovTR(vector.slice(HeadTransform.projectGround(
+  vcm.set_image_fovTR(vector.slice(HeadTransform.projectGround(
 	  HeadTransform.coordinatesA(fovTR,0.1)),1,2));
-  dlvcm.set_image_fovBL(vector.slice(HeadTransform.projectGround(
+  vcm.set_image_fovBL(vector.slice(HeadTransform.projectGround(
 	  HeadTransform.coordinatesA(fovBL,0.1)),1,2));
-  dlvcm.set_image_fovBR(vector.slice(HeadTransform.projectGround(
+  vcm.set_image_fovBR(vector.slice(HeadTransform.projectGround(
 	  HeadTransform.coordinatesA(fovBR,0.1)),1,2));
 end
 
 
 function exit()
   HeadTransform.exit();
-end
-
-function bboxStats(color, bboxB, rollAngle, scale)
-  scale = scale or scaleB;
-  bboxA = {};
-  bboxA[1] = scale*bboxB[1];
-  bboxA[2] = scale*bboxB[2] + scale - 1;
-  bboxA[3] = scale*bboxB[3];
-  bboxA[4] = scale*bboxB[4] + scale - 1;
-  if rollAngle then
- --hack: shift boundingbox 1 pix helps goal detection
- --not sure why this thing is happening...
-
---    bboxA[1]=bboxA[1]+1;
-      bboxA[2]=bboxA[2]+1;
-
-    return ImageProc.tilted_color_stats(
-	labelA.data, labelA.m, labelA.n, color, bboxA,rollAngle);
-  else
-    return ImageProc.color_stats(labelA.data, labelA.m, labelA.n, color, bboxA);
-  end
-end
-
-function ballColorBboxStats(color, bboxA)
-  return ImageProc.ball_color_stats(labelA.ballData, labelA.m, labelA.n, color, bboxA);
-end
-
-function bboxB2A(bboxB)
-  bboxA = {};
-  bboxA[1] = scaleB*bboxB[1];
-  bboxA[2] = scaleB*bboxB[2] + scaleB - 1;
-  bboxA[3] = scaleB*bboxB[3];
-  bboxA[4] = scaleB*bboxB[4] + scaleB - 1;
-  return bboxA;
-end
-
-function bboxArea(bbox)
-  return (bbox[2] - bbox[1] + 1) * (bbox[4] - bbox[3] + 1);
 end
 
 function save_rgb(rgb)
