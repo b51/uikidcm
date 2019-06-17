@@ -27,15 +27,15 @@ typedef std::map<int, std::string> LabelNameMap;
 typedef std::map<std::string, Object> NameObjMap;
 std::shared_ptr<Detector> detector;
 const LabelNameMap kLabelNameMap{
-    {0, "ball"},        {1, "left_post"},    {2, "right_post"},
+    {39, "ball"},       {1, "left_post"},    {2, "right_post"},
     {3, "unkonw_post"}, {4, "penalty_spot"}, {5, "teammate"},
 };
 
-static void MakePair(const std::vector<Object>& objects,
+static void MakePair(const std::vector<Object>& objs,
                      NameObjMap& name_obj_map) {
   for (auto ln : kLabelNameMap) {
     Object object(ln.first);
-    for (auto obj : objects) {
+    for (auto obj : objs) {
       if (obj.label == ln.first) {
         object = obj;
       }
@@ -71,54 +71,29 @@ static int lua_bboxes_detect(lua_State* L) {
   int ori_h = luaL_checkint(L, 3);
   int net_w = luaL_checkint(L, 4);
   int net_h = luaL_checkint(L, 5);
+  int show_img = luaL_checkint(L, 6);
   std::vector<Object> objs;
   NameObjMap name_obj_map;
   cv::Mat img(net_h, net_w, CV_8UC3, rgb);
   detector->Detect(img, ori_w, ori_h, objs);
   MakePair(objs, name_obj_map);
-  /* Fot Test
-  name_obj_map["ball"].frame_id = 100;
-  name_obj_map["left_post"].frame_id = 1;
-  name_obj_map["right_post"].frame_id = 2;
-  name_obj_map["unkonw_post"].frame_id = 3;
-  name_obj_map["penalty_spot"].frame_id = 4;
-  name_obj_map["teammate"].frame_id = 5;
-
-  name_obj_map["ball"].score = 100;
-  name_obj_map["left_post"].score = 1;
-  name_obj_map["right_post"].score = 2;
-  name_obj_map["unkonw_post"].score = 3;
-  name_obj_map["penalty_spot"].score = 4;
-  name_obj_map["teammate"].score = 5;
-
-  name_obj_map["ball"].x = 100;
-  name_obj_map["left_post"].x = 1;
-  name_obj_map["right_post"].x = 2;
-  name_obj_map["unkonw_post"].x = 3;
-  name_obj_map["penalty_spot"].x = 4;
-  name_obj_map["teammate"].x = 5;
-
-  name_obj_map["ball"].y = 100;
-  name_obj_map["left_post"].y = 1;
-  name_obj_map["right_post"].y = 2;
-  name_obj_map["unkonw_post"].y = 3;
-  name_obj_map["penalty_spot"].y = 4;
-  name_obj_map["teammate"].y = 5;
-
-  name_obj_map["ball"].w = 100;
-  name_obj_map["left_post"].w = 1;
-  name_obj_map["right_post"].w = 2;
-  name_obj_map["unkonw_post"].w = 3;
-  name_obj_map["penalty_spot"].w = 4;
-  name_obj_map["teammate"].w = 5;
-
-  name_obj_map["ball"].h = 100;
-  name_obj_map["left_post"].h = 1;
-  name_obj_map["right_post"].h = 2;
-  name_obj_map["unkonw_post"].h = 3;
-  name_obj_map["penalty_spot"].h = 4;
-  name_obj_map["teammate"].h = 5;
-  */
+  if (show_img) {
+    cv::Mat disp = img.clone();
+    for (auto no : name_obj_map) {
+      std::string name = no.first;
+      float w_scale = float(net_w) / ori_w;
+      float h_scale = float(net_h) / ori_h;
+      int x = no.second.x * w_scale;
+      int y = no.second.y * h_scale;
+      int w = no.second.w * w_scale;
+      int h = no.second.h * h_scale;
+      cv::rectangle(disp, cv::Rect(x, y, w, h),
+                    cv::Scalar(255. / no.second.label, 255, 0), 8);
+      cv::putText(disp, name, cv::Point(x, y), cv::FONT_HERSHEY_COMPLEX, 1, 1);
+      cv::imshow("disp", disp);
+      cv::waitKey(1);
+    }
+  }
 
   lua_createtable(L, name_obj_map.size(), 0);
   for (auto no : name_obj_map) {

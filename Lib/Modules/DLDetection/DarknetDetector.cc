@@ -40,7 +40,7 @@ void DarknetDetector::RescaleBoxes(int ori_w, int ori_h, int num,
 
 //TODO rename ori_w to a better name and add resize to ImagePreProc
 bool DarknetDetector::Detect(const cv::Mat& image, int ori_w, int ori_h,
-                             std::vector<Object>& objects) {
+                             std::vector<Object>& objs) {
   static int frame_count_ = 0;
   layer output_l = net_->layers[net_->n - 1];
   float* net_input = Mat2Float(image);
@@ -54,7 +54,7 @@ bool DarknetDetector::Detect(const cv::Mat& image, int ori_w, int ori_h,
 
   RescaleBoxes(ori_w, ori_h, nboxes, dets);
 
-  objects.clear();
+  objs.clear();
   for (int i = 0; i < nboxes; i++) {
     for (int j = 0; j < output_l.classes; j++) {
       if (dets[i].prob[j] > object_thresh_) {
@@ -66,7 +66,7 @@ bool DarknetDetector::Detect(const cv::Mat& image, int ori_w, int ori_h,
         obj.frame_id = frame_count_;
         obj.label = j;
         obj.score = dets[i].prob[j];
-        objects.push_back(obj);
+        objs.push_back(obj);
       }
     }
   }

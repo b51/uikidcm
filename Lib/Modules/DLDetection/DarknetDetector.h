@@ -35,7 +35,7 @@ public:
     hier_thresh_ = hier_thresh;
   }
 
-  bool Detect(const cv::Mat& image, int ori_w, int ori_h, std::vector<Object>& objects);
+  bool Detect(const cv::Mat& image, int ori_w, int ori_h, std::vector<Object>& objs);
 
 private:
   float* Mat2Float(const cv::Mat& image);

@@ -9,6 +9,7 @@ require('vcm');
 require('unix');
 
 -- Dependency
+require('DLDetection');
 require('detectBall');
 require('detectGoal');
 require('detectLine');
@@ -68,6 +69,20 @@ Trobot = 0;
 Tfreespace = 0;
 Tboundary = 0;
 
+camera = {};
+camera.width = Camera.get_width();
+camera.height = Camera.get_height();
+-- net
+net = {};
+net.width = Config.net.width;
+net.height = Config.net.height;
+net.ratio_fixed = Config.net.ratio_fixed;
+net.prototxt = Config.net.prototxt;
+net.model = Config.net.model;
+net.object_thresh = Config.net.object_thresh
+net.nms_thresh = Config.net.nms_thresh
+net.hier_thresh = Config.net.hier_thresh
+
 function entry()
   -- Initiate Detection
   ball = {};
@@ -75,7 +90,7 @@ function entry()
 
   ballYellow={};
   ballYellow.detect=0;
-	
+
   ballCyan={};
   ballCyan.detect=0;
 
@@ -96,7 +111,7 @@ function entry()
 
   corner = {};
   corner.detect = 0;
-  
+
   spot = {};
   spot.detect = 0;
 
@@ -109,19 +124,38 @@ function entry()
   boundary={};
   boundary.detect=0;
 
-
+  DLDetection.detector_yolo_init(net.prototxt,
+                                 net.model,
+                                 net.object_thresh,
+                                 net.nms_thresh,
+                                 net.hier_thresh);
 end
 
 
 
 function update()
-  
-  if( Config.gametype == "stretcher" ) then
-    ball = detectEyes.detect(colorOrange);
-    return;
-  end
-
   -- ball detector
+  tstart = unix.time();
+  local show_image = 1;
+  local detection = DLDetection.bboxes_detect(dlvcm.get_image_rzdrgb(),
+                                              camera.width,
+                                              camera.height,
+                                              net.width,
+                                              net.height,
+                                              show_image);
+  Tdetection = unix.time() - tstart;
+  ball = detectBall.dldetect(detection.ball);
+  --[[
+  goal = detectGoal.detect(detection.goal);
+  print("DLDetection tim: "..Tdetection);
+  for k, v in pairs(detection) do
+    print(k..":")
+    for m, n in pairs(v) do
+      print("    "..m..": "..n)
+    end
+  end
+  --]]
+  --[[
   tstart = unix.time();
 	if(use_arbitrary_ball) then
 		ball = detectBall.detect("arbitrary");
@@ -163,7 +197,7 @@ function update()
     Tline = unix.time() - tstart;
     if enableCorner == 1 then
       corner = detectCorner.detect(line);
-      Tcorner = unix.time() - Tline - tstart; 
+      Tcorner = unix.time() - Tline - tstart;
     end
   end
 
@@ -201,7 +235,9 @@ function update()
     detectRobot.detect();
     Trobot = unix.time() - tstart;
   end
-  update_shm();
+  --]]
+
+  --update_shm();
 end
 
 function update_shm()
@@ -264,7 +300,7 @@ function update_shm()
     max_real_length = 0;
     max_index=1;
 
-    for i=1,line.nLines do 
+    for i=1,line.nLines do
       v1x[i]=line.v[i][1][1];
       v1y[i]=line.v[i][1][2];
       v2x[i]=line.v[i][2][1];
@@ -283,7 +319,7 @@ function update_shm()
       end
     end
 
-    --TODO: check line length 
+    --TODO: check line length
 
     vcm.set_line_v1x(v1x);
     vcm.set_line_v1y(v1y);
@@ -372,10 +408,10 @@ function print_time()
       if (landmarkCyan.detect == 1) then
         print ('landmarkCyan detected')
       end
-      print ('cyan landmark detecting time:   '..TlandmarkCyan) 
+      print ('cyan landmark detecting time:   '..TlandmarkCyan)
       if (landmarkYellow.detect == 1) then
         print ('landmarkYellow detected')
-      end  
+      end
       print ('yellow landmark detecting time: '..TlandmarkYellow..'\n')
     end
    if (enable_freespace_detection == 1) then
