@@ -62,13 +62,13 @@ function update()
   state.role = role;
   state.robotName = Config.game.robotName;
 
-  local labelB = vcm.get_image_labelB();
+  --local labelB = vcm.get_image_labelB();
   local width = vcm.get_image_width()/2/Config.vision.scaleB;
   local height = vcm.get_image_height()/2/Config.vision.scaleB;
   local count = vcm.get_image_count();
 
-  state.labelB = serialization.serialize_label_rle(
-	labelB, width, height, 'uint8', 'labelB',count);
+  --state.labelB = serialization.serialize_label_rle(
+	--labelB, width, height, 'uint8', 'labelB',count);
 
   state.attackBearing = wcm.get_attack_bearing();
   if gcm.in_penalty() then

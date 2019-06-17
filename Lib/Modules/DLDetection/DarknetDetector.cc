@@ -38,7 +38,6 @@ void DarknetDetector::RescaleBoxes(int ori_w, int ori_h, int num,
   }
 }
 
-//TODO rename ori_w to a better name and add resize to ImagePreProc
 bool DarknetDetector::Detect(const cv::Mat& image, int ori_w, int ori_h,
                              std::vector<Object>& objs) {
   static int frame_count_ = 0;

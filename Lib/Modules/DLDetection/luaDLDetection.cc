@@ -78,8 +78,8 @@ static int lua_bboxes_detect(lua_State* L) {
   detector->Detect(img, ori_w, ori_h, objs);
   MakePair(objs, name_obj_map);
   if (show_img) {
-    cv::Mat disp = img.clone();
     for (auto no : name_obj_map) {
+      if (no.second.score <= 0) continue;
       std::string name = no.first;
       float w_scale = float(net_w) / ori_w;
       float h_scale = float(net_h) / ori_h;
@@ -87,12 +87,12 @@ static int lua_bboxes_detect(lua_State* L) {
       int y = no.second.y * h_scale;
       int w = no.second.w * w_scale;
       int h = no.second.h * h_scale;
-      cv::rectangle(disp, cv::Rect(x, y, w, h),
-                    cv::Scalar(255. / no.second.label, 255, 0), 8);
-      cv::putText(disp, name, cv::Point(x, y), cv::FONT_HERSHEY_COMPLEX, 1, 1);
-      cv::imshow("disp", disp);
-      cv::waitKey(1);
+      cv::rectangle(img, cv::Rect(x, y, w, h),
+                    cv::Scalar(255. / no.second.label, 255, 0), 5);
+      cv::putText(img, name, cv::Point(x, y), cv::FONT_HERSHEY_COMPLEX, 1, 1);
     }
+    cv::imshow("disp", img);
+    cv::waitKey(1);
   }
 
   lua_createtable(L, name_obj_map.size(), 0);

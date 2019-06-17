@@ -150,6 +150,8 @@ function update()
                                               show_image);
   Tdetection = unix.time() - tstart;
   ball = detectBall.detect(detection.ball);
+  -- TODO(b51): Add post to a table in DLDetection, and deal with posts in detectGoal
+  --goal = detectGoal.detect(detection.posts);
   print(ball.score)
   --[[
   goal = detectGoal.detect(detection.goal);

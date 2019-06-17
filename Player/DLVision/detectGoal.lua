@@ -1,33 +1,15 @@
 module(..., package.seeall);
 
 require('Config');	-- For Ball and Goal Size
-require('ImageProc');
 require('HeadTransform');	-- For Projection
 require('Body')
-require('Vision');
 
 -- Dependency
 require('Detection');
 
--- Define Color
-colorOrange = Config.color.orange;
-colorYellow = Config.color.yellow;
-colorCyan = Config.color.cyan;
-colorField = Config.color.field;
-colorWhite = Config.color.white;
-
-width_min_in_pixel = 4;
-width_max_in_pixel = 70;
-connect_th = 0.3;
-check_for_ground_whole = 0;
-
-goalSizeThresh = 50;
-
 --this threshold makes sure that the posts don't have more than a certain ratio of their length under the horizon
 goalHorizonCheck = 1.0;
 
---Use tilted boundingbox? (robots with nonzero bodytilt)
-use_tilted_bbox = Config.vision.use_tilted_bbox or 0; --0
 --Use center post to determine post type (disabled for OP)
 use_centerpost=Config.vision.goal.use_centerpost or 0;  --0
 --Check the bottom of the post for green
@@ -46,60 +28,25 @@ postDiameter = Config.world.postDiameter or 0.10;
 postHeight = Config.world.goalHeight or 0.80;
 goalWidth = Config.world.goalWidth or 1.40;
 
-
-
---------------------------------------------------------------
---Vision threshold values (to support different resolutions)
---------------------------------------------------------------
-th_min_color_count=Config.vision.goal.th_min_color_count;
-th_min_area = Config.vision.goal.th_min_area; --40
-th_nPostB = Config.vision.goal.th_nPostB; --10
-th_min_orientation = Config.vision.goal.th_min_orientation; --60*pi/180
-th_min_fill_extent = Config.vision.goal.th_min_fill_extent; --{0.35, 0.65}
-th_aspect_ratio = Config.vision.goal.th_aspect_ratio; --{2.5, 15}
-th_edge_margin = Config.vision.goal.th_edge_margin; --5
-th_bottom_boundingbox = Config.vision.goal.th_bottom_boundingbox; --0.9
-th_ground_boundingbox = Config.vision.goal.th_ground_boundingbox; --{-15, 15, -15, 10}
-th_min_green_ratio = Config.vision.goal.th_min_green_ratio; --0.2
-th_min_bad_color_ratio = Config.vision.goal.th_min_bad_color_ratio; --0.1
-th_goal_separation = Config.vision.goal.th_goal_separation; --{0.35, 3.0}
-th_min_area_unknown_post = Config.vision.goal.th_min_area_unknown_post; --200
-
-function detect(color)
+function detect(dposts)
+  local posts = dposts;
   local goal = {};
   goal.detect = 0;
 
-  local postB;
+  if #posts == 0 then
+    return goal
+  end
 
-  tiltAngle=0;
+  local tiltAngle=0;
   vcm.set_camera_rollAngle(tiltAngle);
 
   headPitch = Body.get_sensor_headpos()[1];
 
-  --params: label data; w; h;
-  --optinal params: min_width_in_pixel; max_width_in_pixel; connect_th; max_gap_in_pixel; min_height_in_pixel
-  postB = ImageProc.goal_posts_white(Vision.labelA.data,
-	Vision.labelA.m, Vision.labelA.n, headPitch, width_min_in_pixel, width_max_in_pixel, connect_th);
-
-  if (not postB or #postB == 0) then return goal; end
---	Vision.labelA.m, Vision.labelA.n, 25*math.pi/180, width_min_in_pixel, width_max_in_pixel, connect_th);
-
-	--convert to expression in labelB, the scale is supposed to be the same for height and width
-	for i = 1, #postB do
-		postB[i].area = postB[i].area * Vision.labelB.m * Vision.labelB.n/Vision.labelA.m/Vision.labelA.n;
-		postB[i].centroid[1] = postB[i].centroid[1]*Vision.labelB.m/Vision.labelA.m;
-		postB[i].centroid[2] = postB[i].centroid[2]*Vision.labelB.m/Vision.labelA.m;
-		for j = 1,4 do
-			postB[i].boundingBox[j] = postB[i].boundingBox[j]*Vision.labelB.m/Vision.labelA.m
-		end
-
-		--print(i,postB[i].area,unpack(postB[i].centroid))
-		--print(unpack(postB[i].boundingBox))
+	for i = 1, #posts do
+		posts[i].centroid = {posts[i].x + posts[i].w / 2., posts[i].y + posts[i].h / 2.};
 	end
 
-	--print("exiting the detectGoal test routine");
-	--os.exit();
-
+  --TODO(b51): Do we need post area sort?
   local function compare_post_area(post1, post2)
     return post1.area > post2.area
   end

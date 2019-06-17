@@ -3,7 +3,6 @@ module(..., package.seeall);
 require('Config');      -- For Ball and Goal Size
 require('ImageProc');
 require('HeadTransform');       -- For Projection
-require('Vision');
 require('Body');
 require('shm');
 require('vcm');
@@ -23,8 +22,8 @@ field_margin = Config.vision.ball.field_margin or 0; -- 2.0
 
 th_headAngle = Config.vision.ball.th_headAngle or 30*math.pi/180; -- 30 degree
 
-function detect(db)
-  local ball = db
+function detect(dball)
+  local ball = dball
   local check_passed = true;
 
   headAngle = {Body.get_sensor_headpos()[2],Body.get_sensor_headpos()[1]};	--b51
