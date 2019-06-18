@@ -22,63 +22,79 @@ field_margin = Config.vision.ball.field_margin or 0; -- 2.0
 
 th_headAngle = Config.vision.ball.th_headAngle or 30*math.pi/180; -- 30 degree
 
-function detect(dball)
-  local ball = dball
-  local check_passed = true;
+function detect(dballs)
+  local balls = dballs
+  local ball = {}
+  ball.detect = 0;
 
-  headAngle = {Body.get_sensor_headpos()[2],Body.get_sensor_headpos()[1]};	--b51
+  if (not balls or #balls == 0) then
+    return ball
+  end
+  local function compare_ball_score(ball1, ball2)
+    return ball1.score > ball2.score
+  end
+  table.sort(balls, compare_ball_score)
 
+  -- {yaw, pitch}
+  headAngle = {Body.get_sensor_headpos()[2], Body.get_sensor_headpos()[1]};	--b51
+  headAngle = {20, 10};	--b51
+  for i = 1, #balls do
+    local check_passed = true;
+    -- Find the centroid of the ball
+    local ballCentroid = {balls[i].x + balls[i].w / 2, balls[i].y + balls[i].h / 2};
+    -- Coordinates of ball
+    local scale = math.max(balls[i].w/diameter, balls[i].h/diameter);
+
+    v = HeadTransform.coordinatesA(ballCentroid, scale);
+    v_inf = HeadTransform.coordinatesA(ballCentroid,0.1);
+
+    -- TODO(b51) Should keep height check? Tests needed
+    --if v[3] > th_height_max then
+    --  --Ball height check
+    --  check_passed = false;
+    --end
+
+    if check_passed then
+      ball_dist_inf = math.sqrt(v_inf[1]*v_inf[1] + v_inf[2]*v_inf[2])
+      height_th_inf = th_height_max + ball_dist_inf * math.tan(10*math.pi/180)
+      if v_inf[3] > height_th_inf then
+        print("a, check "..i.."th ball"..v_inf[3]);
+        check_passed = false;
+      end
+
+      pose=wcm.get_pose();
+      posexya=vector.new( {pose.x, pose.y, pose.a} );
+      ballGlobal = util.pose_global({v[1],v[2],0},posexya);
+      if ballGlobal[1]>Config.world.xMax * 2.0 or
+         ballGlobal[1]<-Config.world.xMax* 2.0 or
+         ballGlobal[2]>Config.world.yMax * 2.0 or
+         ballGlobal[2]<-Config.world.yMax* 2.0 then
+        if (v[1]*v[1] + v[2]*v[2] > max_distance*max_distance) then
+          print("b, check "..i.."th ball"..max_distance);
+          check_passed = false;
+        end
+      end
+
+      local ball_dist = math.sqrt(v[1]*v[1] + v[2]*v[2])
+      local height_th = th_height_max + ball_dist * math.tan(8*math.pi/180)
+
+      --if check_passed and v[3] > height_th then
+      --  print("c, check "..i.."th ball"..v[3]);
+      --  check_passed = false;
+      --end
+
+    end -- End check_pass check
+
+    if check_passed then
+      balls[i].detect = 1;
+      ball = balls[i];
+      print(i.." th ball used, score: "..balls[i].score)
+      break;
+    end
+  end -- End for #balls
   if ball.detect == 0 then
     return ball;
   end
-
-  -- Find the centroid of the ball
-  local ballCentroid = {ball.x + ball.w / 2, ball.y + ball.h / 2};
-  -- Coordinates of ball
-  local scale = math.max(ball.w/diameter, ball.h/diameter);
-
-  v = HeadTransform.coordinatesA(ballCentroid, scale);
-  v_inf = HeadTransform.coordinatesA(ballCentroid,0.1);
-
-  -- TODO(b51) Should keep height check? Tests needed
-  --if v[3] > th_height_max then
-  --  --Ball height check
-  --  check_passed = false;
-  --end
-
-  if check_passed then
-    ball_dist_inf = math.sqrt(v_inf[1]*v_inf[1] + v_inf[2]*v_inf[2])
-    height_th_inf = th_height_max + ball_dist_inf * math.tan(10*math.pi/180)
-    if v_inf[3] > height_th_inf then
-       check_passed = false;
-    end
-
-    pose=wcm.get_pose();
-    posexya=vector.new( {pose.x, pose.y, pose.a} );
-    ballGlobal = util.pose_global({v[1],v[2],0},posexya);
-    if ballGlobal[1]>Config.world.xMax * 2.0 or
-       ballGlobal[1]<-Config.world.xMax* 2.0 or
-       ballGlobal[2]>Config.world.yMax * 2.0 or
-       ballGlobal[2]<-Config.world.yMax* 2.0 then
-       if (v[1]*v[1] + v[2]*v[2] > max_distance*max_distance) then
-         check_passed = false;
-       end
-    end
-
-    local ball_dist = math.sqrt(v[1]*v[1] + v[2]*v[2])
-    local height_th = th_height_max + ball_dist * math.tan(8*math.pi/180)
-
-    if check_passed and v[3] > height_th then
-      check_passed = false;
-    end
-
-  end -- End check_pass check
-
-  if not check_passed then
-    ball.detect = 0;
-    return ball;
-  end
-
   --SJ: we subtract foot offset
   --bc we use ball.x for kick alignment
   --and the distance from foot is important

@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <list>
 #include <map>
 #include <memory>
 #include <string>
@@ -24,23 +25,25 @@
 #include "DarknetDetector.h"
 
 typedef std::map<int, std::string> LabelNameMap;
-typedef std::map<std::string, Object> NameObjMap;
+typedef std::unordered_map<std::string, std::list<Object>> NamedObjsMap;
 std::shared_ptr<Detector> detector;
 const LabelNameMap kLabelNameMap{
-    {39, "ball"},       {1, "left_post"},    {2, "right_post"},
-    {3, "unkonw_post"}, {4, "penalty_spot"}, {5, "teammate"},
+    {39, "balls"},
+    {1, "posts"},
+    {2, "penalty_spot"},
+    {3, "teammates"},
 };
 
 static void MakePair(const std::vector<Object>& objs,
-                     NameObjMap& name_obj_map) {
-  for (auto ln : kLabelNameMap) {
-    Object object(ln.first);
-    for (auto obj : objs) {
+                     NamedObjsMap& named_objs_map) {
+  for (const auto& ln : kLabelNameMap) {
+    std::list<Object> objects;
+    for (const auto& obj : objs) {
       if (obj.label == ln.first) {
-        object = obj;
+        objects.push_back(obj);
       }
     }
-    name_obj_map.insert(std::make_pair(ln.second, object));
+    named_objs_map.insert(std::make_pair(ln.second, objects));
   }
 }
 
@@ -73,55 +76,59 @@ static int lua_bboxes_detect(lua_State* L) {
   int net_h = luaL_checkint(L, 5);
   int show_img = luaL_checkint(L, 6);
   std::vector<Object> objs;
-  NameObjMap name_obj_map;
+  NamedObjsMap named_objs_map;
   cv::Mat img(net_h, net_w, CV_8UC3, rgb);
   detector->Detect(img, ori_w, ori_h, objs);
-  MakePair(objs, name_obj_map);
+  MakePair(objs, named_objs_map);
   if (show_img) {
-    for (auto no : name_obj_map) {
-      if (no.second.score <= 0) continue;
+    for (const auto& no : named_objs_map) {
       std::string name = no.first;
-      float w_scale = float(net_w) / ori_w;
-      float h_scale = float(net_h) / ori_h;
-      int x = no.second.x * w_scale;
-      int y = no.second.y * h_scale;
-      int w = no.second.w * w_scale;
-      int h = no.second.h * h_scale;
-      cv::rectangle(img, cv::Rect(x, y, w, h),
-                    cv::Scalar(255. / no.second.label, 255, 0), 5);
-      cv::putText(img, name, cv::Point(x, y), cv::FONT_HERSHEY_COMPLEX, 1, 1);
+      for (const auto obj : no.second) {
+        float w_scale = float(net_w) / ori_w;
+        float h_scale = float(net_h) / ori_h;
+        int x = obj.x * w_scale;
+        int y = obj.y * h_scale;
+        int w = obj.w * w_scale;
+        int h = obj.h * h_scale;
+        cv::rectangle(img, cv::Rect(x, y, w, h),
+                      cv::Scalar(255. / obj.label, 255, 0), 5);
+        cv::putText(img, name, cv::Point(x, y), cv::FONT_HERSHEY_COMPLEX, 1, 1);
+      }
     }
     cv::imshow("disp", img);
     cv::waitKey(1);
   }
 
-  lua_createtable(L, name_obj_map.size(), 0);
-  for (auto no : name_obj_map) {
+  lua_createtable(L, kLabelNameMap.size(), 0);
+  for (const auto& no : named_objs_map) {
     lua_pushstring(L, no.first.c_str());
     {
-      lua_createtable(L, 0, 7);
-      lua_pushstring(L, "detect");
-      int detect = no.second.score > 0 ? 1 : 0;
-      lua_pushnumber(L, detect);
-      lua_settable(L, -3);
-      lua_pushstring(L, "frame_id");
-      lua_pushnumber(L, no.second.frame_id);
-      lua_settable(L, -3);
-      lua_pushstring(L, "score");
-      lua_pushnumber(L, no.second.score);
-      lua_settable(L, -3);
-      lua_pushstring(L, "x");
-      lua_pushnumber(L, no.second.x);
-      lua_settable(L, -3);
-      lua_pushstring(L, "y");
-      lua_pushnumber(L, no.second.y);
-      lua_settable(L, -3);
-      lua_pushstring(L, "w");
-      lua_pushnumber(L, no.second.w);
-      lua_settable(L, -3);
-      lua_pushstring(L, "h");
-      lua_pushnumber(L, no.second.h);
-      lua_settable(L, -3);
+      int count = 0;
+      lua_createtable(L, no.second.size(), 0);
+      for (const auto& obj : no.second) {
+        lua_createtable(L, 0, 6);
+        lua_pushstring(L, "frame_id");
+        lua_pushnumber(L, obj.frame_id);
+        lua_settable(L, -3);
+        lua_pushstring(L, "score");
+        lua_pushnumber(L, obj.score);
+        lua_settable(L, -3);
+        lua_pushstring(L, "x");
+        lua_pushnumber(L, obj.x);
+        lua_settable(L, -3);
+        lua_pushstring(L, "y");
+        lua_pushnumber(L, obj.y);
+        lua_settable(L, -3);
+        lua_pushstring(L, "w");
+        lua_pushnumber(L, obj.w);
+        lua_settable(L, -3);
+        lua_pushstring(L, "h");
+        lua_pushnumber(L, obj.h);
+        lua_settable(L, -3);
+
+        lua_rawseti(L, -2, count + 1);
+        count++;
+      }
     }
     lua_settable(L, -3);
   }

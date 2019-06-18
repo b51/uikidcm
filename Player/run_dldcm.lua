@@ -7,13 +7,12 @@ if (string.find(computer, "Darwin")) then
 else
    package.cpath = cwd.."/Lib/?.so;"..package.cpath;
 end
-package.path = cwd.."/Vision/?.lua;"..package.path; 
+package.path = cwd.."/DLVision/?.lua;"..package.path;
 package.path = cwd.."/Util/?.lua;"..package.path;
 package.path = cwd.."/Config/?.lua;"..package.path;
 package.path = cwd.."/Lib/?.lua;"..package.path;
 package.path = cwd.."/Dev/?.lua;"..package.path;
 package.path = cwd.."/World/?.lua;"..package.path;
-package.path = cwd.."/Vision/?.lua;"..package.path;
 package.path = cwd.."/Motion/?.lua;"..package.path; 
 
 
@@ -28,7 +27,7 @@ dcm.entry()
 sensorShm = shm.open('dcmSensor');
 actuatorShm = shm.open('dcmActuator');
 
-require('dlvcm') --Shared memory is created here, and ready for access
+require('vcm') --Shared memory is created here, and ready for access
 
 print('Running controller');
 loop = true;

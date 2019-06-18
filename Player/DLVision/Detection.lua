@@ -149,20 +149,27 @@ function update()
                                               net.height,
                                               show_image);
   Tdetection = unix.time() - tstart;
-  ball = detectBall.detect(detection.ball);
-  -- TODO(b51): Add post to a table in DLDetection, and deal with posts in detectGoal
-  --goal = detectGoal.detect(detection.posts);
-  print(ball.score)
   --[[
-  goal = detectGoal.detect(detection.goal);
-  print("DLDetection tim: "..Tdetection);
+  print("DLDetection time: "..Tdetection);
   for k, v in pairs(detection) do
     print(k..":")
     for m, n in pairs(v) do
-      print("    "..m..": "..n)
+      print("    "..m..":")
+      for o, p in pairs(n) do
+        print("        "..o..": "..p)
+      end
     end
   end
   --]]
+
+  ball = detectBall.detect(detection.balls);
+  --[[
+  for k, v in pairs(ball) do
+    print(k.." : ", v)
+  end
+  --]]
+  -- TODO(b51): Add post to a table in DLDetection, and deal with posts in detectGoal
+  goal = detectGoal.detect(detection.posts);
   --[[
   -- goal detector
   if use_point_goal == 1 then
