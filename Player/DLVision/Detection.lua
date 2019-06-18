@@ -138,9 +138,8 @@ function update()
   tstart = unix.time();
   local show_image = 1;
   -- bboxes_detect return values includes:
-  --      detect,     whether detected or not
-  --      score,      score of probabilities
   --      frame_id,   image frame_id, increase by one
+  --      score,      score of probabilities
   --      x, y, w, h, bounding box
   local detection = DLDetection.bboxes_detect(vcm.get_image_rzdrgb(),
                                               camera.width,
@@ -170,6 +169,9 @@ function update()
   --]]
   -- TODO(b51): Add post to a table in DLDetection, and deal with posts in detectGoal
   goal = detectGoal.detect(detection.posts);
+  for k, v in pairs(goal) do
+    print(k.." : ", v)
+  end
   --[[
   -- goal detector
   if use_point_goal == 1 then
@@ -261,6 +263,7 @@ function update_shm()
     vcm.set_ball_da(ball.da);
   end
 
+  -- TODO(b51): need fix for new goal
   vcm.set_goal_detect(math.max(goalCyan.detect, goalYellow.detect));
   if (goalCyan.detect == 1) then
     vcm.set_goal_color(colorCyan);

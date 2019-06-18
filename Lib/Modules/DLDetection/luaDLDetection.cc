@@ -28,8 +28,8 @@ typedef std::map<int, std::string> LabelNameMap;
 typedef std::unordered_map<std::string, std::list<Object>> NamedObjsMap;
 std::shared_ptr<Detector> detector;
 const LabelNameMap kLabelNameMap{
-    {39, "balls"},
-    {1, "posts"},
+    {0, "balls"},
+    {39, "posts"},
     {2, "penalty_spot"},
     {3, "teammates"},
 };
