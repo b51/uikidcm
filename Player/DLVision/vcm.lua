@@ -69,6 +69,7 @@ shared.ball.da = vector.zeros(1);
 
 shared.goal = {};
 shared.goal.detect = vector.zeros(1);
+shared.goal.color = vector.zeros(1);
 shared.goal.type = vector.zeros(1);
 shared.goal.v1 = vector.zeros(4);
 shared.goal.v2 = vector.zeros(4);
