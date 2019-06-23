@@ -206,6 +206,7 @@ static int lua_rgb_resize(lua_State* L) {
   // 7th Input: Height of resized image
   int show_img = luaL_checkint(L, 7);
   cv::Mat img(h, w, CV_8UC3, rgb);
+  //cv::Mat img = cv::imread("/home/humanoid/000002.jpg");
   cv::Mat rzd_img(rz_h, rz_w, CV_8UC3, 128);  // padded image with 128
   if (!ratio_fixed) {
     cv::resize(img, rzd_img, cv::Size(rz_w, rz_h));
