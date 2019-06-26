@@ -14,7 +14,7 @@ require('wcm')
 require('ocm')
 require('mcm')
 require('serialization');
-require('ImageProc')
+--require('ImageProc')
 require('Config');
 
 --sendShm = {'wcm','vcm','gcm'}

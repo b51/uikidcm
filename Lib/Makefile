@@ -107,11 +107,6 @@ image:
 	@cd $(IMAGEDIR) && make && cd $(CWD)
 	@echo "\n"
 
-image_pre:
-	@echo "Compiling Image Processing Lua/C++ Libraries...\n"
-	@cd $(IMAGEPREDIR) && make && cd $(CWD)
-	@echo "\n"
-
 comm::
 	@echo "Compiling Communication Lua/C++ Libraries...\n"
 	@cd $(COMMDIR) && make && cd $(CWD)
@@ -163,7 +158,7 @@ setup_webots_op: webots_op setup_util setup_image setup_image_pre setup_webots
 	cd $(PLAYERDIR)/Config && ln -s Config_WebotsOP.lua Config.lua && cd $(CWD)
 	@echo "\n"
 
-setup_op: op setup_util setup_image setup_image_pre setup_comm
+setup_op: op setup_util setup_image setup_comm
 	@echo "Setting up Darwin OP Lua/C++ Libraries...\n"
 	mkdir -p $(INSTDIR)
 	find $(OPDIR) $(REGEX) -exec cp -v {} $(INSTDIR) \;
@@ -192,12 +187,6 @@ setup_image: image
 	@echo "Setting up Image Processing Lua/C++ Libraries...\n"
 	mkdir -p $(INSTDIR)
 	find $(IMAGEDIR) $(REGEX) -exec cp -v {} $(INSTDIR) \;
-	@echo "\n"
-
-setup_image_pre: image_pre
-	@echo "Setting up Image Processing Lua/C++ Libraries...\n"
-	mkdir -p $(INSTDIR)
-	find $(IMAGEPREDIR) $(REGEX) -exec cp -v {} $(INSTDIR) \;
 	@echo "\n"
 
 setup_util: util

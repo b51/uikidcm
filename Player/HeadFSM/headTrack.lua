@@ -82,11 +82,6 @@ function update()
   lastDeltaAngles = deltaAngles;
   yaw = math.min((math.pi/2),math.max((-math.pi/2),yaw));
 
---b51: From Mos
---	  print("yaw, lastYaw :",yaw*180/math.pi, lastHeadAngles[1]*180/math.pi);
-
---  print(pitch*180/math.pi);  
-  --print(ball.y); 
   Body.set_head_command({yaw, pitch});
   
   Body.set_para_headpos(vector.new({yaw, pitch}));--123456î^²¿

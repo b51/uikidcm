@@ -2,8 +2,8 @@
 #define _ROBOT_PARAMETER_H_
 
 #define CONFIG_FILE_NAME	"robot.conf"
-#define VIDEO_DEVICE_NAME	"/dev/video3"
-#define RS232_DEVICE_NAME	"/dev/ttySAC1"
+#define VIDEO_DEVICE_NAME	"/dev/video0"
+#define RS232_DEVICE_NAME	"/dev/ttyTHS2"
 
 #define MOTION_DEBUG_PORT 	50001
 #define IMAGE_CAPTURE_PORT 	50002

@@ -28,10 +28,10 @@ typedef std::map<int, std::string> LabelNameMap;
 typedef std::unordered_map<std::string, std::list<Object>> NamedObjsMap;
 std::shared_ptr<Detector> detector;
 const LabelNameMap kLabelNameMap{
-    {0, "teammates"},
-    {1, "posts"},
-    {2, "balls"},
-    {3, "penalty_spot"},
+    {32, "balls"},
+    {39, "posts"},
+    {2, "penalty_spot"},
+    {3, "teammates"},
 };
 
 static void MakePair(const std::vector<Object>& objs,

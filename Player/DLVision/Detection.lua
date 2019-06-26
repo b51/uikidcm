@@ -112,7 +112,7 @@ end
 function update()
   -- ball detector
   tstart = unix.time();
-  local show_image = 1;
+  local show_image = 0;
   -- bboxes_detect return values includes:
   --      frame_id,   image frame_id, increase by one
   --      score,      score of probabilities

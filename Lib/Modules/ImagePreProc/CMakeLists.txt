@@ -15,6 +15,7 @@ endif()
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 
+#set(LIB_TURBOJPEG /usr/lib/aarch64-linux-gnu/libturbojpeg.so.0)
 ## Find catkin macros and libraries
 find_package(OpenCV REQUIRED)
 
@@ -36,6 +37,7 @@ target_link_libraries(ImagePreProc
   lua
   glog
   v4l2
+  #${LIB_TURBOJPEG}
   turbojpeg
   -Wl,--no-whole-archive
 )

@@ -25,7 +25,7 @@ typedef struct {
   double joint[20];
 } CAMERA_STATUS;
 
-#define VIDEO_DEVICE "/dev/video1"
+#define VIDEO_DEVICE "/dev/video0"
 
 /* Exposed C functions to Lua */
 typedef unsigned char uint8;

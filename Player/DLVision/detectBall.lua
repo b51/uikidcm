@@ -37,7 +37,6 @@ function detect(dballs)
 
   -- {yaw, pitch}
   headAngle = {Body.get_sensor_headpos()[2], Body.get_sensor_headpos()[1]};	--b51
-  headAngle = {20, 10};	--b51
   for i = 1, #balls do
     local check_passed = true;
     -- Find the centroid of the ball
@@ -88,7 +87,6 @@ function detect(dballs)
     if check_passed then
       balls[i].detect = 1;
       ball = balls[i];
-      print(i.." th ball used, score: "..balls[i].score)
       break;
     end
   end -- End for #balls

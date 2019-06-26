@@ -1,6 +1,7 @@
 CWD= $(shell pwd)
 
-all:: body camera kinematics gamecontrol
+#all:: body camera kinematics gamecontrol
+all:: body kinematics gamecontrol
 
 body::
 	cd Body && make && cd $(CWD)

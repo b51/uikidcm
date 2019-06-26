@@ -22,7 +22,7 @@ camera.auto_param = {};
 camera.auto_param[1] = {key='white balance temperature, auto', val={1}};
 camera.auto_param[2] = {key='power line frequency',   val={1}};
 camera.auto_param[3] = {key='backlight compensation', val={1}};
-camera.auto_param[4] = {key='exposure, auto',val={1}};
+camera.auto_param[4] = {key='exposure, auto',val={2}};
 camera.auto_param[5] = {key="exposure, auto priority",val={1}};
 
 camera.param = {};
@@ -34,7 +34,7 @@ camera.param[5] = {key='gamma',         val={100}};
 camera.param[6] = {key='gain',          val={0}};
 camera.param[7] = {key='white balance temperature', val={4600}};
 camera.param[8] = {key='sharpness',     val={3}};
-camera.param[9] = {key='exposure (absolute)',      val={100}};
+camera.param[9] = {key='exposure (absolute)',      val={500}};
 if use_arbitrary_ball then
   camera.lut_file = 'gateline0318.raw';
   camera.lut_ball_file = 'FieldandBall0318.raw';
