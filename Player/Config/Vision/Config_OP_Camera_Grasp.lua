@@ -12,11 +12,17 @@ camera.switchFreq = 0; --unused for OP
 
 camera.width = 1280;
 camera.height = 720;
-camera.x_center = 656;
-camera.y_center = 372;
+camera.x_center = 618.4566;
+camera.y_center = 355.9215;
 
-camera.focal_length = 1066; -- in pixels
-camera.focal_base = 1280; -- image width used in focal length calculation
+camera.focal_length = 982.4735; -- in pixels
+camera.focal_base = 980.6277; -- image width used in focal length calculation
+
+--[[ Tsinghua new camera intrinsics
+749.976216 0.000000 666.504700
+0.000000 752.193184 357.094205
+0.000000 0.000000 1.000000
+--]]
 
 camera.auto_param = {};
 camera.auto_param[1] = {key='white balance temperature, auto', val={1}};
