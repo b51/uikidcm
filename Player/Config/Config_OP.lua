@@ -45,7 +45,7 @@ speak.enable = false;
 
 -- Game Parameters
 game = {};
-game.teamNumber = 22;
+game.teamNumber = 6;
 
 --Default role: 0 for goalie, 1 for attacker, 2 for defender
 game.role = 1;

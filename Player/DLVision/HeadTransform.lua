@@ -31,6 +31,11 @@ labelA = {};
 labelA.m = Config.camera.width/2;
 labelA.n = Config.camera.height/2;
 
+u0 = Config.camera.x_center;
+v0 = Config.camera.y_center;
+focalU = Config.camera.focal_length;
+focalV = Config.camera.focal_base;
+
 nxA = labelA.m;
 x0A = 0.5 * (nxA-1);
 nyA = labelA.n;
@@ -182,10 +187,17 @@ function get_horizonDir()
 end
 
 function coordinatesA(c, scale)
+  --[[
   scale = scale or 1;
   local v = vector.new({focalA,
                        -(c[1] - x0A),
                        -(c[2] - y0A),
+                       scale});
+  --]]
+  scale = scale or 1;
+  local v = vector.new({focalU,
+                       -(c[1] - u0),
+                       -(c[2] - v0),
                        scale});
   v = tHead*v;
   v = v/v[4];
