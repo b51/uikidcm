@@ -165,8 +165,10 @@ function process_keyinput()
     --switch camera 
     elseif byte==string.byte("-") then
       vcm.set_camera_command(1);
+      vcm.set_image_save(1);
     elseif byte==string.byte("=") then
       vcm.set_camera_command(0);
+      vcm.set_image_save(0);
 
     -- Move the head around
     elseif byte==string.byte("w") then

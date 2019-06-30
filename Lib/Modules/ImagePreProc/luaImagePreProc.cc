@@ -17,13 +17,37 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <sys/stat.h>
 
 #include <fstream>
+#include <chrono>
 #include <opencv2/opencv.hpp>
 
 #include "TurboDecode.h"
 
 TurboDecode turbo_decode;
+
+std::string CurrentSystemDate(const std::string& format = "%Y-%m-%d_%H-%M-%S") {
+  auto time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+  char str[255];
+  std::strftime(str, 255, format.c_str(), localtime(&time));
+  return std::string(str);
+}
+
+bool Exists(std::string dir_path) {
+  struct stat st;
+  int result = stat(dir_path.c_str(), &st);
+  if(result == 0) {
+    return true;
+  } else {
+    return false;
+    //if (errno != ENOENT) {
+    //  LOG(ERROR) << "File Error: " << errno;
+    //}
+  }
+}
+
+const std::string path = std::string("/home/nvidia/Pictures/") + CurrentSystemDate() + "/";
 
 float clamp(float val, float mn, float mx) {
   return (val >= mn) ? ((val <= mx) ? val : mx) : mn;
@@ -206,7 +230,6 @@ static int lua_rgb_resize(lua_State* L) {
   // 7th Input: Height of resized image
   int show_img = luaL_checkint(L, 7);
   cv::Mat img(h, w, CV_8UC3, rgb);
-  //cv::Mat img = cv::imread("/home/humanoid/000002.jpg");
   cv::Mat rzd_img(rz_h, rz_w, CV_8UC3, 128);  // padded image with 128
   if (!ratio_fixed) {
     cv::resize(img, rzd_img, cv::Size(rz_w, rz_h));
@@ -225,9 +248,17 @@ static int lua_rgb_resize(lua_State* L) {
     cv::resize(img, image_roi, cv::Size(new_w, new_h));
   }
   // TODO(b51): Remove this after beta
+  static int count = 0;
+  std::string img_name = path + std::to_string(count) + ".jpg";
   if (show_img) {
+    if (!Exists(path)) {
+      mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
+    }
+    if (count % 10 == 0)
+      cv::imwrite(img_name, img);
     cv::imshow("rzd_img", rzd_img);
     cv::waitKey(1);
+    count++;
   }
   // Pushing rgb data
   lua_pushlightuserdata(L, rzd_img.data);
