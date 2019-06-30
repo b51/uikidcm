@@ -107,7 +107,7 @@ function update()
   count = count + 1;
   HeadTransform.update(status.select, headAngles);
   -- Convert mjpg to rgb
-  local save_image = vcm.get_image_save or 0;
+  local save_image = vcm.get_image_save() or 0;
   local rgb = ImagePreProc.mjpg_to_rgb(camera.mjpg.data,
                                        camera.mjpg.size,
                                        camera.width,

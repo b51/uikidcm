@@ -47,7 +47,7 @@ bool Exists(std::string dir_path) {
   }
 }
 
-const std::string path = std::string("/home/nvidia/Pictures/") + CurrentSystemDate() + "/";
+const std::string path = std::string("/home/humanoid/Pictures/") + CurrentSystemDate() + "/";
 
 float clamp(float val, float mn, float mx) {
   return (val >= mn) ? ((val <= mx) ? val : mx) : mn;
