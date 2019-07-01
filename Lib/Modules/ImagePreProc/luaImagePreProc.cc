@@ -47,7 +47,7 @@ bool Exists(std::string dir_path) {
   }
 }
 
-const std::string path = std::string("/home/humanoid/Pictures/") + CurrentSystemDate() + "/";
+const std::string path = std::string("/home/b51/Pictures/") + CurrentSystemDate() + "/";
 
 float clamp(float val, float mn, float mx) {
   return (val >= mn) ? ((val <= mx) ? val : mx) : mn;
@@ -229,7 +229,8 @@ static int lua_rgb_resize(lua_State* L) {
   int ratio_fixed = luaL_checkint(L, 6);
   // 7th Input: Height of resized image
   int show_img = luaL_checkint(L, 7);
-  cv::Mat img(h, w, CV_8UC3, rgb);
+  //cv::Mat img(h, w, CV_8UC3, rgb);
+  cv::Mat img = cv::imread("/home/b51/Humanoid/yolo_models/fb_yolo3_tiny_4.6/bad1.jpg");
   cv::Mat rzd_img(rz_h, rz_w, CV_8UC3, 128);  // padded image with 128
   if (!ratio_fixed) {
     cv::resize(img, rzd_img, cv::Size(rz_w, rz_h));

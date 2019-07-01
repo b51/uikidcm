@@ -31,7 +31,7 @@ const LabelNameMap kLabelNameMap{
     {0, "robots"},
     {1, "posts"},
     {2, "balls"},
-    {3, "goalkeeper"},
+    {3, "target"},
 };
 
 static void MakePair(const std::vector<Object>& objs,

@@ -8,10 +8,10 @@ end
 
 net = {};
 net.width = 416
-net.height = 416
-net.ratio_fixed = 1
-net.prototxt = get_data_path().."fb_yolo3_tiny_3.2.cfg"
-net.model = get_data_path().."fb_yolo3_tiny_3.2.weights"
+net.height = 256
+net.ratio_fixed = 0
+net.prototxt = get_data_path().."fb_yolo3_tiny_4.6.cfg"
+net.model = get_data_path().."fb_yolo3_tiny_4.6_ep490.weights"
 --net.prototxt = get_data_path().."yolov3-tiny.cfg"
 --net.model = get_data_path().."yolov3-tiny.weights"
 net.object_thresh = 0.2

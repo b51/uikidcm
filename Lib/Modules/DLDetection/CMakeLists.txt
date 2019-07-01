@@ -4,7 +4,7 @@ project(DLDetection
 
 add_definitions(-std=c++11)
 
-option(USE_GPU "Use GPU as image inference" ON)
+option(USE_GPU "Use GPU as image inference" OFF)
 
 #########################################################################
 set(CMAKE_BUILD_TYPE "Release")
@@ -56,11 +56,21 @@ add_library(${PROJECT_NAME} SHARED
   DarknetDetector.cc
 )
 
-target_link_libraries(${PROJECT_NAME}
-  ${OpenCV_LIBS}
-  ${Darknet_LIB}
-  ${CUDA_LIBS}
-  lua
-  glog
-  -Wl,--no-whole-archive
-)
+if (USE_GPU)
+  target_link_libraries(${PROJECT_NAME}
+    ${OpenCV_LIBS}
+    ${Darknet_LIB}
+    ${CUDA_LIBS}
+    lua
+    glog
+    -Wl,--no-whole-archive
+  )
+else ()
+  target_link_libraries(${PROJECT_NAME}
+    ${OpenCV_LIBS}
+    ${Darknet_LIB}
+    lua
+    glog
+    -Wl,--no-whole-archive
+  )
+endif(USE_GPU)

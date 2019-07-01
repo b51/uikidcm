@@ -108,10 +108,12 @@ function update()
   HeadTransform.update(status.select, headAngles);
   -- Convert mjpg to rgb
   local save_image = vcm.get_image_save() or 0;
+  print("aaaaaaaaa")
   local rgb = ImagePreProc.mjpg_to_rgb(camera.mjpg.data,
                                        camera.mjpg.size,
                                        camera.width,
                                        camera.height);
+  print("aaaabaaaa")
   -- Resize rgb fro net input
   local rzdrgb = ImagePreProc.rgb_resize(rgb,
                                           camera.width,
@@ -120,10 +122,11 @@ function update()
                                           net.height,
                                           net.ratio_fixed,
                                           save_image);
-  vcm.set_image_rzdrgb(rzdrgb);
-  update_shm(status, headAngles)
+  print("aaaacaaaa")
+  --vcm.set_image_rzdrgb(rzdrgb);
+  --update_shm(status, headAngles)
 
-  vcm.refresh_debug_message();
+  --vcm.refresh_debug_message();
 
   Detection.update();
   vcm.refresh_debug_message();

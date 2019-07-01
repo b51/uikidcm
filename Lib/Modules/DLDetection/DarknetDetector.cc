@@ -19,12 +19,23 @@ void DarknetDetector::RescaleBoxes(int ori_w, int ori_h, int num,
                                    detection* dets) {
   int w = ori_w;
   int h = ori_h;
+  //  cv::Mat img =
+  //      cv::imread("/home/b51/Humanoid/yolo_models/fb_yolo3_tiny_4.6/bad1.jpg");
+  std::cout << "num: " << num << std::endl;
   for (int i = 0; i < num; i++) {
     box b = dets[i].bbox;
     int x1 = (b.x - b.w / 2.) * w;
     int x2 = (b.x + b.w / 2.) * w;
     int y1 = (b.y - b.h / 2.) * h;
     int y2 = (b.y + b.h / 2.) * h;
+    //    cv::rectangle(img, cv::Point(b.x, b.y), cv::Point(b.x + b.w, b.y +
+    //    b.h),
+    //                  cv::Scalar(255, 0, 0), 5);
+    //    cv::putText(img, std::to_string(dets[i].classes), cv::Point(b.x, b.y),
+    //    3, 3,
+    //                cv::Scalar(0, 255, 0));
+    //    cv::putText(img, std::to_string(dets[i].classes),
+    //            cv::Point(b.x + b.w, b.y + b.h), 4, 3, cv::Scalar(0, 0, 255));
 
     x1 = std::max(x1, 0);
     y1 = std::max(y1, 0);
@@ -36,6 +47,8 @@ void DarknetDetector::RescaleBoxes(int ori_w, int ori_h, int num,
     dets[i].bbox.w = x2 - x1;
     dets[i].bbox.h = y2 - y1;
   }
+  // cv::imshow("yolo", img);
+  // cv::waitKey(0);
 }
 
 bool DarknetDetector::Detect(const cv::Mat& image, int ori_w, int ori_h,
@@ -68,6 +81,11 @@ bool DarknetDetector::Detect(const cv::Mat& image, int ori_w, int ori_h,
         objs.push_back(obj);
       }
     }
+  }
+  for (size_t i = 0; i < objs.size(); i++) {
+    std::cout << "i: " << i << std::endl;
+    std::cout << "class: " << objs[i].score << std::endl;
+    std::cout << "score: " << objs[i].label << std::endl;
   }
   frame_count_++;
   free(net_input);
