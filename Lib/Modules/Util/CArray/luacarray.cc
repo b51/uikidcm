@@ -5,16 +5,7 @@
  * 2010
  */
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-  #include "lua.h"
-  #include "lualib.h"
-  #include "lauxlib.h"
-#ifdef __cplusplus
-}
-#endif
+#include <lua.hpp>
 
 typedef struct {
   const void *ptr;
@@ -92,7 +83,7 @@ static int lua_carray_delete(lua_State *L) {
 static int lua_carray_set(lua_State *L) {
   structCArray *p = lua_checkcarray(L, 1);
   // Convert lua 1-index to C 0-index
-  int index = luaL_checkint(L, 2) - 1; 
+  int index = luaL_checkinteger(L, 2) - 1;
   if ((index < 0) || (index >= p->size)) {
     return luaL_error(L, "index out of bounds");
   }
@@ -127,7 +118,7 @@ static int lua_carray_set(lua_State *L) {
 static int lua_carray_get(lua_State *L) {
   structCArray *p = lua_checkcarray(L, 1);
   // Convert lua 1-index to C 0-index
-  int index = luaL_checkint(L, 2) - 1; 
+  int index = luaL_checkinteger(L, 2) - 1;
   double val;
 
   switch (p->type) {
@@ -180,7 +171,7 @@ static int lua_carray_len(lua_State *L) {
   return 1;
 }
 
-static const struct luaL_reg carray_functions[] = {
+static const struct luaL_Reg carray_functions[] = {
   {"new", lua_carray_new},
   {"cast", lua_carray_cast},
   {"set", lua_carray_set},
@@ -189,7 +180,7 @@ static const struct luaL_reg carray_functions[] = {
   {NULL, NULL}
 };
 
-static const struct luaL_reg carray_methods[] = {
+static const struct luaL_Reg carray_methods[] = {
   {"__gc", lua_carray_delete},
   {"__newindex", lua_carray_set},
   {"__tostring", lua_carray_tostring},
@@ -197,9 +188,7 @@ static const struct luaL_reg carray_methods[] = {
   {NULL, NULL}
 };
 
-#ifdef __cplusplus
 extern "C"
-#endif
 int luaopen_carray (lua_State *L) {
   luaL_newmetatable(L, "carray_mt");
 
@@ -209,8 +198,7 @@ int luaopen_carray (lua_State *L) {
   lua_pushcfunction(L, lua_carray_get);
   lua_settable(L, -3);
 
-  luaL_register(L, NULL, carray_methods);
-  luaL_register(L, "carray", carray_functions);
+  luaL_setfuncs(L, carray_methods, 0);
+  luaL_setfuncs(L, carray_functions, 0);
   return 1;
 }
-
