@@ -12,17 +12,7 @@
 #include <string>
 #include <map>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-  #include "lua.h"
-  #include "lualib.h"
-  #include "lauxlib.h"
-#ifdef __cplusplus
-}
-#endif
-
+#include <lua.hpp>
 
 const char ascii_lut[] = "0123456789abcdef";
 const int8_t byte_lut[] = { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
@@ -51,9 +41,6 @@ const int8_t label_color_unpack_lut[]={0,1,2,4,8,16};
 const char label_lut1[] = "012345";
 const char label_lut2[] = "abcdef";
 
-
-
-
 std::map<std::string, int> dataTypeMap;
 
 // use matlab support datatype names
@@ -70,15 +57,14 @@ void init_dataTypeMap() {
   dataTypeMap["double"]   = sizeof(double);
 }
 
-
 static int lua_array2string(lua_State *L) {
   uint8_t *data = (uint8_t *) lua_touserdata(L, 1);
   if ((data == NULL) || !lua_islightuserdata(L, 1)) {
     return luaL_error(L, "Input image not light user data");
   }
   
-  int width = luaL_checkint(L, 2);
-  int height = luaL_checkint(L, 3);
+  int width = luaL_checkinteger(L, 2);
+  int height = luaL_checkinteger(L, 3);
   std::string dtype(luaL_checkstring(L, 4));
   std::string name(luaL_checkstring(L, 5));
 
@@ -158,9 +144,6 @@ static int lua_string2userdata(lua_State *L) {
   return 1;
 }
 
-
-
-
 //Custom function for YUYV, where we throw out every other line
 
 static int lua_array2string2(lua_State *L) {
@@ -169,8 +152,8 @@ static int lua_array2string2(lua_State *L) {
     return luaL_error(L, "Input image not light user data");
   }
   
-  int width = luaL_checkint(L, 2);
-  int height = luaL_checkint(L, 3);
+  int width = luaL_checkinteger(L, 2);
+  int height = luaL_checkinteger(L, 3);
   std::string dtype(luaL_checkstring(L, 4));
   std::string name(luaL_checkstring(L, 5));
 
@@ -240,8 +223,8 @@ static int lua_string2userdata2(lua_State *L) {
   }
 
   const char *cdata = luaL_checkstring(L, 2);
-  int width = luaL_checkint(L, 3);
-  int height = luaL_checkint(L, 4);
+  int width = luaL_checkinteger(L, 3);
+  int height = luaL_checkinteger(L, 4);
 
   int ind = 0;
   int cind = 0;
@@ -275,7 +258,7 @@ static int lua_label2string(lua_State *L) {
     return luaL_error(L, "Input image not light user data");
   }
   
-  int arr_size = luaL_checkint(L, 2);
+  int arr_size = luaL_checkinteger(L, 2);
   std::string dtype(luaL_checkstring(L, 3));
   std::string name(luaL_checkstring(L, 4));
 
@@ -344,8 +327,6 @@ static int lua_string2label(lua_State *L) {
   return 1;
 }
 
-
-
 //Label-specific string conversion function
 //Bin each label into 6 class 
 //And pack two pixel into one byte
@@ -356,7 +337,7 @@ static int lua_label2string_double(lua_State *L) {
     return luaL_error(L, "Input image not light user data");
   }
   
-  int arr_size = luaL_checkint(L, 2);
+  int arr_size = luaL_checkinteger(L, 2);
   std::string dtype(luaL_checkstring(L, 3));
   std::string name(luaL_checkstring(L, 4));
 
@@ -442,7 +423,7 @@ static int lua_label2string_rle(lua_State *L) {
     return luaL_error(L, "Input image not light user data");
   }
   
-  int arr_size = luaL_checkint(L, 2);
+  int arr_size = luaL_checkinteger(L, 2);
   std::string dtype(luaL_checkstring(L, 3));
   std::string name(luaL_checkstring(L, 4));
 
@@ -530,8 +511,6 @@ static int lua_label2string_rle(lua_State *L) {
   return 1;
 }
 
-
-
 static int lua_string2label_rle(lua_State *L) {
   uint8_t *dout = (uint8_t *) lua_touserdata(L, 1);
   if ((dout == NULL) || !lua_islightuserdata(L, 1)) {
@@ -555,14 +534,6 @@ static int lua_string2label_rle(lua_State *L) {
   }
   return 1;
 }
-
-
-
-
-
-
-
-
 
 static int lua_ptradd(lua_State *L) {
   uint8_t *ptr = (uint8_t *) lua_touserdata(L, 1);
@@ -614,18 +585,17 @@ static int lua_testarray(lua_State *L) {
 }
 
 static int lua_bitand(lua_State *L) {
-  int a = luaL_checkint(L, 1); 
-  int b = luaL_checkint(L, 2); 
+  int a = luaL_checkinteger(L, 1); 
+  int b = luaL_checkinteger(L, 2); 
 
   lua_pushinteger(L, a & b);
 
   return 1;
 }
 
-
 static int lua_bitor(lua_State *L) {
-  int a = luaL_checkint(L, 1); 
-  int b = luaL_checkint(L, 2); 
+  int a = luaL_checkinteger(L, 1); 
+  int b = luaL_checkinteger(L, 2); 
 
   lua_pushinteger(L, a | b);
 
@@ -633,8 +603,8 @@ static int lua_bitor(lua_State *L) {
 }
 
 static int lua_bitxor(lua_State *L) {
-  int a = luaL_checkint(L, 1); 
-  int b = luaL_checkint(L, 2); 
+  int a = luaL_checkinteger(L, 1); 
+  int b = luaL_checkinteger(L, 2); 
 
   lua_pushinteger(L, a ^ b);
 
@@ -642,14 +612,14 @@ static int lua_bitxor(lua_State *L) {
 }
 
 static int lua_bitnot(lua_State *L) {
-  int a = luaL_checkint(L, 1); 
+  int a = luaL_checkinteger(L, 1); 
 
   lua_pushinteger(L, ~a);
 
   return 1;
 }
 
-static const struct luaL_reg cutil_lib [] = {
+static const struct luaL_Reg cutil_lib [] = {
   {"array2string", lua_array2string},
   {"string2userdata", lua_string2userdata},
   {"array2string2", lua_array2string2},
@@ -667,18 +637,12 @@ static const struct luaL_reg cutil_lib [] = {
   {"bit_not", lua_bitnot},
   {"sizeof", lua_sizeof},
   {"test_array", lua_testarray},
-
   {NULL, NULL}
 };
 
-#ifdef __cplusplus
 extern "C"
-#endif
 int luaopen_cutil (lua_State *L) {
-  luaL_register(L, "cutil", cutil_lib);
-
+  luaL_newlib(L, cutil_lib);
   init_dataTypeMap();
-  
   return 1;
 }
-
