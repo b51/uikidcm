@@ -1,12 +1,18 @@
-cmake_minimum_required(VERSION 2.6.4 FATAL_ERROR)
-
+cmake_minimum_required(VERSION 3.2)
 project(LuaShm)
 
-# include for lua headers
-include_directories(../../../Lua/src)
+add_definitions(-std=c++11)
+
+find_package(Boost REQUIRED)
+
+include_directories(
+  ${Boost_INCLUDE_DIRS}
+)
 
 # shm main library definition
-add_library(shm SHARED luashm.cpp)
+add_library(shm SHARED
+  luashm.cc
+)
 
 # set optimization level (shm cannot be higher than 1)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O1")
@@ -16,4 +22,3 @@ set_target_properties(shm PROPERTIES PREFIX "")
 
 # link to rt for shared memory ipc
 target_link_libraries(shm rt)
-
