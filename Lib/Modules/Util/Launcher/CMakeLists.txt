@@ -1,19 +1,18 @@
-cmake_minimum_required(VERSION 2.6.4 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.2)
+project(Launcher)
 
-project(rocket)
-
-# include for lua headers
-include_directories(../../../Lua/src)
-
-# luancher main library definition
-add_library(launcher SHARED lualauncher.c)
+add_definitions(-std=c++11)
 
 # set optimization level
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2")
+
+# luancher main library definition
+add_library(launcher SHARED
+  lualauncher.cc
+)
 
 # set library prefix to "" otherwise it will create liblauncher.so
 set_target_properties(launcher PROPERTIES PREFIX "")
 
 # link to libusb
 target_link_libraries(launcher usb)
-

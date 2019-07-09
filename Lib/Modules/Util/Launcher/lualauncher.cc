@@ -4,16 +4,8 @@
  * compatible with Dream Cheeky - Thunder model
  */
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-  #include "lua.h"
-  #include "lualib.h"
-  #include "lauxlib.h"
-#ifdef __cplusplus
-}
-#endif
+// TODO(b51): Add usb controller support
+#include <lua.hpp>
 
 #include <usb.h>
 #include <stdio.h>
@@ -183,23 +175,18 @@ static int lua_launcherstop(lua_State *L) {
   return 1;
 }
 
-static const struct luaL_reg launcher_lib [] = {
+static const struct luaL_Reg launcher_lib [] = {
   {"down", lua_launcherdown},
   {"up", lua_launcherup},
   {"left", lua_launcherleft},
   {"right", lua_launcherright},
   {"fire", lua_launcherfire},
   {"stop", lua_launcherstop},
-
   {NULL, NULL}
 };
 
-#ifdef __cplusplus
 extern "C"
-#endif
 int luaopen_launcher (lua_State *L) {
-  luaL_register(L, "launcher", launcher_lib);
-  
+  luaL_newlib(L, launcher_lib);
   return connect_launcher();
 }
-
