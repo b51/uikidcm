@@ -6,9 +6,7 @@
 #include <fcntl.h>
 #include <termios.h>
 
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
+#include <lua.hpp>
 
 static int lua_getch(lua_State *L) {
   int n,dims[2];
@@ -36,15 +34,14 @@ static int lua_nonblock(lua_State *L){
  return 1;
 }
 
-
-static const struct luaL_reg getch_lib [] = {
+static const struct luaL_Reg getch_lib [] = {
   {"get", lua_getch},
   {"enableblock", lua_nonblock},
   {NULL, NULL}
 };
 
-
+extern "C"
 int luaopen_getch (lua_State *L) {
-  luaL_register(L, "getch", getch_lib);
+  luaL_newlib(L, getch_lib);
   return 1;
 }

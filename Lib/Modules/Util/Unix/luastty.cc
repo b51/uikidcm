@@ -1,6 +1,8 @@
-/* 
+/*
   Lua module to set termios characteristics
 */
+
+#include <lua.hpp>
 
 #include <stdio.h>
 #include <string.h>
@@ -11,19 +13,8 @@
 #include <sys/stat.h>
 #include <sys/ioctl.h>
 #include <errno.h>
-
-#ifdef __APPLE__
-#include <IOKit/serial/ioss.h>
-#else
 #include <linux/serial.h>
-#endif
 
-extern "C"
-{
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-}
 
 #define LUA_FILEHANDLE "FILE*"
 #define tofilep(L) ((FILE **)luaL_checkudata(L, 1, LUA_FILEHANDLE))
@@ -49,7 +40,7 @@ int lua_tofd(lua_State *L, int narg) {
   int ftype = lua_type(L, narg);
   switch (ftype) {
   case LUA_TNUMBER:
-    return luaL_checkint(L, narg);
+    return luaL_checkinteger(L, narg);
     break;
   case LUA_TUSERDATA:
     FILE **fp = (FILE **)luaL_checkudata(L, narg, LUA_FILEHANDLE);
@@ -129,7 +120,7 @@ static int lua_stty_serial(lua_State *L) {
 
 static int lua_stty_speed(lua_State *L) {
   int fd = lua_tofd(L, 1);
-  int speed = luaL_checkint(L,2);
+  int speed = luaL_checkinteger(L,2);
 
 #ifdef __APPLE__
   if (ioctl(fd, IOSSIOSPEED, &speed) == -1)
@@ -164,7 +155,7 @@ static int lua_stty_speed(lua_State *L) {
 
 static int lua_stty_min(lua_State *L) {
   int fd = lua_tofd(L, 1);
-  int min = luaL_checkint(L,2);
+  int min = luaL_checkinteger(L,2);
 
   struct termios tio;
   if (tcgetattr(fd, &tio) != 0) {
@@ -181,7 +172,7 @@ static int lua_stty_min(lua_State *L) {
 
 static int lua_stty_time(lua_State *L) {
   int fd = lua_tofd(L, 1);
-  int time = luaL_checkint(L,2);
+  int time = luaL_checkinteger(L,2);
 
   struct termios tio;
   if (tcgetattr(fd, &tio) != 0) {
@@ -240,7 +231,7 @@ static int lua_stty_clocal(lua_State *L) {
   return 0;
 }
 
-static const struct luaL_reg stty_lib [] = {
+static const struct luaL_Reg stty_lib [] = {
   {"raw", lua_stty_raw},
   {"sane", lua_stty_sane},
   {"serial", lua_stty_serial},
@@ -254,7 +245,6 @@ static const struct luaL_reg stty_lib [] = {
 
 extern "C"
 int luaopen_stty (lua_State *L) {
-  luaL_register(L, "stty", stty_lib);
-  
+  luaL_newlib(L, stty_lib);
   return 1;
 }

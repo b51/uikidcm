@@ -2,6 +2,8 @@
   Lua module to provide some standard Unix functions
 */
 
+#include <lua.hpp>
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,11 +13,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-
-typedef const struct const_info {
+typedef const struct ConstInfo {
   const char *name;
   int value;
 } const_info;
@@ -30,14 +28,14 @@ void lua_install_constants(lua_State *L, const_info constants[]) {
 }
 
 static int lua_usleep(lua_State *L) {
-  int usec = luaL_checkint(L, 1);
+  int usec = luaL_checkinteger(L, 1);
   int ret = usleep((useconds_t) usec);
   lua_pushinteger(L, ret);
   return 1;
 }
 
 static int lua_sleep(lua_State *L) {
-  int sec = luaL_checkint(L, 1);
+  int sec = luaL_checkinteger(L, 1);
   int ret = sleep(sec);
   lua_pushinteger(L, ret);
   return 1;
@@ -124,7 +122,7 @@ static int lua_closefd(lua_State *L) {
 // Definition of LUA_FILEHANDLE should be in lualib.h
 //#define LUA_FILEHANDLE "FILE*"
 static int lua_fdopen(lua_State *L) {
-  int fd = luaL_checkint(L, 1);
+  int fd = luaL_checkinteger(L, 1);
   const char *mode = luaL_optstring(L, 2, "r");
 
   FILE **pf = (FILE **)lua_newuserdata(L, sizeof(FILE *));
@@ -223,8 +221,8 @@ static int lua_fork(lua_State *L) {
   if (pid == 0) {
     // Child process
     char *argv[4];
-    argv[0] = "sh";
-    argv[1] = "-c";
+    argv[0] = (char*)"sh";
+    argv[1] = (char*)"-c";
     argv[2] = (char *)command;
     argv[3] = 0;
     execv("/bin/sh", argv);
@@ -236,7 +234,7 @@ static int lua_fork(lua_State *L) {
 }
 
 
-static const struct luaL_reg unix_lib [] = {
+static const struct luaL_Reg unix_lib [] = {
   {"usleep", lua_usleep},
   {"sleep", lua_sleep},
   {"gethostname", lua_gethostname},
@@ -273,8 +271,9 @@ static const const_info unix_constants[] = {
   {NULL, 0}
 };
 
+extern "C"
 int luaopen_unix (lua_State *L) {
-  luaL_register(L, "unix", unix_lib);
+  luaL_newlib(L, unix_lib);
 
   lua_install_constants(L, unix_constants);
   return 1;
