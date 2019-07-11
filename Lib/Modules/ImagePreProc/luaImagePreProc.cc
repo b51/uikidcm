@@ -63,11 +63,11 @@ static int lua_subsample_yuyv2yuyv(lua_State* L) {
     return luaL_error(L, "Input YUYV not light user data");
   }
   // 2nd Input: Width (in YUYV macropixels) of the original YUYV image
-  int m = luaL_checkint(L, 2);
+  int m = luaL_checkinteger(L, 2);
   // 3rd Input: Height (in YUVY macropixels) of the original YUYV image
-  int n = luaL_checkint(L, 3);
+  int n = luaL_checkinteger(L, 3);
   // 4th Input: How much to subsample
-  int subsample_rate = luaL_checkint(L, 4);
+  int subsample_rate = luaL_checkinteger(L, 4);
 
   yuyv_array.resize(m * n / subsample_rate / subsample_rate);
   int yuyv_ind = 0;
@@ -100,17 +100,17 @@ static int lua_subsample_yuyv2yuv(lua_State* L) {
   }
 
   // 2nd Input: Width (in YUYV macropixels) of the original YUYV image
-  int m = luaL_checkint(L, 2);
+  int m = luaL_checkinteger(L, 2);
 
   // 3rd Input: Height (in YUVY macropixels) of the original YUYV image
-  int n = luaL_checkint(L, 3);
+  int n = luaL_checkinteger(L, 3);
 
   // 4th Input: How much to subsample
   // subsample_amount == 1: use only one of the Y channels
   // subsample_amount == 2: use only one of the Y channels, every other
   // macropixel
   // TODO: subsample_amount == 0: use only both Y channels
-  int subsample_rate = luaL_checkint(L, 4);
+  int subsample_rate = luaL_checkinteger(L, 4);
 
   // Image is 3 bytes for 3 channels, times the total num of pixels
   yuv_array.resize(3 * (m * n / 2));
@@ -146,8 +146,8 @@ static int lua_rgb_to_yuyv(lua_State* L) {
   if ((rgb == NULL) || !lua_islightuserdata(L, 1)) {
     return luaL_error(L, "Input RGB not light user data");
   }
-  int m = luaL_checkint(L, 2);
-  int n = luaL_checkint(L, 3);
+  int m = luaL_checkinteger(L, 2);
+  int n = luaL_checkinteger(L, 3);
 
   yuyv.resize(m * n / 2);
 
@@ -178,9 +178,9 @@ static int lua_yuyv_to_rgb(lua_State* L) {
     return luaL_error(L, "Input YUYV not light user data");
   }
   // 2nd Input: Width of the image
-  int w = luaL_checkint(L, 2);
+  int w = luaL_checkinteger(L, 2);
   // 3rd Input: Height of the image
-  int h = luaL_checkint(L, 3);
+  int h = luaL_checkinteger(L, 3);
   // rgb will be tripple size of the original image
   unsigned char rgb[w * h * 3];
   // yuyv get directory from camera has PACKED yuv422 format
@@ -198,11 +198,11 @@ static int lua_mjpg_to_rgb(lua_State* L) {
     return luaL_error(L, "Input YUYV not light user data");
   }
   // 2nd Input: mjpeg buffer size
-  int size = luaL_checkint(L, 2);
+  int size = luaL_checkinteger(L, 2);
   // 3rd Input: Width of the image
-  int w = luaL_checkint(L, 3);
+  int w = luaL_checkinteger(L, 3);
   // 4th Input: Height of the image
-  int h = luaL_checkint(L, 4);
+  int h = luaL_checkinteger(L, 4);
   // rgb will be tripple size of the original image
   unsigned char rgb[w * h * 3];
   turbo_decode.DecodeMJPG2BGR(mjpg, size, rgb);
@@ -218,17 +218,17 @@ static int lua_rgb_resize(lua_State* L) {
     return luaL_error(L, "Input RGB not light user data");
   }
   // 2nd Input: Width of the image
-  int w = luaL_checkint(L, 2);
+  int w = luaL_checkinteger(L, 2);
   // 3rd Input: Height of the image
-  int h = luaL_checkint(L, 3);
+  int h = luaL_checkinteger(L, 3);
   // 4th Input: Width of resized image
-  int rz_w = luaL_checkint(L, 4);
+  int rz_w = luaL_checkinteger(L, 4);
   // 5th Input: Height of resized image
-  int rz_h = luaL_checkint(L, 5);
+  int rz_h = luaL_checkinteger(L, 5);
   // 6th Input: will keep original ratio?
-  int ratio_fixed = luaL_checkint(L, 6);
+  int ratio_fixed = luaL_checkinteger(L, 6);
   // 7th Input: Height of resized image
-  int show_img = luaL_checkint(L, 7);
+  int show_img = luaL_checkinteger(L, 7);
   cv::Mat img(h, w, CV_8UC3, rgb);
   cv::Mat rzd_img(rz_h, rz_w, CV_8UC3, 128);  // padded image with 128
   if (!ratio_fixed) {
@@ -270,11 +270,11 @@ static int lua_init(lua_State* L) {
   if ((mjpg == NULL) || !lua_islightuserdata(L, 1)) {
     return luaL_error(L, "Input YUYV not light user data");
   }
-  int size = luaL_checkint(L, 2);
+  int size = luaL_checkinteger(L, 2);
   turbo_decode.Init();
 }
 
-static const struct luaL_reg imagePreProc_lib[] = {
+static const struct luaL_Reg imagePreProc_lib[] = {
     {"init", lua_init},
     {"yuyv_to_rgb", lua_yuyv_to_rgb},
     {"mjpg_to_rgb", lua_mjpg_to_rgb},
@@ -283,8 +283,9 @@ static const struct luaL_reg imagePreProc_lib[] = {
     {"subsample_yuyv2yuyv", lua_subsample_yuyv2yuyv},
     {NULL, NULL}};
 
-extern "C" int luaopen_ImagePreProc(lua_State* L) {
-  luaL_register(L, "ImagePreProc", imagePreProc_lib);
+extern "C"
+int luaopen_ImagePreProc(lua_State* L) {
+  luaL_newlib(L, imagePreProc_lib);
 
   return 1;
 }
