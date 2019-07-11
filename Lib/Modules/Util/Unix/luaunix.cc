@@ -6,7 +6,8 @@
 
 #include <unistd.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string>
+#include <cstring>
 #include <fcntl.h>
 #include <dirent.h>
 #include <sys/time.h>
@@ -38,6 +39,15 @@ static int lua_sleep(lua_State *L) {
   int sec = luaL_checkinteger(L, 1);
   int ret = sleep(sec);
   lua_pushinteger(L, ret);
+  return 1;
+}
+
+static int lua_getusername(lua_State* L) {
+  std::string username = std::getenv("USER");
+  if (username.length())
+    lua_pushstring(L, username.c_str());
+  else
+    lua_pushnil(L);
   return 1;
 }
 
@@ -117,7 +127,6 @@ static int lua_closefd(lua_State *L) {
   lua_pushinteger(L, ret);
   return 1;
 }
-
 
 // Definition of LUA_FILEHANDLE should be in lualib.h
 //#define LUA_FILEHANDLE "FILE*"
@@ -237,6 +246,7 @@ static int lua_fork(lua_State *L) {
 static const struct luaL_Reg unix_lib [] = {
   {"usleep", lua_usleep},
   {"sleep", lua_sleep},
+  {"getusername", lua_getusername},
   {"gethostname", lua_gethostname},
   {"getcwd", lua_getcwd},
   {"chdir", lua_chdir},
