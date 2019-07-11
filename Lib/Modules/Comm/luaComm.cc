@@ -1,7 +1,9 @@
+#include <lua.hpp>
+
 #include <iostream>
 #include <string>
 #include <deque>
-#include "string.h"
+#include <cstring>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -12,17 +14,6 @@
 #include <netdb.h>
 #include <stdio.h>
 #include <assert.h>
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-#ifdef __cplusplus
-}
-#endif
 
 #include <vector>
 #include <stdint.h>
@@ -50,10 +41,10 @@ void mexExit(void)
 
 static int lua_comm_init(lua_State *L) {
 	const char *ip = luaL_checkstring(L, 1);
-	int port = luaL_checkint(L,2);
+	int port = luaL_checkinteger(L,2);
 	IP = ip;
 	PORT = port;
- 	return 1;
+	return 1;
 }
 
 static int lua_comm_update(lua_State *L) {
@@ -61,7 +52,7 @@ static int lua_comm_update(lua_State *L) {
   static char data[MAX_LENGTH];
 
 	// Check whether initiated
-  assert(IP.empty()!=1);	
+  assert(IP.empty()!=1);
 
 	// Check port
 	assert(PORT!=0);
@@ -85,7 +76,7 @@ static int lua_comm_update(lua_State *L) {
       printf("Could not set broadcast option\n");
       return -1;
     }
-      
+
     struct sockaddr_in dest_addr;
     bzero((char *) &dest_addr, sizeof(dest_addr));
     dest_addr.sin_family = AF_INET;
@@ -115,7 +106,7 @@ static int lua_comm_update(lua_State *L) {
 
     // Nonblocking receive:
     int flags  = fcntl(recv_fd, F_GETFL, 0);
-    if (flags == -1) 
+    if (flags == -1)
       flags = 0;
     if (fcntl(recv_fd, F_SETFL, flags | O_NONBLOCK) < 0) {
       printf("Could not set nonblocking mode\n");
@@ -159,7 +150,7 @@ static int lua_comm_receive(lua_State *L) {
     return 1;
   }
 
-  // TODO: is this enough or do i need to pass an array with the bytes 
+  // TODO: is this enough or do i need to pass an array with the bytes
   lua_pushstring(L, recvQueue.front().c_str());
   recvQueue.pop_front();
 
@@ -187,13 +178,13 @@ static int lua_comm_send(lua_State *L) {
   header.push_back(11);
 	dataStr = header + contents;
   int ret = send(send_fd, dataStr.c_str(), dataStr.size(), 0);
-    
+
   lua_pushinteger(L, ret);
 
   return 1;
 }
 
-static const struct luaL_reg Comm_lib [] = {
+static const struct luaL_Reg Comm_lib [] = {
   {"init", lua_comm_init},
   {"size", lua_comm_size},
   {"receive", lua_comm_receive},
@@ -201,12 +192,9 @@ static const struct luaL_reg Comm_lib [] = {
   {NULL, NULL}
 };
 
-#ifdef __cplusplus
 extern "C"
-#endif
 int luaopen_Comm (lua_State *L) {
-  luaL_register(L, "Comm", Comm_lib);
+  luaL_newlib(L, Comm_lib);
 
   return 1;
 }
-
