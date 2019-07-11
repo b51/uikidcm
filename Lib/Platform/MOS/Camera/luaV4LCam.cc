@@ -5,7 +5,8 @@
         : Stephen McGill 10/10
 */
 
-#include "OPCam.h"
+#include <lua.hpp>
+
 #include <fcntl.h>
 #include <memory.h>
 #include <string.h>
@@ -106,8 +107,6 @@ static int lua_get_image(lua_State* L) {
   return 1;
 }
 
-// Taken from the Naos
-// TODO: this is not really working super well...
 static int lua_camera_status(lua_State* L) {
   lua_createtable(L, 0, 4);
 
@@ -132,9 +131,9 @@ static int lua_camera_status(lua_State* L) {
 
 static int lua_init(lua_State* L) {
   // 1st Input: Width of the image
-  int w = luaL_checkint(L, 1);
+  int w = luaL_checkinteger(L, 1);
   // 2rd Input: Height of the image
-  int h = luaL_checkint(L, 2);
+  int h = luaL_checkinteger(L, 2);
   //  int res = 1;
   if (!init) {
     init = 1;
@@ -219,17 +218,17 @@ static int lua_get_param(lua_State* L) {
 
 // Camera selects should be nil
 static int lua_select_camera(lua_State* L) {
-  int bottom = luaL_checkint(L, 1);
+  int bottom = luaL_checkinteger(L, 1);
   return 1;
 }
 
 static int lua_select_camera_fast(lua_State* L) {
-  int bottom = luaL_checkint(L, 1);
+  int bottom = luaL_checkinteger(L, 1);
   return 1;
 }
 
 static int lua_select_camera_slow(lua_State* L) {
-  int bottom = luaL_checkint(L, 1);
+  int bottom = luaL_checkinteger(L, 1);
   return 1;
 }
 
@@ -239,7 +238,7 @@ static int lua_selected_camera(lua_State* L) {
 }
 
 /* Lua Wrapper Requirements */
-static const struct luaL_reg camera_lib[] = {
+static const struct luaL_Reg camera_lib[] = {
     {"get_image", lua_get_image},
     {"init", lua_init},
     {"stop", lua_stop},
@@ -256,10 +255,11 @@ static const struct luaL_reg camera_lib[] = {
     {"select_camera_fast", lua_select_camera_fast},
     {"select_camera_slow", lua_select_camera_slow},
     {"get_select", lua_selected_camera},
-    {NULL, NULL}};
+    {NULL, NULL}
+};
 
-extern "C" int luaopen_OPCam(lua_State* L) {
-  luaL_register(L, "camera", camera_lib);
-
+extern "C"
+int luaopen_V4LCam(lua_State* L) {
+  luaL_newlib(L, camera_lib);
   return 1;
 }

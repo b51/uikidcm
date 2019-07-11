@@ -1,4 +1,5 @@
-Camera = require "OPCam"
+package.cpath = './build/?.so;' .. package.cpath
+local Camera = require("V4LCam")
 
 width = 1280;
 height = 720;
