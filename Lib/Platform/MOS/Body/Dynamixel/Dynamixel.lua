@@ -317,4 +317,3 @@ function sync_write_word(ids, addr, data)
 					   string.char(unpack(t)));
    unix.write(fd, inst);
 end
-

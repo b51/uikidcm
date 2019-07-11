@@ -31,7 +31,7 @@ int dynamixel_input(DynamixelPacket *pkt, uchar c, int n) {
   }
   else if (n > pkt->length+3)
     return 0;
-  
+
   // Default is to increment index
   return n+1;
 }

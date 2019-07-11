@@ -1,6 +1,9 @@
 #ifndef DSP_CODE_H
 #define DSP_CODE_H
 
+#include "linuxdef.h"
+#include "DspControl.h"
+
 struct SpecialGaitCommand
 {
 	USHORT id;//²œÌ¬id

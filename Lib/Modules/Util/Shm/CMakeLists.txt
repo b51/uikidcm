@@ -3,6 +3,9 @@ project(LuaShm)
 
 add_definitions(-std=c++11)
 
+# set optimization level (shm cannot be higher than 1)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O1")
+
 find_package(Boost REQUIRED)
 
 include_directories(
@@ -13,9 +16,6 @@ include_directories(
 add_library(shm SHARED
   luashm.cc
 )
-
-# set optimization level (shm cannot be higher than 1)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O1")
 
 # set library prefix to "" otherwise it will create libshm.so
 set_target_properties(shm PROPERTIES PREFIX "")

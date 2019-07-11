@@ -61,10 +61,10 @@ typedef struct DynamixelPacket {
   //added for bulk read
   DynamixelPacket *dynamixel_instruction_bulk_read_data(
 	uchar id_cm730, uchar id[], uchar address, uchar len, uchar n);
-  
+
 
   int dynamixel_input(DynamixelPacket *pkt, uchar c, int n);
-  
+
 #ifdef __cplusplus
 }
 #endif
