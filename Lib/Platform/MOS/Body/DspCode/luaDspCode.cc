@@ -35,7 +35,7 @@ using namespace boost::interprocess;
 typedef double value_t;
 
 //----------------------------------------------------------------------
-// CompressPacket 打包 
+// CompressPacket 打包
 //
 static UINT uiNumReceived=0;
 static DSP_INST_PACKET startPacket;
@@ -64,22 +64,22 @@ int init_rs232(void)
 		perror("serial port open failed");
 		return -1;
 	}
-	
+
 	tcgetattr(sio_fd, &opt);
 	tcflush(sio_fd, TCIOFLUSH);
-	
+
 	//baudrate:115200
 	cfsetispeed(&opt, B115200);
 	cfsetospeed(&opt, B115200);
-	
+
 	opt.c_cflag &=~CSIZE;
 	opt.c_lflag &=~(ICANON | ECHO | ECHOE | ISIG);
 	opt.c_oflag &=~OPOST;
 	opt.c_iflag =0;
-	
+
 	//8 bits data
 	opt.c_cflag |=CS8;
-	
+
 	//no parity
 	opt.c_cflag &= ~PARENB;
 	opt.c_iflag &=~INPCK;
@@ -88,12 +88,12 @@ int init_rs232(void)
 	opt.c_cflag &=~CSTOPB;
 
 	/////opt.c_iflag |=INPCK;//??
-	
+
 	opt.c_cc[VTIME]=1;
 	opt.c_cc[VMIN]=1;
-	
+
 	status=tcsetattr(sio_fd, TCSANOW, &opt);
-	if (status !=0) 
+	if (status !=0)
 	{
 		perror("tcsetattr failed");
 		return -1;
@@ -141,11 +141,11 @@ BOOL PacketInterprete(DSP_STATUS_PACKET **container)
 	BYTE checkSum=pRawPacket->parameter[pRawPacket->length-2];
 	BYTE checkSumCal=0;
 	int i=0;
-	
+
 	for(i=0;i<pRawPacket->length+1;i++)
 		checkSumCal+=packetToProc[2+i];
 	checkSumCal=~checkSumCal;
-	
+
 	if(checkSumCal==checkSum)
 	{
 		*container=pRawPacket;
@@ -272,7 +272,7 @@ BOOL PostProcessingStateSwap(DSP_STATUS_PACKET *pkt)
 			}
 //			printf("\n");
 //printf("out.velocity.x=%d,out.velocity.y=%d,out.veloctiy.theat=%d\n",out.dirSts.xOffset,out.dirSts.yOffset,out.dirSts.thetaOffset);
-/*				
+/*
 			//other processing of the receiveing packet
 			if(out.stsReg1&COPY_RESET_ODOMETER)
 				ResetOdometers(&out.odometer);
@@ -283,7 +283,7 @@ BOOL PostProcessingStateSwap(DSP_STATUS_PACKET *pkt)
 			//no further command or reset is executed
 			in.ctrReg1&=~(out.stsReg1&SPECIAL_GAIT_VALID);
 			in.ctrReg1&=~(out.stsReg1&GAIT_DIRECTION_VALID);
-			in.ctrReg1&=~(out.stsReg1&COPY_RESET_ODOMETER);	
+			in.ctrReg1&=~(out.stsReg1&COPY_RESET_ODOMETER);
 */
 		}
 		break;
@@ -330,29 +330,29 @@ void PreProcessingStateSwap(struct StateSwapInput *pin)
 
 void BeginDspThread()
 {
-	
+
 	memset(packetBuffer,0,sizeof(packetBuffer));
 	memset(packetToProc,0,sizeof(packetToProc));
 	memset(odometers,0,sizeof(odometers));
 	pGetNextFrame=NULL;
 
-        if(-1==(fd=init_rs232()))//dcm对应的设定波特率什么的 
+        if(-1==(fd=init_rs232()))//dcm对应的设定波特率什么的
 	{
 		printf("rs232 port init failed\n");
 		return ;
 	}
         //printf("fd=%d\n",fd);
 	EnterPreparingState();//in.out分别是抓包和收包的
-	pdata=(PUSHORT)&in_thread;   
+	pdata=(PUSHORT)&in_thread;
 }
 
 //dcmupdate()
 void DspThread()
-{       
-           
-        	unsigned int i=0;
-                
-        	//previous processing of state swaping packet
+{
+
+		unsigned int i=0;
+
+		//previous processing of state swaping packet
 		PreProcessingStateSwap(&in_thread);
 //printf("fd=%d\n",fd);
 		//clear all data received but not read
@@ -366,7 +366,7 @@ void DspThread()
 			startPacket.parameter[2*i]=(pdata[i]&0xff);
 			startPacket.parameter[2*i+1]=((pdata[i]>>8)&0xff);
 //printf("%d ",pdata[i]);
-		}	
+		}
 //printf("\n");
 
 		retval=CompressPacket(info,&startPacket);
@@ -383,7 +383,7 @@ void DspThread()
 		{
 			FD_ZERO(&rdfs);
 			FD_SET(fd,&rdfs);
-			
+
 			retval=select(fd+1,&rdfs,NULL,NULL,&tv);
 //printf("select retval=%d\n",retval);
 			if(retval<0)
@@ -392,7 +392,7 @@ void DspThread()
 				tv.tv_usec=200000;
 				continue;
 			}
-                 
+
                         else if(retval==0)
 			{
 				//waiting for reply timeout happened
@@ -427,12 +427,12 @@ void DspThread()
 //                printf("receive success\n");
 		if(!processSuccessful)
 			PostProcessingTimeout();
-                        
-		//usleep(50000);  
+
+		//usleep(50000);
 }
 
 static int lua_pass_state(lua_State *L){
-  
+
   luaL_checktype(L,1,LUA_TTABLE);
   int nIndex=lua_gettop(L);
   lua_pushnil(L);
@@ -476,51 +476,51 @@ void setStateToIn() {
   for(i=0;i<stateNum;i++)
   {
 		if(!strcmp("headValid",stateName[i]))
-                { 
+                {
 		          if (int(stateIn[i]->ptr[0]) == 1)
 			  {
-			      in.ctrReg1|= HEAD_MOVE_VALID;         
+			      in.ctrReg1|= HEAD_MOVE_VALID;
 			  }
                           else
                           {
 			      in.ctrReg1&=~HEAD_MOVE_VALID;
-                          } 
+                          }
 		}
 		else if(!strcmp("sensorEnable",stateName[i]))
 		{
 			  if (int(stateIn[i]->ptr[0]) == 1)
 			  {
-			      in.ctrReg1|= SENSOR_ENABLE_VALID;       
-			  } 
-		 	  else 
-		 	  {
+			      in.ctrReg1|= SENSOR_ENABLE_VALID;
+			  }
+			  else
+			  {
 			      in.ctrReg1&=~SENSOR_ENABLE_VALID;
 			  }
-		} 
+		}
 		else if(!strcmp("odometerReset",stateName[i]))
-		{ 
+		{
 			  if (int(stateIn[i]->ptr[0]) == 1)
 			  {
-			      in.ctrReg1|= COPY_RESET_ODOMETER;          
-			  } 
+			      in.ctrReg1|= COPY_RESET_ODOMETER;
+			  }
 			  else
 			  {
 			      in.ctrReg1&=~COPY_RESET_ODOMETER;
-      			  }
+			  }
 		}
 		else if(!strcmp("specialValid",stateName[i]))
 		{
 			  if (int(stateIn[i]->ptr[0]) == 1)
 			  {
-			      in.ctrReg1|= SPECIAL_GAIT_VALID;      
-			  } 
+			      in.ctrReg1|= SPECIAL_GAIT_VALID;
+			  }
 			  else
 			  {
 			      in.ctrReg1&=~SPECIAL_GAIT_VALID;
 			  }
 		}
 		else if(!strcmp("walkkick",stateName[i]))
-		{ 
+		{
 			  if(int(stateIn[i]->ptr[0])==1)
 			  {
 				in.ctrReg1|=WALK_KICK_LEFT;
@@ -539,40 +539,40 @@ void setStateToIn() {
 			  }
 		}
 		else if(!strcmp("torqueEnable",stateName[i]))
-		{ 
+		{
 			  if (int(stateIn[i]->ptr[0]) == 1)
 			  {
-			      in.ctrReg1|= TORQUE_ENABLE_VALID;         
-			  } 
+			      in.ctrReg1|= TORQUE_ENABLE_VALID;
+			  }
                           else
- 			  {
+			  {
 			      in.ctrReg1&=~TORQUE_ENABLE_VALID;
 			  }
 		}
 		else if(!strcmp("gaitValid",stateName[i]))
-		{ 
+		{
 			  if (int(stateIn[i]->ptr[0]) == 1)
 			  {
-			      in.ctrReg1|= GAIT_DIRECTION_VALID;        
-			  } 
+			      in.ctrReg1|= GAIT_DIRECTION_VALID;
+			  }
 			  else
 			  {
 			      in.ctrReg1&=~GAIT_DIRECTION_VALID;
 			  }
 		}
 		else if(!strcmp("gaitReset",stateName[i]))
-		{ 
+		{
 			  if (int(stateIn[i]->ptr[0]) == 1)
 			  {
-			      in.ctrReg1|= GAIT_RESET_VALID;           
-			  } 
+			      in.ctrReg1|= GAIT_RESET_VALID;
+			  }
 			  else
 			  {
 			      in.ctrReg1&=~GAIT_RESET_VALID;
 			  }
 		}
 		else
-			  continue;    
+			  continue;
   }
 //  printf("in.ctrReg1=%d\n",in.ctrReg1);
 }
@@ -609,49 +609,49 @@ static int lua_get_gdv_from_c (lua_State *L){
          lua_pushnumber(L,1);
       else
          lua_pushnumber(L,0);
-      return 1;                           
+      return 1;
 }
 static int lua_get_sgv_from_c (lua_State *L){
       if(out.stsReg1&SPECIAL_GAIT_VALID)
          lua_pushnumber(L,1);
       else
          lua_pushnumber(L,0);
-      return 1;                           
+      return 1;
 }
 static int lua_get_grv_from_c (lua_State *L){
       if(out.stsReg1&GAIT_RESET_VALID)
          lua_pushnumber(L,1);
       else
          lua_pushnumber(L,0);
-      return 1;                           
+      return 1;
 }
 static int lua_get_cro_from_c (lua_State *L){
       if(out.stsReg1&COPY_RESET_ODOMETER)
          lua_pushnumber(L,1);
       else
          lua_pushnumber(L,0);
-      return 1;                           
+      return 1;
 }
 static int lua_get_hmv_from_c (lua_State *L){
       if(out.stsReg1&HEAD_MOVE_VALID)
          lua_pushnumber(L,1);
       else
          lua_pushnumber(L,0);
-      return 1;                           
+      return 1;
 }
 static int lua_get_tev_from_c (lua_State *L){
       if(out.stsReg1&TORQUE_ENABLE_VALID)
          lua_pushnumber(L,1);
       else
          lua_pushnumber(L,0);
-      return 1;                           
+      return 1;
 }
 static int lua_get_sev_from_c (lua_State *L){
       if(out.stsReg1&SENSOR_ENABLE_VALID)
          lua_pushnumber(L,1);
       else
          lua_pushnumber(L,0);
-      return 1;                           
+      return 1;
 }
 static int lua_get_walk_kick(lua_State *L){
       if(out.stsReg1&WALK_KICK_LEFT)
@@ -667,25 +667,25 @@ static int lua_get_walk_kick(lua_State *L){
 static int lua_get_special_state(lua_State *L){
       if(out.stsReg2&SPECIAL_GAIT_PENDING)
 	lua_pushnumber(L,1);
-      else 
+      else
 	lua_pushnumber(L,0);
       if(out.stsReg2&GAIT_RESET_PENDING)
 	lua_pushnumber(L,1);
-      else 
+      else
 	lua_pushnumber(L,0);
       if(out.stsReg2&RESET_ODOMETER_PENDING)
 	lua_pushnumber(L,1);
-      else 
+      else
 	lua_pushnumber(L,0);
       if(out.stsReg2&WALK_KICK_PENDING)
 	lua_pushnumber(L,1);
-      else 
+      else
 	lua_pushnumber(L,0);
       return 4;
 }
 static int lua_get_velocity (lua_State *L){
       int reg=0;
-      lua_pushnumber(L,out.dirSts.xOffset);     
+      lua_pushnumber(L,out.dirSts.xOffset);
       reg++;
       lua_pushnumber(L,out.dirSts.yOffset);
       reg++;
@@ -699,7 +699,7 @@ static int lua_get_headpos (lua_State *L){
       reg++;
       lua_pushnumber(L,out.headSts.yaw);
       reg++;
-      return reg;       
+      return reg;
 }
 static int lua_get_odometry (lua_State *L){
       int reg=0;
@@ -709,7 +709,7 @@ static int lua_get_odometry (lua_State *L){
       reg++;
       lua_pushnumber(L,out.odometer.thetaOffset);
       reg++;
-      return reg;       
+      return reg;
 }
 //b51
 static int lua_get_imu_angle(lua_State *L)
@@ -762,7 +762,7 @@ static const struct luaL_reg dspcode_functions[] = {
   {"get_velocity",lua_get_velocity},
   {"get_headpos",lua_get_headpos},
   {"get_imuAngle",lua_get_imu_angle},	//b51
-  {"get_odometry",lua_get_odometry}, 
+  {"get_odometry",lua_get_odometry},
   {"enter_entry", lua_dcm_entry},
   {"dsp_exit",lua_dcm_exit},
   {"get_bodypos",lua_get_body_pos},

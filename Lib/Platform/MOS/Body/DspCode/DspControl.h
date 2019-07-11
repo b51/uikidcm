@@ -14,12 +14,12 @@ typedef struct
 }DSP_INST_PACKET;
 
 ////////////////// Status packet /////////////////////////
-typedef struct 
+typedef struct
 {
 	BYTE	id;							// Dynamixel ID
 	BYTE	length;				// Packet length = parameter's number + 1(ID) + 1(infomation)
 	BYTE	infomation;						// Error code
-	BYTE	parameter[MAX_PARAM_NUM];	// Parameters								
+	BYTE	parameter[MAX_PARAM_NUM];	// Parameters
 }DSP_STATUS_PACKET;
 
 /****************** Define Macro ************************/
@@ -53,10 +53,9 @@ typedef struct
 #define INFO_GAIT_EXECUTING				0x73
 #define INFO_GAIT_FEEDBACK              0x74
 
-#define PACKET_TYPE_MASK 				0x80
+#define PACKET_TYPE_MASK				0x80
 
 #define LOOP_EXECUTE					0xff
 #define STOP_EXECUTE					0x00
-#define ID_DSP 							0xfe
+#define ID_DSP							0xfe
 #endif
-

@@ -53,7 +53,7 @@ typedef char *PSZ;
 #define TRUE 1
 #endif
 
-#ifndef FALSE 
+#ifndef FALSE
 #define FALSE 0
 #endif
 
@@ -75,7 +75,7 @@ typedef long                *LPLONG;
 typedef DWORD               *PDWORD;
 typedef DWORD               *LPDWORD;
 typedef void                *LPVOID;
-typedef void 		    *PVOID;
+typedef void		    *PVOID;
 typedef SHORT		    *PSHORT;
 
 typedef int                 INT;
@@ -83,7 +83,7 @@ typedef unsigned int        UINT;
 typedef unsigned int        *PUINT;
 typedef double              DOUBLE;
 
-// Types use for passing & returning polymorphic values 
+// Types use for passing & returning polymorphic values
 typedef UINT WPARAM;
 typedef LONG LPARAM;
 typedef LONG LRESULT;
@@ -177,9 +177,3 @@ typedef struct _RGNDATA {
 } RGNDATA, *PRGNDATA;
 
 #endif
-
-
-
-
-
-

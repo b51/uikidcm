@@ -10,9 +10,9 @@
 #include "DspCode.h"
 
 //----------------------------------------------------------------------
-// CompressPacket 打包 
+// CompressPacket 打包
 //
-static UINT uiNumReceived=0;	
+static UINT uiNumReceived=0;
 void PrintName()
 {
   printf("liuchao\n");
@@ -47,11 +47,11 @@ BOOL PacketInterprete(DSP_STATUS_PACKET **container)
 	BYTE checkSum=pRawPacket->parameter[pRawPacket->length-2];
 	BYTE checkSumCal=0;
 	int i=0;
-	
+
 	for(i=0;i<pRawPacket->length+1;i++)
 		checkSumCal+=packetToProc[2+i];
 	checkSumCal=~checkSumCal;
-	
+
 	if(checkSumCal==checkSum)
 	{
 		*container=pRawPacket;
@@ -181,7 +181,7 @@ BOOL PostProcessingStateSwap(DSP_STATUS_PACKET *pkt)
 			//no further command or reset is executed
 			in.ctrReg1&=~(out.stsReg1&SPECIAL_GAIT_VALID);
 			in.ctrReg1&=~(out.stsReg1&GAIT_DIRECTION_VALID);
-			in.ctrReg1&=~(out.stsReg1&COPY_RESET_ODOMETER);	
+			in.ctrReg1&=~(out.stsReg1&COPY_RESET_ODOMETER);
 		}
 		break;
 		default:
@@ -233,23 +233,23 @@ void PreProcessingStateSwap(struct StateSwapInput *pin)
 void BeginDspThread()
 {
 	int fd=-1;
-	
+
 	memset(packetBuffer,0,sizeof(packetBuffer));
 	memset(packetToProc,0,sizeof(packetToProc));
 	memset(odometers,0,sizeof(odometers));
 	pGetNextFrame=NULL;
 /*
-        if(-1==(fd=init_rs232()))//dcm对应的设定波特率什么的 
+        if(-1==(fd=init_rs232()))//dcm对应的设定波特率什么的
 	{
 		printf("rs232 port init failed\n");
 		return ;
 	}
 */
-	EnterPreparingState();//in.out分别是抓包和收包的   
+	EnterPreparingState();//in.out分别是抓包和收包的
 }
 //dcmupdate()
 void DspThread()
-{       
+{
         DSP_INST_PACKET startPacket;
 	BYTE info[sizeof(DSP_INST_PACKET)+2];
 	struct StateSwapInput in_thread;
@@ -258,10 +258,10 @@ void DspThread()
 	int fd=-1;
 	struct timeval tv;
 	fd_set rdfs;
-	int retval;	        
+	int retval;
         unsigned int i=0;
-	
-        
+
+
         //previous processing of state swaping packet
 		PreProcessingStateSwap(&in_thread);
 
@@ -275,10 +275,10 @@ void DspThread()
 		{
 			startPacket.parameter[2*i]=(pdata[i]&0xff);
 			startPacket.parameter[2*i+1]=((pdata[i]>>8)&0xff);
-		}	
+		}
 		retval=CompressPacket(info,&startPacket);
 		retval=write(fd,info,retval);
-		
+
 		tv.tv_sec=0;
 		tv.tv_usec=50000;
 		processSuccessful=FALSE;
@@ -286,7 +286,7 @@ void DspThread()
 		{
 			FD_ZERO(&rdfs);
 			FD_SET(fd,&rdfs);
-			
+
 			retval=select(fd+1,&rdfs,NULL,NULL,&tv);
 			if(retval<0)
 			{
@@ -325,6 +325,5 @@ void DspThread()
 		if(!processSuccessful)
 			PostProcessingTimeout();
 
-		usleep(50000);     
+		usleep(50000);
 }
-

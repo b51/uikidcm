@@ -1,4 +1,3 @@
-
 #ifndef CTRL_RS232_H
 #define CTRL_RS232_H
 
