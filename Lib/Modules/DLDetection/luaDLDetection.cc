@@ -9,7 +9,7 @@
  *
  ************************************************************************/
 
-#include "lua.hpp"
+#include <lua.hpp>
 
 #include <math.h>
 #include <stdint.h>
@@ -70,11 +70,11 @@ static int lua_bboxes_detect(lua_State* L) {
   if ((rgb == NULL) || !lua_islightuserdata(L, 1)) {
     return luaL_error(L, "Input RGB not light user data");
   }
-  int ori_w = luaL_checkint(L, 2);
-  int ori_h = luaL_checkint(L, 3);
-  int net_w = luaL_checkint(L, 4);
-  int net_h = luaL_checkint(L, 5);
-  int show_img = luaL_checkint(L, 6);
+  int ori_w = luaL_checkinteger(L, 2);
+  int ori_h = luaL_checkinteger(L, 3);
+  int net_w = luaL_checkinteger(L, 4);
+  int net_h = luaL_checkinteger(L, 5);
+  int show_img = luaL_checkinteger(L, 6);
   std::vector<Object> objs;
   NamedObjsMap named_objs_map;
   cv::Mat img(net_h, net_w, CV_8UC3, rgb);
@@ -135,13 +135,14 @@ static int lua_bboxes_detect(lua_State* L) {
   return 1;
 }
 
-static const struct luaL_reg dlDetection_lib[] = {
+static const struct luaL_Reg dlDetection_lib[] = {
     {"detector_yolo_init", lua_detector_yolo_init},
     {"bboxes_detect", lua_bboxes_detect},
     {NULL, NULL}};
 
-extern "C" int luaopen_DLDetection(lua_State* L) {
-  luaL_register(L, "DLDetection", dlDetection_lib);
+extern "C"
+int luaopen_DLDetection(lua_State* L) {
+  luaL_newlib(L, dlDetection_lib);
 
   return 1;
 }

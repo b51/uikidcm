@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(DLDetection
-  VERSION 0.1.0)
+project(DLDetection)
 
 add_definitions(-std=c++11)
 
@@ -55,6 +54,8 @@ add_library(${PROJECT_NAME} SHARED
   luaDLDetection.cc
   DarknetDetector.cc
 )
+
+set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 
 target_link_libraries(${PROJECT_NAME}
   ${OpenCV_LIBS}
