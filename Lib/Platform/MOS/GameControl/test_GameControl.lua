@@ -1,7 +1,6 @@
-module(... or "", package.seeall)
-
-require('unix')
-receiver = require('OPGameControlReceiver')
+package.cpath = "./build/?.so;" .. package.cpath
+local unix = require('unix')
+local receiver = require('GameControlReceiver')
 
 teamNumber = 6;
 playerID = 1;
@@ -162,5 +161,5 @@ end
 
 while 1 do
   update();
-  unix.usleep(10000);
+  os.usleep(10000);
 end

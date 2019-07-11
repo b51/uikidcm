@@ -1,3 +1,5 @@
+#include <lua.hpp>
+
 #include "timeScalar.h"
 #include "string.h"
 #include <stdlib.h>
@@ -8,23 +10,12 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include "RoboCupGameControlData.h"
+
 // Needed typedefs:
 typedef unsigned char uint8;
 typedef unsigned short uint16;
 typedef unsigned int uint32;
-
-#include "RoboCupGameControlData.h"
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-#ifdef __cplusplus
-}
-#endif
 
 #define PORT 3838
 
@@ -45,7 +36,6 @@ void mexExit(void)
     close(sock_fd);
 }
 */
-
 
 static int lua_gamecontrolpacket_parse(lua_State *L, RoboCupGameControlData *data) {
   if (data == NULL) {
@@ -262,7 +252,6 @@ static int lua_gamecontrolpacket_receive(lua_State *L) {
     init = true;
   }
 
-
   // Process incoming game controller messages:
   static sockaddr_in source_addr;
   socklen_t source_addr_len = sizeof(source_addr);
@@ -293,17 +282,14 @@ static int lua_gamecontrolpacket_receive(lua_State *L) {
   return 1;
 }
 
-static const struct luaL_reg OPGameControlReceiver_lib [] = {
-  {"receive", lua_gamecontrolpacket_receive},
-  //{"parse", lua_gamecontrolpacket_parse},
-  {NULL, NULL}
+static const struct luaL_Reg GameControlReceiver_lib[] = {
+    {"receive", lua_gamecontrolpacket_receive},
+    //{"parse", lua_gamecontrolpacket_parse},
+    {NULL, NULL}
 };
 
-#ifdef __cplusplus
 extern "C"
-#endif
-int luaopen_OPGameControlReceiver (lua_State *L) {
-  luaL_register(L, "OPGameControlReceiver", OPGameControlReceiver_lib);
-
+int luaopen_GameControlReceiver (lua_State *L) {
+  luaL_newlib(L, GameControlReceiver_lib);
   return 1;
 }
