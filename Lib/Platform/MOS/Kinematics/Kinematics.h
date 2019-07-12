@@ -1,5 +1,5 @@
-#ifndef darwinopKinematics_h_DEFINED
-#define darwinopKinematics_h_DEFINED
+#ifndef Kinematics_h_DEFINED
+#define Kinematics_h_DEFINED
 
 #include <math.h>
 #include <vector>

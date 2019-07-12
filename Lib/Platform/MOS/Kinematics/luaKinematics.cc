@@ -5,20 +5,9 @@
   g++ -arch i386 -o OPKinematics.dylib -bundle -undefined dynamic_lookup luaOPKinematics.pp OPKinematics.cc Transform.cc -lm
 */
 
-#include "OPKinematics.h"
+#include <lua.hpp>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-
-#ifdef __cplusplus
-}
-#endif
-
+#include "Kinematics.h"
 
 static void lua_pushvector(lua_State *L, std::vector<double> v) {
   int n = v.size();
@@ -31,11 +20,11 @@ static void lua_pushvector(lua_State *L, std::vector<double> v) {
 
 static std::vector<double> lua_checkvector(lua_State *L, int narg) {
   if (!lua_istable(L, narg))
-    luaL_typerror(L, narg, "vector");
-  int n = lua_objlen(L, narg);
+    luaL_error(L, "vector is excepted, but got %s", luaL_typename(L, narg));
+  int n = lua_rawlen(L, narg);
   std::vector<double> v(n);
   for (int i = 0; i < n; i++) {
-    lua_rawgeti(L, narg, i+1);
+    lua_rawgeti(L, narg, i + 1);
     v[i] = lua_tonumber(L, -1);
     lua_pop(L, 1);
   }
@@ -121,7 +110,7 @@ static int torso_rleg(lua_State *L) {
 static int inverse_leg(lua_State *L) {
   std::vector<double> qLeg;
   std::vector<double> pLeg = lua_checkvector(L, 1);
-  int leg = luaL_checkint(L, 2);
+  int leg = luaL_checkinteger(L, 2);
   double hipYawPitch = 0;
   Transform trLeg = transform6D(&pLeg[0]);
   qLeg = darwinop_kinematics_inverse_leg(trLeg, leg, hipYawPitch);
@@ -153,7 +142,7 @@ static int inverse_arm(lua_State *L) {
   return 1;
 }
 
-static const struct luaL_reg kinematics_lib [] = {
+static const struct luaL_Reg kinematics_lib [] = {
   {"forward_head", forward_head},
   {"forward_larm", forward_larm},
   {"forward_rarm", forward_rarm},
@@ -171,8 +160,8 @@ static const struct luaL_reg kinematics_lib [] = {
 };
 
 extern "C"
-int luaopen_OPKinematics (lua_State *L) {
-  luaL_register(L, "OPKinematics", kinematics_lib);
+int luaopen_Kinematics (lua_State *L) {
+  luaL_newlib(L, kinematics_lib);
   
   return 1;
 }
