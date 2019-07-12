@@ -1,0 +1,5 @@
+add_subdirectory(Body/DspCode)
+add_subdirectory(Body/Dynamixel)
+add_subdirectory(Camera)
+add_subdirectory(GameControl)
+add_subdirectory(Kinematics)

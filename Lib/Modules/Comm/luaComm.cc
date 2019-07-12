@@ -47,11 +47,11 @@ static int lua_comm_init(lua_State *L) {
 	return 1;
 }
 
-static int lua_comm_update(lua_State *L) {
+static int lua_comm_update(lua_State* /*L*/) {
   static sockaddr_in source_addr;
   static char data[MAX_LENGTH];
 
-	// Check whether initiated
+  // Check whether initiated
   assert(IP.empty()!=1);
 
 	// Check port
@@ -135,16 +135,15 @@ static int lua_comm_update(lua_State *L) {
   return 1;
 }
 
-static int lua_comm_size(lua_State *L) {
-  int updateRet = lua_comm_update(L);
-
+static int lua_comm_size(lua_State* L) {
+  // int updateRet = lua_comm_update();
+  lua_comm_update(L);
   lua_pushinteger(L, recvQueue.size());
   return 1;
 }
 
-static int lua_comm_receive(lua_State *L) {
-  int updateRet = lua_comm_update(L);
-
+static int lua_comm_receive(lua_State* L) {
+  lua_comm_update(L);
   if (recvQueue.empty()) {
     lua_pushnil(L);
     return 1;
@@ -169,8 +168,7 @@ static int lua_comm_receive(lua_State *L) {
 
 
 static int lua_comm_send(lua_State *L) {
-  int updateRet = lua_comm_update(L);
-
+  lua_comm_update(L);
   const char *data = luaL_checkstring(L, 1);
 	std::string header;
   std::string dataStr;

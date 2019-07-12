@@ -110,7 +110,7 @@ void Transform::apply(double x[3]) {
   }
 }
 
-double const Transform::operator() (int i, int j) const {
+double Transform::operator() (int i, int j) const {
   return t[i][j];
 }
 

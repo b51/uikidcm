@@ -150,10 +150,10 @@ static int lua_init(lua_State* L) {
       printf("camera dqueue buffer error.");
       return 0;
     }
-    unsigned long jpgSize = 0;
-    unsigned char* jpgBuffer;
-    jpgBuffer = (unsigned char*)frame.data;
-    jpgSize = frame.buf.bytesused;
+    //unsigned long jpgSize = 0;
+    //unsigned char* jpgBuffer;
+    //jpgBuffer = (unsigned char*)frame.data;
+    //jpgSize = frame.buf.bytesused;
     ret = camera_queue_frame(cam, &frame);
     if (ret) {
       printf("camera dqueue buffer error.");
@@ -161,23 +161,21 @@ static int lua_init(lua_State* L) {
     }
     return 1;
   }
+  return 1;
 }
 
-static int lua_stop(lua_State* L) {
+static int lua_stop(lua_State* /*L*/) {
   free(cameraStatus);
-  // v4l2_close();
   camera_close(cam);
   return 1;
 }
 
-static int lua_stream_on(lua_State* L) {
-  //  v4l2_stream_on();
+static int lua_stream_on(lua_State* /*L*/) {
   camera_streamon(cam);
   return 1;
 }
 
-static int lua_stream_off(lua_State* L) {
-  // v4l2_stream_off();
+static int lua_stream_off(lua_State* /*L*/) {
   camera_streamoff(cam);
   return 1;
 }
@@ -207,28 +205,25 @@ static int lua_set_param_id(lua_State* L) {
 
 static int lua_get_param(lua_State* L) {
   const char* param = luaL_checkstring(L, 1);
-
   int value;
-  // double ret = v4l2_get_ctrl(param, &value);
-  double ret = camera_get_ctrl(cam, param, &value);
+  camera_get_ctrl(cam, param, &value);
   lua_pushnumber(L, value);
-
   return 1;
 }
 
 // Camera selects should be nil
-static int lua_select_camera(lua_State* L) {
-  int bottom = luaL_checkinteger(L, 1);
+static int lua_select_camera(lua_State* /*L*/) {
+  // int bottom = luaL_checkinteger(L, 1);
   return 1;
 }
 
-static int lua_select_camera_fast(lua_State* L) {
-  int bottom = luaL_checkinteger(L, 1);
+static int lua_select_camera_fast(lua_State* /*L*/) {
+  // int bottom = luaL_checkinteger(L, 1);
   return 1;
 }
 
-static int lua_select_camera_slow(lua_State* L) {
-  int bottom = luaL_checkinteger(L, 1);
+static int lua_select_camera_slow(lua_State* /*L*/) {
+  // int bottom = luaL_checkinteger(L, 1);
   return 1;
 }
 

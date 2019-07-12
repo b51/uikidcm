@@ -61,7 +61,7 @@ DynamixelPacket *dynamixel_instruction_read_data(uchar id,
 						 uchar address, uchar n) {
   uchar inst = INST_READ;
   uchar nparameter = 2;
-  uchar parameter[nparameter];
+  uchar* parameter = new uchar[nparameter];
   parameter[0] = address;
   parameter[1] = n;
   return dynamixel_instruction(id, inst, parameter, nparameter);
@@ -72,7 +72,7 @@ DynamixelPacket *dynamixel_instruction_write_data(uchar id,
 						  uchar data[], uchar n) {
   uchar inst = INST_WRITE;
   uchar nparameter = n+1;
-  uchar parameter[nparameter];
+  uchar* parameter = new uchar[nparameter];
   int i;
   parameter[0] = address;
   for (i = 0; i < n; i++) {
@@ -86,7 +86,7 @@ DynamixelPacket *dynamixel_instruction_reg_write(uchar id,
 						 uchar data[], uchar n) {
   uchar inst = INST_REG_WRITE;
   uchar nparameter = n+1;
-  uchar parameter[nparameter];
+  uchar* parameter = new uchar[nparameter];
   int i;
   parameter[0] = address;
   for (i = 0; i < n; i++) {
@@ -117,7 +117,7 @@ DynamixelPacket *dynamixel_instruction_sync_write(uchar address,
   uchar id = DYNAMIXEL_BROADCAST_ID;
   uchar inst = INST_SYNC_WRITE;
   uchar nparameter = n+2;
-  uchar parameter[nparameter];
+  uchar* parameter = new uchar[nparameter];
   int i;
   parameter[0] = address;
   parameter[1] = len;
@@ -133,7 +133,7 @@ DynamixelPacket *dynamixel_instruction_bulk_read_data(
 
   uchar inst = INST_BULK_READ;
   uchar nparameter = n*3+1;
-  uchar parameter[nparameter];
+  uchar* parameter = new uchar[nparameter];
   int i;
   parameter[0] = address;
   for (i = 0; i < n; i++) {

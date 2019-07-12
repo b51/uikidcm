@@ -2,22 +2,21 @@
   Lua module to provide nonblocking keyboard input
 */
 
+#include <lua.hpp>
+
 #include <unistd.h>
 #include <fcntl.h>
 #include <termios.h>
 
-#include <lua.hpp>
-
-static int lua_getch(lua_State *L) {
-  int n,dims[2];
+static int lua_getch(lua_State* L) {
   char str[2];
-  fcntl(0,F_SETFL,O_NONBLOCK);
-  fcntl(0,F_GETFL,O_NONBLOCK);
-  str[0]=0;
-  str[1]=0;
-  n=read(0,&str,1);
+  fcntl(0, F_SETFL, O_NONBLOCK);
+  fcntl(0, F_GETFL, O_NONBLOCK);
+  str[0] = 0;
+  str[1] = 0;
+  size_t n = read(0, &str, 1);
   lua_pushstring(L, str);
-  return 1;
+  return n;
 }
 
 static int lua_nonblock(lua_State *L){

@@ -225,7 +225,7 @@ static int lua_gamecontrolpacket_receive(lua_State *L) {
   if (!init) {
     sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (sock_fd < 0) {
-      LOG_WHEN_MSG_RECV("Could not open datagram socket\n");
+      LOG_WHEN_MSG_RECV("Could not open datagram socket: %d\n", sock_fd);
       return -1;
     }
 
@@ -235,7 +235,7 @@ static int lua_gamecontrolpacket_receive(lua_State *L) {
     local_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     local_addr.sin_port = htons(PORT);
     if (bind(sock_fd, (struct sockaddr *) &local_addr, sizeof(local_addr)) < 0) {
-      LOG_WHEN_MSG_RECV("Could not bind to port\n");
+      LOG_WHEN_MSG_RECV("Could not bind to port: %s\n", PORT);
       return -1;
     }
 
@@ -244,7 +244,7 @@ static int lua_gamecontrolpacket_receive(lua_State *L) {
     if (flags == -1)
       flags = 0;
     if (fcntl(sock_fd, F_SETFL, flags | O_NONBLOCK) < 0) {
-      LOG_WHEN_MSG_RECV("Could not set nonblocking mode\n");
+      LOG_WHEN_MSG_RECV("Could not set nonblocking mode: %d\n", sock_fd);
       return -1;
     }
 

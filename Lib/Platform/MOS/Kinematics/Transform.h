@@ -19,7 +19,7 @@ public:
   Transform &mDH(double alpha, double a, double theta, double d);
   void apply(double x[3]);
   double& operator() (int i, int j);
-  const double operator() (int i, int j) const;
+  double operator() (int i, int j) const;
 
  private:
   double t[4][4];

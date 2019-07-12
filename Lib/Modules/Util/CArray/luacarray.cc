@@ -6,6 +6,7 @@
  */
 
 #include <lua.hpp>
+#include <stdlib.h>
 
 typedef struct {
   const void *ptr;
@@ -71,10 +72,10 @@ static int lua_carray_cast(lua_State *L) {
   return 1;
 }
 
-static int lua_carray_delete(lua_State *L) {
-  structCArray *p = lua_checkcarray(L, 1);
+static int lua_carray_delete(lua_State* L) {
+  structCArray* p = lua_checkcarray(L, 1);
   if (p->own) {
-    delete p->ptr;
+    free((void*)p->ptr);
   }
 
   return 0;

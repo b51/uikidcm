@@ -75,13 +75,13 @@ static int lua_array2string(lua_State *L) {
   int nbytes = idataTypeMap->second;
 
   int size = width*height * nbytes;
-  char cdata[(2*size) + 1];
+  char* cdata = new char[(2 * size) + 1];
 
   int ind = 0;
   int cind = 0;
   while (ind < size) {
     cdata[cind] = ascii_lut[(data[ind] & 0xf0) >> 4];
-    cdata[cind+1] = ascii_lut[(data[ind] & 0x0f)];
+    cdata[cind + 1] = ascii_lut[(data[ind] & 0x0f)];
     ind += 1;
     cind += 2;
   }
@@ -163,7 +163,7 @@ static int lua_array2string2(lua_State *L) {
   }
   int nbytes = idataTypeMap->second;
   int size = width*height * nbytes / 2;//half the size
-  char cdata[(2*size) + 1];
+  char* cdata = new char[(2*size) + 1];
 
   int ind = 0;
   int cind = 0;
@@ -269,7 +269,7 @@ static int lua_label2string(lua_State *L) {
   int nbytes = idataTypeMap->second;
 
   int size = arr_size * nbytes;
-  char cdata[size + 1];
+  char* cdata = new char[size + 1];
 
   int ind = 0;
   int cind = 0;
@@ -348,11 +348,10 @@ static int lua_label2string_double(lua_State *L) {
   int nbytes = idataTypeMap->second;
 
   int size = arr_size * nbytes/2;
-  char cdata[size + 1];
+  char* cdata = new char[size + 1];
 
   int ind = 0;
   int cind = 0;
-  char buffer=0; 
   while (ind < size*2) {
     //bin label data (0-31) to 6 class (0-5)
     char pixel1=label_color_pack_lut[data[ind++]];
@@ -434,7 +433,7 @@ static int lua_label2string_rle(lua_State *L) {
   int nbytes = idataTypeMap->second;
 
   int size = arr_size * nbytes;
-  char cdata[size + 1];
+  char* cdata = new char[size + 1];
 
   int ind = 0;
   int cind = 0;

@@ -50,7 +50,7 @@ static void enumerate_menu(const camera_t* dev, __u32 id) {
   querymenu.id = id;
 
   for (querymenu.index = queryctrl.minimum;
-       querymenu.index <= queryctrl.maximum; querymenu.index++) {
+       querymenu.index <= (unsigned int)queryctrl.maximum; querymenu.index++) {
     if (0 == ioctl(dev->fd, VIDIOC_QUERYMENU, &querymenu)) {
       fprintf(stdout, "    %s\n", querymenu.name);
     }
@@ -125,6 +125,7 @@ static int camera_qbufs(camera_t* dev) {
   for (i = 0; i < BUF_CNT; i++) {
     camera_queue_frame(dev, &dev->bufs[i]);
   }
+  return 0;
 }
 
 void string_tolower(std::string& str) {
@@ -132,7 +133,7 @@ void string_tolower(std::string& str) {
                  (int (*)(int))std::tolower);
 }
 
-static int xioctl(int fd, int request, void* arg) {
+static int xioctl(int fd, unsigned int request, void* arg) {
   int r;
   do
     r = ioctl(fd, request, arg);
@@ -145,7 +146,7 @@ int camera_query_menu(camera_t* dev, struct v4l2_queryctrl& queryctrl) {
 
   querymenu.id = queryctrl.id;
   for (querymenu.index = queryctrl.minimum;
-       querymenu.index <= queryctrl.maximum; querymenu.index++) {
+       querymenu.index <= (unsigned int)queryctrl.maximum; querymenu.index++) {
     if (ioctl(dev->fd, VIDIOC_QUERYMENU, &querymenu) == 0) {
       // fprintf(stdout, "querymenu: %s\n", querymenu.name);
       menuMap[(char*)querymenu.name] = querymenu;
@@ -172,7 +173,7 @@ int camera_query_ctrl(camera_t* dev, unsigned int addr_begin,
     switch (queryctrl.type) {
       case V4L2_CTRL_TYPE_MENU:
         camera_query_menu(dev, queryctrl);
-        // fall throught
+        [[fallthrough]];
       case V4L2_CTRL_TYPE_INTEGER:
       case V4L2_CTRL_TYPE_BOOLEAN:
       case V4L2_CTRL_TYPE_BUTTON:
@@ -184,6 +185,7 @@ int camera_query_ctrl(camera_t* dev, unsigned int addr_begin,
         break;
     }
   }
+  return 0;
 }
 
 camera_t* camera_open(const char* dev) {
@@ -224,7 +226,7 @@ int camera_devmap(camera_t* dev) {
 
 void camera_close(camera_t* dev) {
   if (dev) {
-    LOG(INFO) << "close dev : ", dev->name;
+    LOG(INFO) << "close dev : " << dev->name;
     camera_munmap(dev);
     if (dev->fd > 0) {
       close(dev->fd);
@@ -356,7 +358,7 @@ int camera_writable(camera_t* dev, float timeout) /* timeout is in seconds */
 {
   fd_set wr_set;
   struct timeval tv;
-  int count = 0;
+  // int count = 0;
   long sec = (long)timeout;
   long usec = (long)((timeout - sec) * 1000000);
   tv.tv_sec = sec;
@@ -377,7 +379,7 @@ int camera_readable(camera_t* dev, float timeout) /* timeout is in seconds */
 {
   fd_set rd_set;
   struct timeval tv;
-  int count = 0;
+  // int count = 0;
   long sec = (long)timeout;
   long usec = (long)((timeout - sec) * 1000000);
   tv.tv_sec = sec;

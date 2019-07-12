@@ -53,7 +53,7 @@ static int lua_getusername(lua_State* L) {
 
 static int lua_gethostname(lua_State *L) {
   int mlen = 124;
-  char hostname[mlen];
+  char* hostname = new char[mlen];
 
   int ret = gethostname(hostname, mlen);
   if (ret == 0) {
@@ -168,7 +168,7 @@ static int lua_fcntl(lua_State *L) {
 static int lua_readfd(lua_State *L) {
   int fd = luaL_checkinteger(L, 1);
   int nbyte = luaL_optinteger(L, 2, 1024);
-  char *buf[nbyte];
+  char **buf = new char*[nbyte];
 
   int ret = read(fd, buf, nbyte);
   if (ret > 0)
@@ -184,7 +184,6 @@ static int lua_readfd(lua_State *L) {
 static int lua_writefd(lua_State *L) {
   int fd = luaL_checkinteger(L, 1);
   int ret = 0;
-  size_t len;
   const char *buf;
 
   int i;

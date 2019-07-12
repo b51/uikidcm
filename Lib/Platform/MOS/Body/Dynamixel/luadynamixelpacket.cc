@@ -91,7 +91,7 @@ static int lua_dynamixel_input(lua_State *L) {
   DynamixelPacket pkt;
   int ret = 0;
   if (str) {
-    for (int i = 0; i < nstr; i++) {
+    for (size_t i = 0; i < nstr; i++) {
       nPacket = dynamixel_input(&pkt, str[i], nPacket);
       if (nPacket < 0) {
 	ret += lua_pushpacket(L, &pkt);

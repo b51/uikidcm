@@ -215,7 +215,7 @@ BOOL PostProcessingTimeout(void) {
 
 BOOL PostProcessingStateSwap(DSP_STATUS_PACKET* pkt) {
   PUSHORT pdata = NULL;
-  int i = 0;
+  unsigned int i = 0;
   if (pkt->infomation & PACKET_TYPE_MASK) {
     switch (pkt->infomation & ~PACKET_TYPE_MASK) {
       case INST_STATE_SWAP: {
@@ -299,8 +299,6 @@ void BeginDspThread() {
 
 // dcmupdate()
 void DspThread() {
-  unsigned int i = 0;
-
   // previous processing of state swaping packet
   PreProcessingStateSwap(&in_thread);
   // printf("fd=%d\n",fd);
@@ -310,7 +308,7 @@ void DspThread() {
   startPacket.id = ID_DSP;
   startPacket.instruction = INST_STATE_SWAP;
   startPacket.length = (sizeof(struct StateSwapInput) + 2);
-  for (i = 0; i < sizeof(struct StateSwapInput) / sizeof(USHORT); i++) {
+  for (unsigned int i = 0; i < sizeof(struct StateSwapInput) / sizeof(USHORT); i++) {
     startPacket.parameter[2 * i] = (pdata[i] & 0xff);
     startPacket.parameter[2 * i + 1] = ((pdata[i] >> 8) & 0xff);
     // printf("%d ",pdata[i]);
@@ -353,7 +351,7 @@ void DspThread() {
     }
     // printf("%d bytes received\n",retval);
     // recv message is read, processing is following
-    for (i = 0; i < retval; i++) {
+    for (int i = 0; i < retval; i++) {
       if (PacketReconstrct(info[i])) {
         DSP_STATUS_PACKET* recv = NULL;
         if (PacketInterprete(&recv)) {
@@ -389,7 +387,9 @@ static int lua_pass_state(lua_State* L) {
   }
   setStateToIn();
   //  printf("statenum=%d\n",stateNum);
+  return 1;
 }
+
 static int lua_pass_para(lua_State* L) {
   luaL_checktype(L, 1, LUA_TTABLE);
   int nIndex = lua_gettop(L);
@@ -408,6 +408,7 @@ static int lua_pass_para(lua_State* L) {
   }
   setParaToIn();
   //  printf("paranum=%d\n",paraNum);
+  return 1;
 }
 
 void setStateToIn() {
@@ -625,17 +626,17 @@ static int lua_get_body_pos(lua_State* L) {
   lua_pushnumber(L, out.torsoPose.pose.theta);
   return 7;
 }
-static int lua_dcm_entry(lua_State* L) {
+static int lua_dcm_entry(lua_State* /*L*/) {
   BeginDspThread();
   printf("dsp in\n");
   return 0;
 }
-static int lua_dcm_exit(lua_State* L) {
+static int lua_dcm_exit(lua_State* /*L*/) {
   destroy_rs232();
   printf("dsp out\n");
   return 0;
 }
-static int lua_one_time_dsp_thread(lua_State* L) {
+static int lua_one_time_dsp_thread(lua_State* /*L*/) {
   DspThread();
   return 1;
 }

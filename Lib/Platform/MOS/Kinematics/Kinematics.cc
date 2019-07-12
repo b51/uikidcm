@@ -90,7 +90,7 @@ darwinop_kinematics_forward_rleg(const double *q)
 std::vector<double>
 darwinop_kinematics_inverse_leg(
 			   Transform trLeg,
-			   int leg, double unused)
+			   int leg, double /*unused*/)
 {
   std::vector<double> qLeg(6);
   bool left = (leg == LEG_LEFT); // Left leg
@@ -168,7 +168,7 @@ darwinop_kinematics_inverse_legs(
 			    const double *pLLeg,
 			    const double *pRLeg,
 			    const double *pTorso,
-			    int legSupport)
+			    int /*legSupport*/)
 {
   std::vector<double> qLLeg(12), qRLeg;
   Transform trLLeg = transform6D(pLLeg);

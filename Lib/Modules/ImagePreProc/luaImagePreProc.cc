@@ -22,6 +22,7 @@
 #include <fstream>
 #include <chrono>
 #include <opencv2/opencv.hpp>
+#include <glog/logging.h>
 
 #include "TurboDecode.h"
 
@@ -182,7 +183,7 @@ static int lua_yuyv_to_rgb(lua_State* L) {
   // 3rd Input: Height of the image
   int h = luaL_checkinteger(L, 3);
   // rgb will be tripple size of the original image
-  unsigned char rgb[w * h * 3];
+  unsigned char* rgb = new unsigned char[w * h * 3];
   // yuyv get directory from camera has PACKED yuv422 format
   // e_yuyv_type type = YUYV_422_PACKED;
   // gpuConvertYUYVtoRGB(type, (unsigned char*)yuyv, rgb, w, h);
@@ -204,7 +205,7 @@ static int lua_mjpg_to_rgb(lua_State* L) {
   // 4th Input: Height of the image
   int h = luaL_checkinteger(L, 4);
   // rgb will be tripple size of the original image
-  unsigned char rgb[w * h * 3];
+  unsigned char* rgb = new unsigned char[w * h * 3];
   turbo_decode.DecodeMJPG2BGR(mjpg, size, rgb);
   // Pushing rgb data
   lua_pushlightuserdata(L, &rgb[0]);
@@ -271,12 +272,15 @@ static int lua_init(lua_State* L) {
     return luaL_error(L, "Input YUYV not light user data");
   }
   int size = luaL_checkinteger(L, 2);
+  CHECK_NE(size, 0);
   turbo_decode.Init();
+  return 1;
 }
 
 static const struct luaL_Reg imagePreProc_lib[] = {
     {"init", lua_init},
     {"yuyv_to_rgb", lua_yuyv_to_rgb},
+    {"rgb_to_yuyv", lua_rgb_to_yuyv},
     {"mjpg_to_rgb", lua_mjpg_to_rgb},
     {"rgb_resize", lua_rgb_resize},
     {"subsample_yuyv2yuv", lua_subsample_yuyv2yuv},
