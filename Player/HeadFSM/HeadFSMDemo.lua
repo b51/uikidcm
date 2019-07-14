@@ -27,7 +27,7 @@ sm:add_state(headKickFollow);
 sm:add_state(headLookGoal);
 sm:add_state(headSweep);
 
-if Config.fsm.playMode==1 then 
+if Config.fsm.playMode==1 then
 ---------------------------------------------
 --Demo FSM w/o looking at the goal
 ---------------------------------------------
@@ -49,7 +49,7 @@ sm:set_transition(headKickFollow, 'ball', headTrack);
 sm:set_transition(headScan, 'ball', headTrack);
 sm:set_transition(headScan, 'timeout', headScan);
 
-else 
+else
 
 ---------------------------------------------
 --Game FSM with looking at the goal

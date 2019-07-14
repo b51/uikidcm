@@ -69,7 +69,7 @@ calibrated=false;
 function update()
 
   count = count + 1;
-  
+
 	if (not init)  then
     if (calibrating) then
       if (Body.calibrate(count)) then
@@ -78,7 +78,7 @@ function update()
         ready = true;
         Comm.init("192.168.1.255", 54321);
       end
-      
+
     elseif (ready) then
       init = true;
     else
@@ -96,7 +96,7 @@ function update()
       if (count % 100 == 0) then
         initToggle = not initToggle;
         if (initToggle) then
-          Body.set_indicator_state({1,1,1}); 
+          Body.set_indicator_state({1,1,1});
         else
           Body.set_indicator_state({0,0,0});
         end

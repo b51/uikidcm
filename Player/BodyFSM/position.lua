@@ -47,8 +47,8 @@ function posCalc()
   end
   --print("postAttack:",postAttack[1][1],postAttack[1][2]);  --tse
   --print("teamColor:",gcm.get_team_color());
- 
-  aBallLocal=math.atan2(ball.y,ball.x); 
+
+  aBallLocal=math.atan2(ball.y,ball.x);
   aBall=math.atan2(ballGlobal[2]-pose.y, ballGlobal[1]-pose.x);
 
   goalGlobal=wcm.get_goal_attack();
@@ -57,7 +57,7 @@ function posCalc()
   aGoal1 = math.atan2(LPost[2]-ballGlobal[2],LPost[1]-ballGlobal[1]);
   aGoal2 = math.atan2(RPost[2]-ballGlobal[2],RPost[1]-ballGlobal[1]);
   daPost = math.abs(util.mod_angle(aGoal1-aGoal2));
-  
+
   aGoal = aGoal2 + 0.5 * daPost;
 
   rGoalBall = math.sqrt( (goalGlobal[2]-ballGlobal[2])^2+
@@ -80,7 +80,7 @@ function posCalc()
     daPost = 20*math.pi/180;
   end
 
-  --Far-goal handling : widen the goalpost 
+  --Far-goal handling : widen the goalpost
   rMinGoal2 = 5.0;
   if rGoalBall > rMinGoal2 and variable_dapost>0 then
     aGoal1 = math.atan2(LPost[2]*1.5-ballGlobal[2],LPost[1]-ballGlobal[1]);
@@ -90,7 +90,7 @@ function posCalc()
   end
 
   --Kick target angle
-  wcm.set_goal_attack_angle2(aGoal); 
+  wcm.set_goal_attack_angle2(aGoal);
   wcm.set_goal_daPost2(daPost);
 end
 
@@ -150,7 +150,7 @@ function getAttackerHomePose()
     rDist = math.min(
         rDist2 + (rDist1-rDist2) * math.abs(angle2Turn)/(math.pi/2),
         ballR
-        );    
+        );
     local homepose={
         ballGlobal[1]-math.cos(aGoalSelected)*rDist,
         ballGlobal[2]-math.sin(aGoalSelected)*rDist,
@@ -191,7 +191,7 @@ function getDefenderHomePose0()
   relBallX = ballGlobal[1]-homePosition[1];
   relBallY = ballGlobal[2]-homePosition[2];
 
-  -- face ball 
+  -- face ball
   homePosition[3] = util.mod_angle(math.atan2(relBallY, relBallX));
   return homePosition;
 end
@@ -207,9 +207,9 @@ function getDefenderHomePose()
 
   --Check attacker position
   attacker_pose = wcm.get_team_attacker_pose();
-  
+
   goalie_alive = wcm.get_team_goalie_alive();
-  
+
   attacker_goal_dist = math.sqrt(
 	(attacker_pose[1] - goal_defend[1])^2+
 	(attacker_pose[2] - goal_defend[2])^2
@@ -222,7 +222,7 @@ function getDefenderHomePose()
 
   homePosition = {};
 
-  defending_type = 1; 
+  defending_type = 1;
 
   support_dist = Config.team.support_dist or 3.0;
   supportPenalty = Config.team.supportPenalty or 0.3;
@@ -244,14 +244,14 @@ function getDefenderHomePose()
     else
       --Stay in defending position
       --TODO: we can still go support
-      defending_type = 1;      
---      defending_type = 3;      
+      defending_type = 1;
+--      defending_type = 3;
     end
   end
 
   if defending_type == 1 then
     --Center defender
-    if goalie_alive>0 then 
+    if goalie_alive>0 then
       distGoal,sideGoal = 1.5, 0.3;
     else
       distGoal,sideGoal = 1.0, 0; --We don't have goalie!
@@ -271,7 +271,7 @@ function getDefenderHomePose()
       homePosition[2] = -util.sign(attacker_pose[2]) * 1.0;
     end
     homePosition[3] = math.atan2(relBallY, relBallX);
-  elseif defending_type==3 then  
+  elseif defending_type==3 then
     --Front supporter
     attackGoalPosition = vector.new(wcm.get_goal_attack());
     relBallX = ballGlobal[1]-goal_defend[1];
@@ -291,7 +291,7 @@ function getDefenderHomePose()
     relBallX = ballGlobal[1]-homePosition[1];
     relBallY = ballGlobal[2]-homePosition[2];
 
-    -- face ball 
+    -- face ball
     homePosition[3] = math.atan2(relBallY, relBallX);
   end
 
@@ -316,22 +316,22 @@ function getDefenderHomePose2()
   angle_shift=0.02;
 
  if ballGlobal[1]>0 then
-    angle_ball_goaldefend_center = 
+    angle_ball_goaldefend_center =
      math.atan((ballGlobal[2]-goalDefend[2])
 		/(goalDefend[1]-ballGlobal[1]));
   else
-    angle_ball_goaldefend_center = 
+    angle_ball_goaldefend_center =
     math.atan((ballGlobal[2]-goalDefend[2])
 	      /(goalDefend[1]+math.abs(ballGlobal[1])))
   end
- 
+
   -- Change y co-ordinate according to theta, shift it by a factor of angle_shift and divide the angle by the present theta in degrees
   -- The division is for scaling down when the bot is in the defending half.
-  homePosition[2]=homePosition[1] * 
+  homePosition[2]=homePosition[1] *
 	math.tan((1+angle_shift)*angle_ball_goaldefend_center)
 	/ math.deg(angle_ball_goaldefend_center);
 
-  -- face ball 
+  -- face ball
   relBallX = ballGlobal[1]-homePosition[1];
   relBallY = ballGlobal[2]-homePosition[2];
   homePosition[3] = util.mod_angle(math.atan2(relBallY, relBallX));
@@ -365,7 +365,7 @@ function getSupporterHomePose()
   relBallX = ballGlobal[1]-homePosition[1];
   relBallY = ballGlobal[2]-homePosition[2];
 
-  -- face ball 
+  -- face ball
   homePosition[3] = math.atan2(relBallY, relBallX);
   return homePosition;
 end
@@ -395,14 +395,14 @@ function getGoalieHomePose()
   relBallY = ballGlobal[2]-goal_defend[2];
   RrelBall = math.sqrt(relBallX^2 + relBallY^2)+0.001;
 
-  if tBall>8 or RrelBall > 4.0 then  
+  if tBall>8 or RrelBall > 4.0 then
     --Go back and face center
     dist = 0.40;
     relBallX = -goal_defend[1];
     relBallY = -goal_defend[2];
     homePosition[3] = util.mod_angle(math.atan2(relBallY, relBallX));
-  else --Move out 
-    dist = 0.60; 
+  else --Move out
+    dist = 0.60;
     homePosition[3] = util.mod_angle(math.atan2(relBallY, relBallX));
   end
 
@@ -411,7 +411,7 @@ function getGoalieHomePose()
 
 --Don't let goalie go back until it comes to blocking position first
   uPose=vector.new({pose.x,pose.y,pose.a})
-  homeRelative = util.pose_relative(homePosition, uPose);  
+  homeRelative = util.pose_relative(homePosition, uPose);
   if math.abs(homeRelative[3])>20*math.pi/180 then
 
     posGoalX = pose.x-goal_defend[1];
@@ -457,7 +457,7 @@ end
 
 function setAttackerVelocity(homePose)
   uPose=vector.new({pose.x,pose.y,pose.a})
-  homeRelative = util.pose_relative(homePose, uPose);  
+  homeRelative = util.pose_relative(homePose, uPose);
   rHomeRelative = math.sqrt(homeRelative[1]^2 + homeRelative[2]^2);
   aHomeRelative = math.atan2(homeRelative[2],homeRelative[1]);
   homeRot=math.abs(aHomeRelative);
@@ -477,12 +477,12 @@ function setAttackerVelocity(homePose)
     end
     veltype=1;
   elseif rHomeRelative>rVel2 and homeRot<aVel2 then
-    --Medium speed 
+    --Medium speed
     maxStep = maxStep2;
     maxA = maxA2;
     maxY = maxY2;
     veltype=2;
- 
+
   else --Normal speed
     maxStep = maxStep1;
     maxA = 999;
@@ -499,20 +499,20 @@ function setAttackerVelocity(homePose)
   vx,vy,va=0,0,0;
   aTurn=math.exp(-0.5*(rHomeRelative/rTurn)^2);
   --Don't turn to ball if close
-  if rHomeRelative < 0.3 then 
+  if rHomeRelative < 0.3 then
     aTurn = math.max(0.5,aTurn);
   end
 
   vx = maxStep*homeRelative[1]/rHomeRelative;
 
   --Sidestep more if ball is close and sideby
-  if rHomeRelative<rVel2 and  
+  if rHomeRelative<rVel2 and
            math.abs(aHomeRelative)>45*math.pi/180 then
      vy = maxStep*homeRelative[2]/rHomeRelative;
      if vy < 0 then
-     	vy = math.min(vy, -0.03);
+	vy = math.min(vy, -0.03);
      elseif vy > 0 then
-     	vy = math.max(vy, 0.03);
+	vy = math.max(vy, 0.03);
      end
      aTurn = 1; --Turn toward the goal
   else
@@ -524,13 +524,13 @@ function setAttackerVelocity(homePose)
 
   if math.abs(aHomeRelative)<70*math.pi/180 then
     --Don't allow the robot to backstep if ball is in front
---    vx=math.max(0,vx) 
+--    vx=math.max(0,vx)
   end
 
   va = 0.5*(aTurn*homeRelative[3] --Turn toward the goal
      + (1-aTurn)*aHomeRelative); --Turn toward the target
   va = math.max(-maxA,math.min(maxA,va)); --Limit rotation
-  
+
   --print("aTurn, homeRelative[3], aHomeRelative :",aTurn, homeRelative[3]*180/math.pi, aHomeRelative*180/math.pi);
 
   --NaN Check
@@ -542,7 +542,7 @@ function setAttackerVelocity(homePose)
 
   end
 
---  if rHomeRelative<rVel2 and  
+--  if rHomeRelative<rVel2 and
 --           math.abs(aHomeRelative)>45*math.pi/180 then
 --     print ("when r<0.40, a<45, v: ",vx,vy,va);
 --  end
@@ -598,7 +598,7 @@ function setDefenderVelocity(homePose)
     end
     veltype=1;
   elseif rHomeRelative>rVel2 and homeRot<aVel2 then
-    --Medium speed 
+    --Medium speed
     maxStep = maxStep2;
     maxA = maxA2;
     maxY = maxY2;
@@ -633,14 +633,14 @@ function setDefenderVelocity(homePose)
 
   vx,vy,va=0,0,0;
   aTurn=math.exp(-0.5*(rHomeRelative/rTurn)^2);
-  if rHomeRelative<0.40 then 
-    aTurn = 1; 
+  if rHomeRelative<0.40 then
+    aTurn = 1;
   end
 
   vx = maxStep*homeRelative[1]/(rHomeRelative+0.001);--to get rid of NaN
 
 
-  if rHomeRelative<rVel2 and  
+  if rHomeRelative<rVel2 and
            math.abs(aHomeRelative)>45*math.pi/180 then
      vy = maxStep*homeRelative[2]/rHomeRelative;
      aTurn = 1; --Turn toward the goal
@@ -665,7 +665,7 @@ function setDefenderVelocity(homePose)
 
     print("maxStep:",maxStep)
 
-    print("v:",vx,vy,va)    
+    print("v:",vx,vy,va)
     print("HomePose:",unpack(homePose));
     print("HomeRelative:",unpack(homeRelative));
     print("aHomeRelative:",aHomeRelative*180/math.pi);
@@ -674,4 +674,3 @@ function setDefenderVelocity(homePose)
 
   return vx,vy,va;
 end
-

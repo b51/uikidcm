@@ -45,7 +45,7 @@ webots = false;
 
 require('grip')
 
--- Enable OP specific 
+-- Enable OP specific
 if(Config.platform.name == 'OP') then
   darwin = true;
 end
@@ -113,7 +113,7 @@ function process_keyinput()
 	elseif byte==string.byte("h") then	targetvel[2]=targetvel[2]+0.02;
 	elseif byte==string.byte(";") then	targetvel[2]=targetvel[2]-0.02;
 
-	elseif byte==string.byte("1") then	
+	elseif byte==string.byte("1") then
 --		kick.set_kick("kickForwardLeft");
 --		Motion.event("kick");
 
@@ -121,13 +121,13 @@ function process_keyinput()
 
 		Motion.event("align");
 
-	elseif byte==string.byte("2") then	
+	elseif byte==string.byte("2") then
 		kick.set_kick("kickForwardRight");
 		Motion.event("kick");
-	elseif byte==string.byte("3") then	
+	elseif byte==string.byte("3") then
 		kick.set_kick("kickSideLeft");
 		Motion.event("kick");
-	elseif byte==string.byte("4") then	
+	elseif byte==string.byte("4") then
 		kick.set_kick("kickSideRight");
 		Motion.event("kick");
 
@@ -192,13 +192,13 @@ function process_keyinput()
                 walk.doSideKickRight();
 
 	elseif byte==string.byte("7") then	Motion.event("sit");
-	elseif byte==string.byte("8") then	
-		if walk.active then 
-  		  walk.stop();
+	elseif byte==string.byte("8") then
+		if walk.active then
+		  walk.stop();
 		end
 		Motion.event("standup");
-	
-	elseif byte==string.byte("9") then	
+
+	elseif byte==string.byte("9") then
 		Motion.event("walk");
 		walk.start();
 	end
@@ -211,12 +211,12 @@ end
 
 function update()
   Body.set_syncread_enable(0); --read from only head servos
-   
+
   -- Update the relevant engines
   Body.update();
 
   Motion.update();
-  
+
   -- Get a keypress
   process_keyinput();
 end
@@ -226,7 +226,7 @@ local ncount = 100;
 local tUpdate = Body.get_time();
 while 1 do
   count = count + 1;
-  
+
   update();
   io.stdout:flush();
 
@@ -244,4 +244,3 @@ while 1 do
 --  unix.usleep(tDelay);
 
 end
-

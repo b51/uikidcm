@@ -22,7 +22,7 @@ left = vector.zeros(10);
 right = vector.zeros(10);
 
 
---this works reliably but SLOWLY 
+--this works reliably but SLOWLY
 --numSavedValues = 5;
 --updateFreq = 20;
 
@@ -76,8 +76,8 @@ function update()
         if left[1] < obsThres then
           leftObsCount = leftObsCount + 0.5;
         elseif left[1] > clearThres then
-          leftObsCount = leftObsCount - 1; 
-        end 
+          leftObsCount = leftObsCount - 1;
+        end
         --print('leftObsCount '..leftObsCount);
 
         leftZeroCount = 0;
@@ -93,14 +93,14 @@ function update()
       end
       leftObsCount = math.max(0, math.min(10, leftObsCount));
 
-      -- right 
+      -- right
       if (right[1] > 0 and right[1] < 2.55) then
         --print('right '..right[1]);
         if right[1] < obsThres then
           rightObsCount = rightObsCount + 0.5;
         elseif right[1] > clearThres then
-          rightObsCount = rightObsCount - 1; 
-        end 
+          rightObsCount = rightObsCount - 1;
+        end
         --print('rightObsCount '..rightObsCount);
 
         rightZeroCount = 0;
@@ -147,7 +147,7 @@ function update2()
         distance[1] = left[2];
       end
 
-      -- right 
+      -- right
       if (right[1] > 0 and right[1] < 2.55) then
         print('right '..right[1]);
         --data is valid, so store it for comparison with last numSavedValues values
@@ -173,7 +173,7 @@ function obstacle()
   free = vector.zeros(2);
   distance = {2.55,2.55};
 
- 
+
   if dSum[1] > obsThresh then
     obstacles[1] = 0;
     if dSum[1] > freeThresh then
@@ -204,7 +204,7 @@ end
 
 -- for BodyFSM
 function checkObstacle()
-  -- checks for obstacle IN FRONT of robot.  
+  -- checks for obstacle IN FRONT of robot.
   -- TODO implement for obstacle IN THE PATH of robot
 
   if enable_obstacle_detection == 1 then
@@ -220,7 +220,7 @@ function checkObstacle()
     --print("obstacles "..obstacles[1].." "..obstacles[2]);
     --print("free      "..free[1].." "..free[2]);
     ret = vector.zeros(2);
-    
+
     if free[1] == 1 or free[2] == 1 or (obstacles[1] == 0 and obstacles[2] == 0) then -- too far away on either side to be in the path
       return ret;
     end
@@ -236,7 +236,7 @@ function checkObstacle()
         return ret; -- too far away
       end
     elseif obstacles[1] == 1 and obstacles[2] == 0 then -- possibly on left
-      if free[2] == 1 then 
+      if free[2] == 1 then
         return ret; -- too far to left to be in front
       end
       if distance[2] < disThresh then
@@ -254,5 +254,3 @@ function checkObstacle()
     end
   end
 end
-
-

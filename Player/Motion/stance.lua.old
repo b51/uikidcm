@@ -50,7 +50,7 @@ function entry()
   -- Added by SJ
   -- enable joint encoder reading during getup
   Body.set_syncread_enable(1);
-  started=false; 
+  started=false;
   local qSensor = Body.get_sensor_position();
   Body.set_actuator_command(qSensor);
 
@@ -70,8 +70,8 @@ function update()
   local t = Body.get_time();
   local dt = t - t0;
   if not started then --these init codes are moved here for OP
- 	if dt>0.2 then
-  	  started=true;
+	if dt>0.2 then
+	  started=true;
 	  local qSensor = Body.get_sensor_position();
 	  local dpLLeg = Kinematics.lleg_torso(Body.get_lleg_position());
 	  local dpRLeg = Kinematics.rleg_torso(Body.get_rleg_position());
@@ -99,7 +99,7 @@ function update()
     end
   end
   pLLeg = pLLeg + dpLeft;
-	 
+
   dpRight = pRLegStance - pRLeg;
   for i = 1,6 do
     if (math.abs(dpRight[i]) > tolLimit) then
@@ -118,12 +118,12 @@ function update()
 
   if (tol) then
     if delay <= 0 then
-    	delay=Config.stance.delay or 0;
-    	walk.still=true;
+	delay=Config.stance.delay or 0;
+	walk.still=true;
 	    return "done";
 	  else
-	  	delay=delay-1;
-	  	Body.set_larm_command(qLArm);
+		delay=delay-1;
+		Body.set_larm_command(qLArm);
 			Body.set_larm_hardness(.2);
 			Body.set_rarm_command(qRArm);
 			Body.set_rarm_hardness(.2);

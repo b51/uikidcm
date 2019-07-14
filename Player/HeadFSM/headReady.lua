@@ -40,10 +40,10 @@ function update()
 	dist*math.cos(yaw0),dist*math.sin(yaw0), height);
 	pitch = pitch + 5*math.pi/180;
    Body.set_head_command({yaw, pitch});
-  
+
    Body.set_para_headpos(vector.new({yaw, pitch}));--123456î^²¿
    Body.set_state_headValid(1);--123456î^²¿
-  
+
    if (t - t0 > tScan) then
     return 'done'
    end

@@ -81,10 +81,10 @@ function entry()
   qLArm = vector.new({qLArm0[1],qLArm0[2],qLArm0[3]});
   qRArm = vector.new({qRArm0[1],qRArm0[2],qRArm0[3]});
   torsoShiftX=0;
-  
+
   started = false;
   active = true;
- 
+
   --Parse kick definition
   kickDef = kickDefList[kickType].def;
   supportLeg = kickDefList[kickType].supportLeg;
@@ -124,14 +124,14 @@ function update()
     Body.set_lleg_hardness(hardnessLeg);
     Body.set_rleg_hardness(hardnessLeg);
     kickState=1;
-    print('kick start');	
+    print('kick start');
     Body.set_state_specialValid(1);-------------------------------------------------------------123456kick ¿ªÊ¼
-	
+
 	-----------------------------tse---------------------------
 	--unix.sleep(7.0);      -- for Technical Challenge Throw-in (pick-up specialGait and throw-in specialGait)
 	-- add throw-in gaitID
 	-----------------------------tse---------------------------
-	
+
   end
 
   local t=Body.get_time();
@@ -164,7 +164,7 @@ function update()
 
     ph=0;
     t0=t;
-    if supportLeg ==0 then --left support 
+    if supportLeg ==0 then --left support
       Body.set_lleg_slope(1);
       Body.set_rleg_slope(0);
     else --right support
@@ -197,7 +197,7 @@ function update()
   end
 
   if kickStepType==1 then
-    uBody=util.se2_interpolate(ph,uBody1,kickDef[kickState][3]);	
+    uBody=util.se2_interpolate(ph,uBody1,kickDef[kickState][3]);
     if #kickDef[kickState]>=4 then
       zBody=ph*kickDef[kickState][4] + (1-ph)*zBody1;
     end
@@ -206,7 +206,7 @@ function update()
     end
 
   elseif kickStepType ==6 then --Returning to walk stance
-    uBody=util.se2_interpolate(ph,uBody1,kickDef[kickState][3]);	
+    uBody=util.se2_interpolate(ph,uBody1,kickDef[kickState][3]);
     zBody=ph*bodyHeight + (1-ph)*zBody1;
     bodyRoll=(1-ph)*bodyRoll1;
     qLArm = vector.new({qLArm0[1],qLArm0[2],qLArm0[3]});
@@ -309,7 +309,7 @@ function motion_arms()
   local armAngle=math.min(50*math.pi/180,
 	math.max(-50*math.pi/180,
 	footRel/armGain * 50*math.pi/180
-	));  
+	));
 
   qLArm[1]=qLArm[1]+armAngle;
   qRArm[1]=qRArm[1]-armAngle;
@@ -331,14 +331,14 @@ end
 function set_kick(newKick)
     if (kickDefList[newKick]) then
 	kickType = newKick;
-	  if (kickType == "kickForwardLeft") then 
+	  if (kickType == "kickForwardLeft") then
 	    Body.set_para_gaitID(vector.new({1,1}));-------------------------------------------------------------123456kick type
-	  elseif (kickType == "kickForwardRight") then 
+	  elseif (kickType == "kickForwardRight") then
 	    Body.set_para_gaitID(vector.new({2,1}));--------------------------------------------------------------123456kick type
-	  elseif (kickType == "kickSideRight") then 
-	  	Body.set_para_gaitID(vector.new({2,1}));--------------------------------------------------------------123456kick type
+	  elseif (kickType == "kickSideRight") then
+		Body.set_para_gaitID(vector.new({2,1}));--------------------------------------------------------------123456kick type
       elseif (kickType == "kickSideLeft") then
-	  	Body.set_para_gaitID(vector.new({1,1}));--------------------------------------------------------------123456kick type
+		Body.set_para_gaitID(vector.new({1,1}));--------------------------------------------------------------123456kick type
 	  end
     end
 end

@@ -18,7 +18,7 @@ bodyTilt = Config.stance.bodyTiltDive or 0;
 
 
 -- Max change in postion6D to reach stance:
-dpLimit=Config.stance.dpLimitDive or 
+dpLimit=Config.stance.dpLimitDive or
 vector.new({.1,.01,.03,.1,.3,.1});
 
 tFinish=0;
@@ -54,12 +54,12 @@ function update()
      t0=Body.get_time();
      return;
   end
-  if finished then 
-    return; 
+  if finished then
+    return;
   end
 
   local dt = t - t0;
-  if not started then 
+  if not started then
    --For OP, wait a bit to read joint readings
     if dt>tStartWait then
       started=true;
@@ -80,10 +80,10 @@ function update()
       t0 = Body.get_time();
       tStart=t;
       count=1;
-      Body.set_syncread_enable(0); 
-    else 
-      Body.set_syncread_enable(1); 
-      return; 
+      Body.set_syncread_enable(0);
+    else
+      Body.set_syncread_enable(1);
+      return;
     end
   end
 
@@ -128,5 +128,5 @@ function update()
 end
 
 function exit()
-  Body.set_syncread_enable(1); 
+  Body.set_syncread_enable(1);
 end

@@ -61,13 +61,13 @@ function update()
 	(ballGlobal[1]-goal_defend[1])^2+
 	(ballGlobal[2]-goal_defend[2])^2);
   ballX_defend = math.abs(ballGlobal[1]-goal_defend[1]);
-  
+
   --------------------------tse---------------------------
   aBall = math.atan2(ball.y,ball.x);
   --print("PositionGoalie: aBall",aBall*180/math.pi);
-  
+
   if aBall > 60*math.pi/180 then
-     print("PositionGoalie: Turning Left"); 
+     print("PositionGoalie: Turning Left");
      direction = 1;
   elseif aBall < -60*math.pi/180 then
      print("PositionGoalie: Turning Right");
@@ -76,12 +76,12 @@ function update()
          aBall < 15*math.pi/180 then
      direction = 0;
   end
-  
-  walk.set_velocity(0, 0, direction*0.3); 
- 
+
+  walk.set_velocity(0, 0, direction*0.3);
+
   if direction == 0 then
-     return "done"; 
-  end 
+     return "done";
+  end
   -------------------------tse-----------------------------
 end
 
@@ -90,4 +90,3 @@ function exit()
     HeadFSM.sm:set_state('headTrack');
   end
 end
-

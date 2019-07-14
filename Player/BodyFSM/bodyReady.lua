@@ -55,7 +55,7 @@ function update()
     walk.stop();
     return;
   else
-    if phase==0 then 
+    if phase==0 then
       phase = 1;
       t0 = Body.get_time();
       if role==0 then --goalie
@@ -76,4 +76,3 @@ end
 
 function exit()
 end
-

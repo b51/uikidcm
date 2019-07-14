@@ -45,7 +45,7 @@ Motion.entry();
 darwin = false;
 webots = false;
 
--- Enable OP specific 
+-- Enable OP specific
 if(Config.platform.name == 'OP') then
   darwin = true;
   --SJ: OP specific initialization posing (to prevent twisting)
@@ -61,7 +61,7 @@ getch.enableblock(1);
 unix.usleep(1E6*1.0);
 Body.set_body_hardness(0);
 
---This is robot specific 
+--This is robot specific
 webots = false;
 init = false;
 calibrating = false;
@@ -92,16 +92,16 @@ function process_keyinput()
     elseif byte==string.byte("h") then	targetvel[2]=targetvel[2]+0.02;
     elseif byte==string.byte(";") then	targetvel[2]=targetvel[2]-0.02;
 
-    elseif byte==string.byte("1") then	
+    elseif byte==string.byte("1") then
       kick.set_kick("kickForwardLeft");
       Motion.event("kick");
-    elseif byte==string.byte("2") then	
+    elseif byte==string.byte("2") then
       kick.set_kick("kickForwardRight");
       Motion.event("kick");
-    elseif byte==string.byte("3") then	
+    elseif byte==string.byte("3") then
       kick.set_kick("kickSideLeft");
       Motion.event("kick");
-    elseif byte==string.byte("4") then	
+    elseif byte==string.byte("4") then
       kick.set_kick("kickSideRight");
       Motion.event("kick");
     elseif byte==string.byte("5") then
@@ -128,12 +128,12 @@ function process_keyinput()
 
 
 
-    elseif byte==string.byte("7") then	
+    elseif byte==string.byte("7") then
       Motion.event("sit");
-    elseif byte==string.byte("8") then	
+    elseif byte==string.byte("8") then
       if walk.active then walk.stop();end
       Motion.event("standup");
-    elseif byte==string.byte("9") then	
+    elseif byte==string.byte("9") then
       Motion.event("walk");
       walk.start();
     end
@@ -170,14 +170,14 @@ function update()
       if (count % 100 == 0) then
         initToggle = not initToggle;
         if (initToggle) then
-          Body.set_indicator_state({1,1,1}); 
+          Body.set_indicator_state({1,1,1});
         else
           Body.set_indicator_state({0,0,0});
         end
       end
     end
   else
-    -- update state machines 
+    -- update state machines
     process_keyinput();
     Motion.update();
     Body.update();
@@ -189,7 +189,7 @@ function update()
     -- update battery indicator
     Body.set_indicator_batteryLevel(Body.get_battery_level());
   end
-  
+
   -- check if the last update completed without errors
   lcount = lcount + 1;
   if (count ~= lcount) then

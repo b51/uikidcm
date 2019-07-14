@@ -9,10 +9,10 @@ require('Config')
 require('wcm')
 require('walk');
 
---initial wait 
+--initial wait
 tStartWait = Config.fsm.bodyKick.tStartWait or 0.5;
 tStartWaitMax = Config.fsm.bodyKick.tStartWaitMax or 1.0;
-thGyroMag = Config.fsm.bodyKick.thGyroMag or 100; 
+thGyroMag = Config.fsm.bodyKick.thGyroMag or 100;
 
 --ball position checking params
 kickTargetFront=Config.fsm.bodyKick.kickTargetFront or {0.15,0.04};
@@ -32,14 +32,14 @@ function entry()
   print(_NAME.." entry");
   t0 = Body.get_time();
   --SJ - only initiate kick while walking
-  kickable = walk.active;  
+  kickable = walk.active;
   walk.stop();
-  phase=0;   
+  phase=0;
 end
 
 function update()
   t = Body.get_time();
-  if not kickable then 
+  if not kickable then
      print("bodyKick escape");
      --Set velocity to 0 after kick fails ot prevent instability--
      walk.set_velocity(0, 0, 0);
@@ -91,7 +91,7 @@ function check_ball_pos()
 
   kick_dir=wcm.get_kick_dir();
   if kick_dir==1 then
-  	print("do kick, ball position :",ball.x, ball.y);
+	print("do kick, ball position :",ball.x, ball.y);
 	print("ball.y > 0, kick left ,ball.y < 0, kick right:",ball.y);
     -- straight kick, set kick depending on ball position
     if (ball.y > 0) then
@@ -116,14 +116,14 @@ function check_ball_pos()
   print("ball error:",unpack(ballErr))
   print("Ball pos threshold:",unpack(kickTh))
   print("Ball seen:",t-ball.t," sec ago");
-  
+
   if ballErr[1]<kickTh[1] and --We don't care if ball is too close
     math.abs(ballErr[2])<kickTh[2] and
     (t - ball.t <0.5) then
     return true;
   else
     return false;
-  end  
+  end
 end
 
 function exit()

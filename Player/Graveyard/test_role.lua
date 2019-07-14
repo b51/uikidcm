@@ -44,7 +44,7 @@ Motion.entry();
 darwin = false;
 webots = false;
 
--- Enable OP specific 
+-- Enable OP specific
 if(Config.platform.name == 'OP') then
   darwin = true;
   --SJ: OP specific initialization posing (to prevent twisting)
@@ -54,7 +54,7 @@ if(Config.platform.name == 'OP') then
   Body.set_body_hardness(0);
   Body.set_lleg_hardness({0.2,0.6,0,0,0,0});
   Body.set_rleg_hardness({0.2,0.6,0,0,0,0});
-end 
+end
 
 
 -- Enable Webots specific
@@ -115,7 +115,7 @@ function update()
       waiting = 1-waiting;
       if waiting==0 then
         Speak.talk('Playing');
-        BodyFSM.sm:set_state('bodySearch');   
+        BodyFSM.sm:set_state('bodySearch');
         HeadFSM.sm:set_state('headScan');
         Motion.event("standup");
       else
@@ -139,7 +139,7 @@ function update()
       forced_role = gcm.get_team_forced_role();
       --Cycle roles
       forced_role = forced_role + 1;
-      if forced_role>4 then forced_role = 1;end 
+      if forced_role>4 then forced_role = 1;end
       gcm.set_team_forced_role(forced_role);
       button_role=0;
     end
@@ -156,7 +156,7 @@ function update()
     end
     Motion.update();
     Body.update();
-  else --Playing mode, update state machines  
+  else --Playing mode, update state machines
     gcm.set_game_paused(0);
     BodyFSM.update();
     HeadFSM.update();
@@ -171,7 +171,7 @@ function update()
     -- update battery indicator
     Body.set_indicator_batteryLevel(Body.get_battery_level());
   end
-  
+
 end
 
 -- if using Webots simulator just run update

@@ -155,7 +155,7 @@ function update()
   local maxImuAngle = math.max(math.abs(imuAngle[1]), math.abs(imuAngle[2]-bodyTilt));
   fall = mcm.get_motion_fall_check() --Should we check for fall? 1 = yes
   --print("imuAngle :",imuAngle[1]*180/math.pi,imuAngle[2]*180/math.pi);
-  
+
   ----------------------tse------------------------------
   ----[[            -- for Technical Challenge Throw-in (off fall_down_check)
   --if (maxImuAngle > fallAngle and fall==1) then
@@ -163,7 +163,7 @@ function update()
   --  sm:add_event("fall");
   --  mcm.set_walk_isFallDown(1); --Notify world to reset heading
   --else
-    mcm.set_walk_isFallDown(0); 
+    mcm.set_walk_isFallDown(0);
   --end
   --]]
 
@@ -209,4 +209,3 @@ function update_shm()
   mcm.set_us_right(UltraSound.right);
   mcm.set_walk_stillTime( stillTime );
 end
-

@@ -20,7 +20,7 @@ period = 1;
 lastTx = unix.time();
 
 while (1) do
-  
+
    local cin = getch.get();
    local byte = nil;
    if (#cin > 0) then
@@ -45,7 +45,7 @@ while (1) do
 
             lastTx = unix.time();
          end
-      end 
+      end
    else
      -- button pressed?
      if (Body.get_sensor_button()[1] == 1 and unix.time() - lastPress > 1) then
@@ -67,7 +67,7 @@ while (1) do
         lastPress = unix.time();
      end
    end
-   
+
 
    unix.usleep(100000);
 end

@@ -46,7 +46,7 @@ Motion.entry();
 darwin = false;
 webots = false;
 
--- Enable OP specific 
+-- Enable OP specific
 if(Config.platform.name == 'OP') then
   darwin = true;
   --SJ: OP specific initialization posing (to prevent twisting)
@@ -56,7 +56,7 @@ if(Config.platform.name == 'OP') then
   Body.set_body_hardness(0);
   Body.set_lleg_hardness({0.6,0.6,0.6,0,0,0});
   Body.set_rleg_hardness({0.6,0.6,0.6,0,0,0});
-end 
+end
 
 init = false;
 calibrating = false;
@@ -125,7 +125,7 @@ function update()
     Motion.update();
     Body.update();
 
-  else --Playing mode, update state machines  
+  else --Playing mode, update state machines
     gcm.set_game_paused(0);
     GameFSM.update();
     BodyFSM.update();
@@ -140,7 +140,7 @@ function update()
     tUpdate = unix.time();
     Body.set_indicator_batteryLevel(Body.get_battery_level());
   end
-  
+
 end
 
 if( darwin ) then

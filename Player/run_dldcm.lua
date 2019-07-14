@@ -2,7 +2,7 @@
 cwd = '.';
 computer = os.getenv('COMPUTER') or "";
 if (string.find(computer, "Darwin")) then
-   -- MacOS X uses .dylib:                                                      
+   -- MacOS X uses .dylib:
    package.cpath = cwd.."/Lib/?.dylib;"..package.cpath;
 else
    package.cpath = cwd.."/Lib/?.so;"..package.cpath;
@@ -13,7 +13,7 @@ package.path = cwd.."/Config/?.lua;"..package.path;
 package.path = cwd.."/Lib/?.lua;"..package.path;
 package.path = cwd.."/Dev/?.lua;"..package.path;
 package.path = cwd.."/World/?.lua;"..package.path;
-package.path = cwd.."/Motion/?.lua;"..package.path; 
+package.path = cwd.."/Motion/?.lua;"..package.path;
 
 
 require('unix');
@@ -49,7 +49,7 @@ while (loop) do
    readtype= actuatorShm:get('readType') ;
    if readtype==0 then ncount=200;
      else ncount = 40;
-   end 
+   end
 
    if 1/fpsdesired > tPassed then
 --      unix.usleep(1E6*(1/fpsdesired - tPassed));
@@ -57,7 +57,7 @@ while (loop) do
    t_timing=t1;
    dcm.update()
 
-  
+
 --   pos=vector.new(sensorShm:get('position'))*180/math.pi;
 --   print(string.format("Position:\n Head: %f %f",pos[1],pos[2]));
 

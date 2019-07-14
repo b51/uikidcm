@@ -15,16 +15,16 @@ walk.velLimitX={-.03,.08};                      --tse
 --walk.velLimitY={-.03,.03};                    --tse
 walk.velLimitY={-.04,.04};
 walk.velLimitA={-.4,.4};
-walk.velDelta={0.02,0.02,0.15} 
+walk.velDelta={0.02,0.02,0.15}
 
 ----------------------------------------------
 -- Stance parameters
 ---------------------------------------------
---walk.bodyHeight = 0.295; 
+--walk.bodyHeight = 0.295;
 walk.bodyHeight = 0.460;                 --tse
---walk.bodyTilt=20*math.pi/180; 
+--walk.bodyTilt=20*math.pi/180;
 walk.bodyTilt=10*math.pi/180;
---walk.footX= -0.010; 
+--walk.footX= -0.010;
 walk.footX= 0.03;                          --tse
 --walk.footY = 0.035;
 walk.footY = -0.010;                    --tse
@@ -122,7 +122,7 @@ walk.turnComp = 0.003; --Lean front when turning
 --------------------------------------------
 walk.walkKickDef={}
 
---tStep stepType supportLeg stepHeight 
+--tStep stepType supportLeg stepHeight
 -- SupportMod shiftFactor footPos1 footPos2
 
 walk.walkKickDef["FrontLeft"]={
@@ -178,13 +178,13 @@ walk.walkKickDef["SideRight"]={
 --With more sweep
 walk.walkKickDef["SideLeft"]={
   {0.30, 1, 1, 0.035 , {0,0}, 0.4, {0.0,0.04,10*math.pi/180} },
-  {0.35, 3, 0, 0.05 , {0.01,0.01}, 0.5, 
+  {0.35, 3, 0, 0.05 , {0.01,0.01}, 0.5,
 	{0.06,-0.05,-20*math.pi/180},{0.09,0.005,0}},
   {0.25, 1, 1, 0.035 , {0.01,0}, 0.5, {0,0,0} },}
 
 walk.walkKickDef["SideRight"]={
   {0.30, 1, 0, 0.035 , {0,0}, 0.6, {0.0,-0.04,-10*math.pi/180} },
-  {0.35, 3, 1, 0.05 , {0.01,-0.01},0.5, 
+  {0.35, 3, 1, 0.05 , {0.01,-0.01},0.5,
 	{0.06,0.05,20*math.pi/180},{0.09,-0.005,0}},
   {0.25, 1, 0, 0.035 , {0.01,0},0.5,  {0,0,0} },
 }
@@ -207,8 +207,8 @@ walk.servoBias = {0,0,0,0,0,0,0,0,0,0,0,0};
 walk.footXComp = 0;
 walk.footYComp = 0;
 
---Default pitch angle offset of OP 
-walk.headPitchBias = 0* math.pi / 180; 
+--Default pitch angle offset of OP
+walk.headPitchBias = 0* math.pi / 180;
 walk.headPitchBiasComp = 0;
 
 local robotName = unix.gethostname();
@@ -259,7 +259,7 @@ walk.motionDef["hurray1"]={
         {-30*math.pi/180,-30*math.pi/180,-90*math.pi/180}},
  {1.0,{90*math.pi/180, 8*math.pi/180,-40*math.pi/180},
         {90*math.pi/180, -8*math.pi/180,-40*math.pi/180}}
-} 
+}
 
 --pointing up
 walk.motionDef["point"]={
@@ -274,7 +274,7 @@ walk.motionDef["point"]={
  {1.0,{90*math.pi/180, 8*math.pi/180,-40*math.pi/180},
         {90*math.pi/180, -8*math.pi/180,-40*math.pi/180},
         {0,20*math.pi/180,0}}
-} 
+}
 
 
 --Two arm punching up
@@ -302,7 +302,7 @@ walk.motionDef["hurray2"]={
 
  {0.5,{90*math.pi/180, 8*math.pi/180,-40*math.pi/180},
         {90*math.pi/180, -8*math.pi/180,-40*math.pi/180}}
-} 
+}
 
 
 --Two arm side swing
@@ -322,7 +322,7 @@ walk.motionDef["swing"]={
  {0.5,{90*math.pi/180, 8*math.pi/180,-40*math.pi/180},
         {90*math.pi/180, -8*math.pi/180,-40*math.pi/180},
         {0*math.pi/180,20*math.pi/180,0*math.pi/180}}
-} 
+}
 
 
 
@@ -357,5 +357,4 @@ walk.motionDef["2punch"]={
  {0.3,{90*math.pi/180, 8*math.pi/180,-40*math.pi/180},
         {90*math.pi/180, -8*math.pi/180,-40*math.pi/180},
         {0*math.pi/180,20*math.pi/180,0*math.pi/180}}
-} 
-
+}

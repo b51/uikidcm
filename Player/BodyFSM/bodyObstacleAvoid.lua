@@ -41,4 +41,3 @@ end
 function exit()
   walk.start();
 end
-

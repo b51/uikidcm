@@ -160,4 +160,3 @@ function get_attack_bearing_pose(pose0)
 
   return attackBearing, daPost;
 end
-

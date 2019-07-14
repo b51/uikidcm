@@ -48,4 +48,3 @@ if use_arbitrary_ball then
 else
   camera.lut_file = 'goal_test.raw';
 end
-

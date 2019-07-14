@@ -47,7 +47,7 @@ Motion.entry();
 darwin = false;
 webots = false;
 
--- Enable OP specific 
+-- Enable OP specific
 if(Config.platform.name == 'OP') then
   darwin = true;
   --SJ: OP specific initialization posing (to prevent twisting)
@@ -126,7 +126,7 @@ function update()
       if (count % 100 == 0) then
         initToggle = not initToggle;
         if (initToggle) then
-          Body.set_indicator_state({1,1,1}); 
+          Body.set_indicator_state({1,1,1});
         else
           Body.set_indicator_state({0,0,0});
         end
@@ -134,7 +134,7 @@ function update()
     end
 
   else
-    -- update state machines 
+    -- update state machines
     GameFSM.update();
     BodyFSM.update();
     HeadFSM.update();
@@ -150,7 +150,7 @@ function update()
     -- update battery indicator
     Body.set_indicator_batteryLevel(Body.get_battery_level());
   end
-  
+
   -- check if the last update completed without errors
   lcount = lcount + 1;
   if (count ~= lcount) then

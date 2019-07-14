@@ -4,8 +4,8 @@ module(..., package.seeall);
 
 require('Body')
 
-t0 = 0; 
-tScan = Config.fsm.headSweep.tScan; 
+t0 = 0;
+tScan = Config.fsm.headSweep.tScan;
 yawMag = Config.head.yawMax;
 dist = Config.fsm.headReady.dist;
 
@@ -31,11 +31,11 @@ function update()
   local yaw0 = direction*(ph-0.5)*2*yawMag;
   local yaw, pitch =HeadTransform.ikineCam(
 	dist*math.cos(yaw0),dist*math.sin(yaw0), height);
-	
+
 --	pitch = pitch - 30;		--b51
 --	print("pitch :"..pitch);	--b51
-  Body.set_head_command({yaw, pitch});  
---	print("headsweep pitch :",pitch);  
+  Body.set_head_command({yaw, pitch});
+--	print("headsweep pitch :",pitch);
   Body.set_para_headpos(vector.new({yaw, pitch}));--123456î^²¿
   Body.set_state_headValid(1);--123456î^²¿
 

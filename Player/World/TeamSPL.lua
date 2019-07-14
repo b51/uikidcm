@@ -60,7 +60,7 @@ tLastReceived = 0
 
 
 function recv_msgs()
-  while (Comm.size() > 0) do 
+  while (Comm.size() > 0) do
     t = serialization.deserialize(Comm.receive());
     if (t and (t.teamNumber) and (t.teamNumber == state.teamNumber) and (t.id) and (t.id ~= playerID)) then
       t.tReceive = Body.get_time();
@@ -104,7 +104,7 @@ function update()
   --state.yp = wcm.get_particle_y();
   --state.ap = wcm.get_particle_a();
 
-  --Added Vision Info 
+  --Added Vision Info
   state.goal=0;
   if vcm.get_goal_detect()>0 then
     state.goal = 1 + vcm.get_goal_type();
@@ -112,7 +112,7 @@ function update()
     local v2=vcm.get_goal_v2();
     state.goalv1[1],state.goalv1[2]=v1[1],v1[2];
     state.goalv2[1],state.goalv2[2]=0,0;
-    if vcm.get_goal_type()==3 then --two goalposts 
+    if vcm.get_goal_type()==3 then --two goalposts
       state.goalv2[1],state.goalv2[2]=v2[1],v2[2];
     end
   end
@@ -120,12 +120,12 @@ function update()
   state.landmark=0;
   if vcm.get_landmark_detect()>0 then
     local v = vcm.get_landmark_v();
-    state.landmark = 1; 
+    state.landmark = 1;
     state.landmarkv[1],state.landmarkv[2] = v[1],v[2];
   end
 
   if (math.mod(count, 1) == 0) then
-    -- use old serialization for team monitor so the 
+    -- use old serialization for team monitor so the
     --  old matlab team monitor can be used
     Comm.send(serialization.serialize_orig(state));
     --Copy of message sent out to other players
@@ -153,7 +153,7 @@ function update()
       tBall = states[id].time - states[id].ball.t;
       fallPen = states[id].fall * time_to_stand; -- fall penalty
       eta[id] = rBall/0.10 + 4*math.max(tBall-1.0,0) + fallPen;
-      
+
       -- distance to goal
       dgoalPosition = vector.new(wcm.get_goal_defend());
       pose = wcm.get_pose();
@@ -197,7 +197,7 @@ function update()
 --]]
 
 
-  if gcm.get_game_state()<2 then 
+  if gcm.get_game_state()<2 then
     --Don't switch roles until the gameSet state
     --Because now bodyReady is based on roles
     return;
@@ -223,7 +223,7 @@ function update()
       end
 
       if minDDefID == playerID then
-        -- defense 
+        -- defense
         set_role(2);
       else
         -- support
@@ -233,10 +233,10 @@ function update()
   end
 
   -- update shm
-  update_shm() 
+  update_shm()
 end
 
-function update_shm() 
+function update_shm()
   -- update the shm values
   gcm.set_team_role(role);
 end
@@ -249,7 +249,7 @@ function get_role()
 end
 
 function set_role(r)
-  if role ~= r then 
+  if role ~= r then
     role = r;
     wireless = (Body.get_time()-tLastReceived) < 1;
     if wireless then
@@ -279,7 +279,7 @@ end
 set_role(Config.game.role);
 
 function get_player_id()
-  return playerID; 
+  return playerID;
 end
 
 function min(t)

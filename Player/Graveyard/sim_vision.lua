@@ -5,7 +5,7 @@ module(... or "", package.seeall)
 local cwd = os.getenv('PWD');
 computer = os.getenv('COMPUTER') or "";
 if (string.find(computer, "Darwin")) then
-   -- MacOS X uses .dylib:                                                      
+   -- MacOS X uses .dylib:
    package.cpath = cwd.."/Lib/?.dylib;"..package.cpath;
 else
    package.cpath = cwd.."/Lib/?.so;"..package.cpath;
@@ -16,7 +16,7 @@ package.path = cwd.."/Lib/?.lua;"..package.path;
 package.path = cwd.."/Dev/?.lua;"..package.path;
 package.path = cwd.."/World/?.lua;"..package.path;
 package.path = cwd.."/Vision/?.lua;"..package.path;
-package.path = cwd.."/Motion/?.lua;"..package.path; 
+package.path = cwd.."/Motion/?.lua;"..package.path;
 
 require('Config')
 
@@ -40,7 +40,7 @@ while (true) do
   count = count + 1;
   tstart = unix.time();
 
-  -- update vision 
+  -- update vision
   imageProcessed = Vision.update();
   --if (imageProcessed) then
   --  print ('Image Processed!'..count);
@@ -48,6 +48,5 @@ while (true) do
   unix.sleep(0.1);
 end
 
--- exit 
+-- exit
 Vision.exit();
-

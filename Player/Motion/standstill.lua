@@ -38,8 +38,8 @@ function entry()
   pLLeg = vector.new({-supportX + mcm.get_footX(), footY, 0, 0,0,0});
   pRLeg = vector.new({-supportX + mcm.get_footX(), -footY, 0, 0,0,0});
 
-  Body.set_syncread_enable(1); 
-  started=false; 
+  Body.set_syncread_enable(1);
+  started=false;
   finished=false;
 
   tFinish=0;
@@ -68,7 +68,7 @@ function update()
   if finished then return; end
 
   --Wait a bit to read joint readings
-  if not started then 
+  if not started then
     if dt>tStartWait then
       started=true;
 
@@ -88,10 +88,10 @@ function update()
       t0 = Body.get_time();
       count=1;
       tStart=t0;
-      Body.set_syncread_enable(0); 
-    else 
-      Body.set_syncread_enable(1); 
-      return; 
+      Body.set_syncread_enable(0);
+    else
+      Body.set_syncread_enable(1);
+      return;
     end
   end
 

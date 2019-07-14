@@ -29,7 +29,7 @@ function load_motion_file(fname, key)
   key = key or fname;
   local mot = dofile(fname);
   motData[key] = mot;
-  
+
 --  print_motion_file(fname,mot)
 end
 
@@ -87,7 +87,7 @@ function update()
   local mot = motQueue[1];
   local t = Body.get_time();
   if not started then
-    if t-t0<0.1 then 
+    if t-t0<0.1 then
         return iFrame;
     end--wait 0.1sec to read joint positions
     started=true;
@@ -133,7 +133,7 @@ function update()
     end
     for i = 1,nServo do
       Body.set_actuator_command(q[i], mot.servos[i]);
-    end		
+    end
   end
 
 
@@ -161,6 +161,5 @@ end
 function exit()
   -- disable joint encoder reading
   -- WHYY?
-  Body.set_syncread_enable(0); 
+  Body.set_syncread_enable(0);
 end
-

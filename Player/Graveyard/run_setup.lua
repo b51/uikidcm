@@ -1,5 +1,5 @@
 --[[
-Robot- specific setup code 
+Robot- specific setup code
 Can setup all robot-specific calibration parameters
 And automatically appends it to calibration file
 --]]
@@ -37,7 +37,7 @@ package.path = cwd.."/HeadFSM/?.lua;"..package.path;
 
 require('Config');
 --This FIXES monitor issue with test_vision trying to send team message
-Config.dev.team = 'TeamNull'; 
+Config.dev.team = 'TeamNull';
 require('Body')
 require('vector')
 require("getch")
@@ -62,7 +62,7 @@ if(Config.platform.name == 'OP') then
   Body.set_body_hardness(0);
   Body.set_lleg_hardness({0.2,0.6,0,0,0,0});
   Body.set_rleg_hardness({0.2,0.6,0,0,0,0});
-end 
+end
 getch.enableblock(1);
 
 -- main loop
@@ -98,7 +98,7 @@ function init()
   targetvel=vector.zeros(3);
 
   --0 for biasing, 1 for test_walk, 2 for test_vision
-  test_mode = 1; 
+  test_mode = 1;
   headsm_running = 0;
   bodysm_running = 0;
   headangle=vector.new({0,10*math.pi/180});
@@ -123,7 +123,7 @@ function broadcast()
     Broadcast.update(broadcast_enable);
     -- Send image data every so often
     if( imagecount % imgRate == 0 ) then
-      Broadcast.update_img(broadcast_enable);    
+      Broadcast.update_img(broadcast_enable);
     end
     return true;
   end
@@ -166,13 +166,13 @@ end
 function process_keyinput_test_bias(byte)
    if byte==string.byte("1") then jointindex=(jointindex-2)%6+1;
    elseif byte==string.byte("2") then jointindex=jointindex%6+1;
-   elseif byte==string.byte("a") then 
+   elseif byte==string.byte("a") then
      bias[jointindex+bias_offset]=bias[jointindex+bias_offset]-1;
-   elseif byte==string.byte("d") then 
+   elseif byte==string.byte("d") then
      bias[jointindex+bias_offset]=bias[jointindex+bias_offset]+1;
-   elseif byte==string.byte("w") then 
+   elseif byte==string.byte("w") then
      bias[jointindex+bias_offset+6]=bias[jointindex+bias_offset+6]-1;
-   elseif byte==string.byte("x") then 
+   elseif byte==string.byte("x") then
      bias[jointindex+bias_offset+6]=bias[jointindex+bias_offset+6]+1;
    elseif byte==string.byte("s") then
      bias[jointindex+bias_offset]=bias0[jointindex+bias_offset];
@@ -196,11 +196,11 @@ function process_keyinput_set_velocity(byte)
   elseif byte==string.byte("h") then targetvel[2]=targetvel[2]+0.02;
   elseif byte==string.byte(";") then targetvel[2]=targetvel[2]-0.02;
   elseif byte==string.byte("7") then Motion.event("sit");
-  elseif byte==string.byte("8") then	
+  elseif byte==string.byte("8") then
     if walk.active then walk.stop();end
     bodysm_running = 0;
     Motion.event("standup");
-  elseif byte==string.byte("9") then	
+  elseif byte==string.byte("9") then
     Motion.event("walk");
     walk.start();
   end
@@ -210,16 +210,16 @@ end
 
 function process_keyinput_test_walk(byte)
    --Test_walk mode
-  if byte==string.byte("1") then 
+  if byte==string.byte("1") then
     kick.set_kick("kickForwardLeft");
     Motion.event("kick");
-  elseif byte==string.byte("2") then	
+  elseif byte==string.byte("2") then
     kick.set_kick("kickForwardRight");
     Motion.event("kick");
-  elseif byte==string.byte("3") then	
+  elseif byte==string.byte("3") then
     kick.set_kick("kickSideLeft");
     Motion.event("kick");
-  elseif byte==string.byte("4") then	
+  elseif byte==string.byte("4") then
     kick.set_kick("kickSideRight");
     Motion.event("kick");
   elseif byte==string.byte("5") then
@@ -239,24 +239,24 @@ function process_keyinput_test_walk(byte)
 
     -- footXComp calibration
   elseif byte==string.byte("-") then
-    footXComp = footXComp - 0.001; 
+    footXComp = footXComp - 0.001;
     print(string.format("footXComp Orig: %.3f Now: %.3f\n",
       footXComp0, footXComp));
     mcm.set_walk_footXComp(footXComp);
   elseif byte==string.byte("=") then
-    footXComp = footXComp + 0.001; 
+    footXComp = footXComp + 0.001;
     print(string.format("footXComp Orig: %.3f Now: %.3f\n",
       footXComp0, footXComp));
     mcm.set_walk_footXComp(footXComp);
 
   -- kickXComp calibration
   elseif byte==string.byte("[") then
-    kickXComp = kickXComp - 0.005; 
+    kickXComp = kickXComp - 0.005;
     print(string.format("kickXComp Orig: %.3f Now: %.3f\n",
       kickXComp0, kickXComp));
     mcm.set_walk_kickXComp(kickXComp);
   elseif byte==string.byte("]") then
-    kickXComp = kickXComp + 0.005; 
+    kickXComp = kickXComp + 0.005;
     print(string.format("kickXComp Orig: %.3f Now: %.3f\n",
       kickXComp0, kickXComp));
     mcm.set_walk_kickXComp(kickXComp);
@@ -280,30 +280,30 @@ function process_keyinput_test_vision(byte)
     headsm_running=0;headangle[1],headangle[2]=0,0;
 
   -- Head pitch fine tuning (for camera angle calibration)
-  elseif byte==string.byte("e") then	
+  elseif byte==string.byte("e") then
     headsm_running=0;headangle[2]=headangle[2]-1*math.pi/180;
-  elseif byte==string.byte("c") then	
+  elseif byte==string.byte("c") then
     headsm_running=0;headangle[2]=headangle[2]+1*math.pi/180;
 
-  -- Camera angle bias fine tuning 
-  elseif byte==string.byte("q") then	
+  -- Camera angle bias fine tuning
+  elseif byte==string.byte("q") then
     headsm_running=0;
     headPitchBiasComp = headPitchBiasComp+math.pi/180;
     mcm.set_walk_headPitchBiasComp(headPitchBiasComp);
     print("\nCamera pitch bias:",headPitchBiasComp*180/math.pi);
-  elseif byte==string.byte("z") then	
+  elseif byte==string.byte("z") then
     headsm_running=0;
     headPitchBiasComp = headPitchBiasComp-math.pi/180;
     mcm.set_walk_headPitchBiasComp(headPitchBiasComp);
     print("\nCamera pitch bias:",headPitchBiasComp*180/math.pi);
   -- Head FSM testing
-  elseif byte==string.byte("1") then	
+  elseif byte==string.byte("1") then
     headsm_running = 1;
     HeadFSM.sm:set_state('headScan');
-  elseif byte==string.byte("2") then	
+  elseif byte==string.byte("2") then
     headsm_running = 1;
     HeadFSM.sm:set_state('headReady');
-  elseif byte==string.byte("6") then	
+  elseif byte==string.byte("6") then
     headsm_running = 1;
     HeadFSM.sm:set_state('headKick');
   end
@@ -328,7 +328,7 @@ function process_keyinput()
       test_mode=(test_mode+1)%3;
 print("TESTMODE:",test_mode)
       info();
-      if test_mode==0 then    
+      if test_mode==0 then
         Body.set_lleg_hardness(1);
         Body.set_rleg_hardness(1);
         Body.set_lleg_command(vector.zeros(6));
@@ -342,7 +342,7 @@ print("TESTMODE:",test_mode)
 print("TESTMODE:",test_mode)
 
       info();
-      if test_mode==0 then    
+      if test_mode==0 then
         Body.set_syncread_enable(1);
         Body.set_lleg_hardness(1);
         Body.set_rleg_hardness(1);
@@ -353,7 +353,7 @@ print("TESTMODE:",test_mode)
         Body.set_syncread_enable(0);
       end
     end
- 
+
     if test_mode==0 then
       process_keyinput_test_bias(byte)
     else

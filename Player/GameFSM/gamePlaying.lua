@@ -39,7 +39,7 @@ function update()
     return 'finished';
   end
 
-  -- check for penalty 
+  -- check for penalty
   if gcm.in_penalty() then
     return 'penalized';
   end

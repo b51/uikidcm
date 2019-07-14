@@ -82,7 +82,7 @@ calibrated=false;
 function update()
 
   count = count + 1;
-  
+
 	if (not init)  then
     if (calibrating) then
       if (Body.calibrate(count)) then
@@ -90,7 +90,7 @@ function update()
         calibrating = false;
         ready = true;
       end
-      
+
     elseif (ready) then
     --[[
       -- initialize state machines
@@ -104,7 +104,7 @@ function update()
       BodyFSM.entry();
       HeadFSM.entry();
       GameFSM.entry();
-      
+
       if( webots ) then
         BodyFSM.sm:add_event('button');
       end
@@ -125,7 +125,7 @@ function update()
       if (count % 100 == 0) then
         initToggle = not initToggle;
         if (initToggle) then
-          Body.set_indicator_state({1,1,1}); 
+          Body.set_indicator_state({1,1,1});
         else
           Body.set_indicator_state({0,0,0});
         end
@@ -141,19 +141,19 @@ function update()
   local str=getch.get();
   if #str>0 then
 	local byte=string.byte(str,1);
-		if byte==string.byte("i") then		
+		if byte==string.byte("i") then
 			targetvel[1]=targetvel[1]+0.01;
-		elseif byte==string.byte("j") then	
+		elseif byte==string.byte("j") then
 			targetvel[3]=targetvel[3]+0.1;
-		elseif byte==string.byte("k") then	
+		elseif byte==string.byte("k") then
 			targetvel[1],targetvel[2],targetvel[3]=0,0,0;
-		elseif byte==string.byte("l") then	
+		elseif byte==string.byte("l") then
 			targetvel[3]=targetvel[3]-0.1;
-		elseif byte==string.byte(",") then	
+		elseif byte==string.byte(",") then
 			targetvel[1]=targetvel[1]-0.01;
-		elseif byte==string.byte("h") then	
+		elseif byte==string.byte("h") then
 			targetvel[2]=targetvel[2]+0.01;
-		elseif byte==string.byte(";") then	
+		elseif byte==string.byte(";") then
 			targetvel[2]=targetvel[2]-0.01;
 		elseif byte==string.byte("[") then
 			targetvel[1]=-targetvel[1];
@@ -165,13 +165,13 @@ function update()
 		--Move the head around--
 		elseif byte==string.byte("w") then
 			headangle[2]=headangle[2]-5*math.pi/180;
-		elseif byte==string.byte("a") then	
+		elseif byte==string.byte("a") then
 			headangle[1]=headangle[1]+5*math.pi/180;
-		elseif byte==string.byte("s") then	
+		elseif byte==string.byte("s") then
 			headangle[1],headangle[2]=0,0;
-		elseif byte==string.byte("d") then	
+		elseif byte==string.byte("d") then
 			headangle[1]=headangle[1]-5*math.pi/180;
-		elseif byte==string.byte("x") then	
+		elseif byte==string.byte("x") then
 			headangle[2]=headangle[2]+5*math.pi/180;
 
 		--Change configuration params in real time--
@@ -204,10 +204,10 @@ function update()
     elseif byte==string.byte('\\') then
       walkKick=not walkKick;
     elseif byte==string.byte("1") then
-      if walkKick then	
+      if walkKick then
         walk.doWalkKickLeft();
-      else 
-        kick.set_kick("KickForwardLeft");	
+      else
+        kick.set_kick("KickForwardLeft");
         Motion.event("kick");
       end
     elseif byte==string.byte("2") then
@@ -226,10 +226,10 @@ function update()
 			Config.walk.fsrOn = not Config.walk.fsrOn;
 
 		elseif byte==string.byte("7") then	Motion.event("sit");
-		elseif byte==string.byte("8") then	
+		elseif byte==string.byte("8") then
 			walk.stop();
 			Motion.event("standup");
-		elseif byte==string.byte("9") then	
+		elseif byte==string.byte("9") then
 			Motion.event("walk");
 			walk.start();
 		end
@@ -240,10 +240,9 @@ function update()
 		print(string.format("Head angle: %d, %d",
 			headangle[1]*180/math.pi,
 			headangle[2]*180/math.pi));
-		print(string.format("Walk settings:\n tStep: %.2f\t phSingle: {%.2f, %.2f}\t stepHeight: %.3f\n supportX: %.3f\t supportY: %.3f\t", Config.walk.tStep, Config.walk.phSingle[1], Config.walk.phSingle[2], Config.walk.stepHeight, 
+		print(string.format("Walk settings:\n tStep: %.2f\t phSingle: {%.2f, %.2f}\t stepHeight: %.3f\n supportX: %.3f\t supportY: %.3f\t", Config.walk.tStep, Config.walk.phSingle[1], Config.walk.phSingle[2], Config.walk.stepHeight,
 Config.walk.supportX, Config.walk.supportY));
- 
+
 
 end
 end
-

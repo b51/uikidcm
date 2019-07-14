@@ -14,8 +14,8 @@ ball_log_count = 0;
 
 noball_count = 1;
 ball_count = 0;
---If ball is not seen for this # of frames, remove ball memory 
-noball_threshold = 5; 
+--If ball is not seen for this # of frames, remove ball memory
+noball_threshold = 5;
 --How many succeding ball observations is needed before updating?
 --We need at least two observation to update velocity
 ball_threshold = 2;
@@ -114,7 +114,7 @@ function update(newx,newy)
       tPassed=t-tLast;
 
       moveR = ((oldx - newx)^2 + (oldy - newy)^2);
-      
+
       th = ballR * 0.05;
       if ballR > 2.0 then
         th = th*2;
@@ -122,7 +122,7 @@ function update(newx,newy)
       if ballR > 3.0 then
 	vx,vy=0,0;
         oldx = newx;
-        oldy = newy;        
+        oldy = newy;
         tLast=t;
       elseif moveR>th then
         vxCurrent= (newx-oldx)/tPassed;
@@ -133,7 +133,7 @@ function update(newx,newy)
           vx = (1-gamma)*vx + gamma*vxCurrent;
           vy = (1-gamma)*vy + gamma*vyCurrent;
           oldx = newx;
-          oldy = newy;        
+          oldy = newy;
           tLast=t;
         end
       else
@@ -141,7 +141,7 @@ function update(newx,newy)
 	vy=vy*discount;
         tLast=t;
       end
-  else 
+  else
      --Ball first seen, don't update velocity
      vx=0;vy=0;
      --Update position
@@ -168,7 +168,7 @@ end
 function update_noball()
   ball_count = 0;
   noball_count=noball_count+1;
-  --Reset velocity if ball was not seen 
+  --Reset velocity if ball was not seen
   if noball_count==noball_threshold then
     print("Velocity resetted")
     vx=0;vy=0;

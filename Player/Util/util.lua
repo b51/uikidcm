@@ -140,7 +140,7 @@ function init_shm_segment(fenv, name, shared, shsize)
     -- ex. vcmBall01brindza is the segment for shared.ball table in vcm.lua
     -- NOTE: the first letter of the shared_table_name is capitalized
     local shmName = name..string.upper(string.sub(shtable, 1, 1))..string.sub(shtable, 2)..Config.game.teamNumber..Config.game.playerID..(os.getenv('USER') or '');
-    
+
     fenv[shmHandleName] = shm.new(shmName, shsize[shtable]);
     local shmHandle = fenv[shmHandleName];
 
@@ -187,7 +187,7 @@ function init_shm_segment(fenv, name, shared, shsize)
             return shmHandle:set(k, val, v);
           end
       elseif (type(v) == 'table') then
-        -- setup accessors for a number/vector 
+        -- setup accessors for a number/vector
         fenv['get_'..shtable..'_'..k] =
           function()
             val = shmHandle:get(k);
@@ -210,13 +210,13 @@ end
 
 function init_shm_keys(shmHandle, shmTable)
   -- initialize a shared memory block (creating the entries if needed)
-  for k,v in pairs(shmTable) do 
+  for k,v in pairs(shmTable) do
     -- create the key if needed
     if (type(v) == 'string') then
       if (not shm_key_exists(shmHandle, k)) then
         shmHandle:set(k, {string.byte(v, 1, string.len(v))});
       end
-    elseif (type(v) == 'number') then 
+    elseif (type(v) == 'number') then
       if (not shm_key_exists(shmHandle, k) or shmHandle:size(k) ~= v) then
         shmHandle:empty(k, v);
       end
@@ -245,7 +245,7 @@ function shm_key_exists(shmHandle, k, nvals)
   end
 
   -- key does not exist
-  return false; 
+  return false;
 end
 
 

@@ -12,7 +12,7 @@ mot.keyframes={  {
 	0,0,-60,110,-90,0,
 	-20,-90,90,90,
     }),
-    duration = 0.5; 
+    duration = 0.5;
   },
   {
     angles=math.pi/180*vector.new({
@@ -22,7 +22,7 @@ mot.keyframes={  {
 	0,0,-140,170,-90,0,
 	-10,-0,90,0,
     }),
-    duration = 1; 
+    duration = 1;
   },
 
   {
@@ -33,7 +33,7 @@ mot.keyframes={  {
 	0,0,-90,170,-90,0,
 	0,-0,90,0,
     }),
-    duration = 0.5; 
+    duration = 0.5;
   },
 
 --SJ: This is final pose of bodySit
@@ -41,7 +41,7 @@ mot.keyframes={  {
     angles={
         0,0,
 	105*math.pi/180, 30*math.pi/180, 0, -0*math.pi/180,
-	0,  0.055, -0.77, 2.08, -1.31, -0.055, 
+	0,  0.055, -0.77, 2.08, -1.31, -0.055,
 	0, -0.055, -0.77, 2.08, -1.31, 0.055,
 	105*math.pi/180, -30*math.pi/180,-0,0*math.pi/180,
 	},

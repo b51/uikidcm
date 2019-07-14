@@ -40,7 +40,7 @@ function update()
 	dist*math.cos(yaw1),dist*math.sin(yaw1), height);
   Body.set_head_command({yaw, pitch});
   pitch = pitch + 10*math.pi/180;
-  
+
   Body.set_para_headpos(vector.new({yaw, pitch}));--123456î^²¿
   Body.set_state_headValid(1);--123456î^²¿
 
@@ -59,4 +59,3 @@ end
 
 function exit()
 end
-

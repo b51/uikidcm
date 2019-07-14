@@ -89,7 +89,7 @@ vision.goal.th_min_fill_extent={0.35, 0.65};
 vision.goal.th_aspect_ratio={2.5,15};
 vision.goal.th_edge_margin= 5;
 vision.goal.th_bottom_boundingbox=0.9;
-vision.goal.th_ground_boundingbox={-15,15,-15,10}; 
+vision.goal.th_ground_boundingbox={-15,15,-15,10};
 vision.goal.th_min_green_ratio = 0.2;
 vision.goal.th_min_bad_color_ratio = 0.1;
 --vision.goal.th_goal_separation = {0.35,2.0};
@@ -98,12 +98,12 @@ vision.goal.th_min_area_unknown_post = 200;
 
 --vision.goal.far_goal_threshold= 3.0; --The range we triangulate
 vision.goal.far_goal_threshold= 4.0; --The range we triangulate
---vision.goal.distanceFactorCyan = 1; 
---vision.goal.distanceFactorYellow = 1; 
+--vision.goal.distanceFactorCyan = 1;
+--vision.goal.distanceFactorYellow = 1;
 
---VT field goals 
-vision.goal.distanceFactor = 1.5; 
-vision.goal.distanceFactorGoalie = 1; 
+--VT field goals
+vision.goal.distanceFactor = 1.5;
+vision.goal.distanceFactorGoalie = 1;
 
 vision.goal.use_centerpost = 0;
 vision.goal.check_for_ground = 1;
@@ -144,4 +144,3 @@ vision.corner.min_center_dist = 1.5;
 
 vision.ball.th_headAngle = 30*math.pi/180;  --Minimum angle of headAngle[2].
 vision.use_arbitrary_ball = true;
-

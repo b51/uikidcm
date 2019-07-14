@@ -5,7 +5,7 @@ darwin = false;
 
 -- Get Platform for package path
 cwd = os.getenv('PWD');
-local platform = os.getenv('PLATFORM') or ''; 
+local platform = os.getenv('PLATFORM') or '';
 if (string.find(platform,'webots')) then cwd = cwd .. '/Player';
 end
 
@@ -86,7 +86,7 @@ function update()
         calibrating = false;
         ready = true;
       end
-      
+
     elseif (ready) then
       init = true;
     else
@@ -103,7 +103,7 @@ function update()
       if (count % 100 == 0) then
         initToggle = not initToggle;
         if (initToggle) then
-          Body.set_indicator_state({1,1,1}); 
+          Body.set_indicator_state({1,1,1});
         else
           Body.set_indicator_state({0,0,0});
         end
@@ -114,19 +114,19 @@ function update()
      --is str not empty (thanks Ashleigh)?
      if #str>0 then
 	local byte=string.byte(str,1);
-		if byte==string.byte("I") then		
+		if byte==string.byte("I") then
 			targetvel[1]=targetvel[1]+0.01;
-		elseif byte==string.byte("J") then	
+		elseif byte==string.byte("J") then
 			targetvel[3]=targetvel[3]+0.1;
-		elseif byte==string.byte("K") then	
+		elseif byte==string.byte("K") then
 			targetvel[1],targetvel[2],targetvel[3]=0,0,0;
-		elseif byte==string.byte("L") then	
+		elseif byte==string.byte("L") then
 			targetvel[3]=targetvel[3]-0.1;
-		elseif byte==string.byte(",") then	
+		elseif byte==string.byte(",") then
 			targetvel[1]=targetvel[1]-0.01;
-		elseif byte==string.byte("H") then	
+		elseif byte==string.byte("H") then
 			targetvel[2]=targetvel[2]+0.01;
-		elseif byte==string.byte(";") then	
+		elseif byte==string.byte(";") then
 			targetvel[2]=targetvel[2]-0.01;
 		elseif byte==string.byte("[") then
 			targetvel[1]=-targetvel[1];
@@ -135,32 +135,32 @@ function update()
 		elseif byte==string.byte("/") then
 			targetvel[3]=-targetvel[3];
 
-                elseif byte==string.byte("1") then	
+                elseif byte==string.byte("1") then
 			kick.set_kick("kickForwardLeft");
 			Motion.event("kick");
-		elseif byte==string.byte("2") then	
+		elseif byte==string.byte("2") then
 			kick.set_kick("kickForwardRight");
 			Motion.event("kick");
 
 		--Move the head around--
 		elseif byte==string.byte("W") then
 			headangle[2]=headangle[2]-5*math.pi/180;
-		elseif byte==string.byte("A") then	
+		elseif byte==string.byte("A") then
 			headangle[1]=headangle[1]+5*math.pi/180;
-		elseif byte==string.byte("S") then	
+		elseif byte==string.byte("S") then
 			headangle[1],headangle[2]=0,0;
-		elseif byte==string.byte("D") then	
+		elseif byte==string.byte("D") then
 			headangle[1]=headangle[1]-5*math.pi/180;
-		elseif byte==string.byte("X") then	
+		elseif byte==string.byte("X") then
 			headangle[2]=headangle[2]+5*math.pi/180;
 
 
     elseif byte==string.byte("6") then Motion.event("dive");
     elseif byte==string.byte("7") then	Motion.event("sit");
-		elseif byte==string.byte("8") then	
+		elseif byte==string.byte("8") then
 			walk.stop();
 			Motion.event("standup");
-		elseif byte==string.byte("9") then	
+		elseif byte==string.byte("9") then
 			Motion.event("walk");
 			walk.start();
 
@@ -169,18 +169,18 @@ function update()
                 end
 	      end
     if count%30==0 then
-    	print(string.format("\n Walk Velocity: (%.2f, %.2f, %.2f)",
-        	unpack(targetvel)));
+	print(string.format("\n Walk Velocity: (%.2f, %.2f, %.2f)",
+		unpack(targetvel)));
 	print(string.format("Head angle: %d, %d",
 			headangle[1]*180/math.pi,
 			headangle[2]*180/math.pi));
 
-    end 
-    
+    end
+
     --update the velocity
     walk.set_velocity(unpack(targetvel));
-    
-    
+
+
     Body.set_head_hardness(0.2);
     Body.set_head_command(headangle);
     Motion.update();

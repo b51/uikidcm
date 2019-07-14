@@ -4,7 +4,7 @@ module(... or "", package.seeall)
 cwd = '.';
 computer = os.getenv('COMPUTER') or "";
 if (string.find(computer, "Darwin")) then
-   -- MacOS X uses .dylib:                                                      
+   -- MacOS X uses .dylib:
    package.cpath = cwd.."/Lib/?.dylib;"..package.cpath;
 else
    package.cpath = cwd.."/Lib/?.so;"..package.cpath;
@@ -15,7 +15,7 @@ package.path = cwd.."/Lib/?.lua;"..package.path;
 package.path = cwd.."/Dev/?.lua;"..package.path;
 package.path = cwd.."/World/?.lua;"..package.path;
 package.path = cwd.."/DLVision/?.lua;"..package.path;
-package.path = cwd.."/Motion/?.lua;"..package.path; 
+package.path = cwd.."/Motion/?.lua;"..package.path;
 
 require('unix')
 require('vcm')
@@ -28,7 +28,7 @@ require('World')
 comm_inited = false;
 vcm.set_camera_teambroadcast(1);
 vcm.set_camera_broadcast(0);
---Now vcm.get_camera_teambroadcast() determines 
+--Now vcm.get_camera_teambroadcast() determines
 --Whether we use wired monitoring comm or wireless team comm
 
 count = 0;
@@ -42,10 +42,10 @@ end
 function broadcast()
   broadcast_enable = vcm.get_camera_broadcast();
   if broadcast_enable>0 then
-    if broadcast_enable==1 then 
+    if broadcast_enable==1 then
       --Mode 1, send 1/4 resolution, labeB, all info
       imgRate = 1; --30fps
-    elseif broadcast_enable==2 then 
+    elseif broadcast_enable==2 then
       --Mode 2, send 1/2 resolution, labeA, labelB, all info
       imgRate = 2; --15fps
     else
@@ -56,7 +56,7 @@ function broadcast()
     Broadcast.update(broadcast_enable);
     -- Send image data every so often
     if nProcessedImages % imgRate ==0 then
-      Broadcast.update_img(broadcast_enable);    
+      Broadcast.update_img(broadcast_enable);
     end
     --Reset this flag at every broadcast
     --To prevent monitor running during actual game
@@ -74,7 +74,7 @@ function update()
 --  print("imuangle :",Body.get_sensor_imuAngle()[3]*180/math.pi);
   tstart = unix.time();
 
-  -- update vision 
+  -- update vision
   imageProcessed = DLVision.update();
   World.update_odometry();
 
@@ -88,8 +88,8 @@ function update()
       tUpdate = unix.time();
     end
   end
- 
-  if not comm_inited and 
+
+  if not comm_inited and
     (vcm.get_camera_broadcast()>0 or
      vcm.get_camera_teambroadcast()>0) then
     if vcm.get_camera_teambroadcast()>0 then
@@ -106,7 +106,7 @@ function update()
   end
 
   if comm_inited and imageProcessed then
-    if vcm.get_camera_teambroadcast()>0 then 
+    if vcm.get_camera_teambroadcast()>0 then
       GameControl.update();
       if nProcessedImages % 3 ==0 then
 	--10 fps team update
@@ -118,13 +118,12 @@ function update()
   end
 end
 
--- exit 
+-- exit
 function exit()
-  if vcm.get_camera_teambroadcast()>0 then 
+  if vcm.get_camera_teambroadcast()>0 then
     Team.exit();
     GameControl.exit();
   end
   DLVision.exit();
   World.exit();
 end
-

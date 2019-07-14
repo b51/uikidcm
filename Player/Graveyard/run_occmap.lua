@@ -51,4 +51,3 @@ while (true) do
 end
 
 OccupancyMap.exit();
-

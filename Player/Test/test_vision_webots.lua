@@ -50,7 +50,7 @@ require('ocm')
 darwin = false;
 webots = false;
 
--- Enable OP specific 
+-- Enable OP specific
 if(Config.platform.name == 'OP') then
   darwin = true;
 end
@@ -60,7 +60,7 @@ if (string.find(Config.platform.name,'Webots')) then
   webots = true;
 end
 
-if Config.vision.enable_freespace_detection == 1 then 
+if Config.vision.enable_freespace_detection == 1 then
   require('OccupancyMap')
   OccupancyMap.entry();
 end
@@ -109,19 +109,19 @@ function process_keyinput()
     elseif byte==string.byte("a") then
       headangle[1]=headangle[1]+5*math.pi/180;
       headsm_running=0;
-    elseif byte==string.byte("s") then	
+    elseif byte==string.byte("s") then
       headangle[1],headangle[2]=0,0;
       headsm_running=0;
     elseif byte==string.byte("d") then
       headangle[1]=headangle[1]-5*math.pi/180;
       headsm_running=0;
-    elseif byte==string.byte("x") then	
+    elseif byte==string.byte("x") then
       headangle[2]=headangle[2]+5*math.pi/180;
       headsm_running=0;
-    elseif byte==string.byte("e") then	
+    elseif byte==string.byte("e") then
       headangle[2]=headangle[2]-1*math.pi/180;
       headsm_running=0;
-    elseif byte==string.byte("c") then	
+    elseif byte==string.byte("c") then
       headangle[2]=headangle[2]+1*math.pi/180;
       headsm_running=0;
 
@@ -165,7 +165,7 @@ function process_keyinput()
       if (headsm_running == 1) then
         HeadFSM.sm:set_state('headSweep');
       end
-    elseif byte==string.byte("1") then	
+    elseif byte==string.byte("1") then
       headsm_running = 1-headsm_running;
       if( headsm_running==1 ) then
 --	Speak.talk("Starting head Scan")
@@ -181,10 +181,10 @@ function process_keyinput()
       headangle[1],headangle[2] = HeadTransform.ikineCam(ball.x, ball.y, trackZ);
       print("Head Angles for looking directly at the ball", unpack(headangle*180/math.pi));
 
-    elseif byte==string.byte("3") then	
+    elseif byte==string.byte("3") then
       kick.set_kick("kickForwardLeft");
       Motion.event("kick");
-    elseif byte==string.byte("4") then	
+    elseif byte==string.byte("4") then
       kick.set_kick("kickForwardRight");
       Motion.event("kick");
 
@@ -192,18 +192,18 @@ function process_keyinput()
 --     Speak.talk("Starting body Search")
      headsm_running=1;
      bodysm_running=1;
-     BodyFSM.sm:set_state('bodySearch');   
+     BodyFSM.sm:set_state('bodySearch');
      HeadFSM.sm:set_state('headScan');
    elseif byte==string.byte("6") then	--Kick head SM
      headsm_running=1;
 --     Speak.talk("Starting head Ready")
      HeadFSM.sm:set_state('headReady');
    elseif byte==string.byte("7") then	Motion.event("sit");
-   elseif byte==string.byte("8") then	
+   elseif byte==string.byte("8") then
      if walk.active then walk.stop();end
      Motion.event("standup");
      bodysm_running=0;
-   elseif byte==string.byte("9") then	
+   elseif byte==string.byte("9") then
      Motion.event("walk");
      walk.start();
    elseif byte==string.byte('o') then
@@ -231,7 +231,7 @@ function update()
 
   local t = Body.get_time();
   Body.set_syncread_enable(0); --read from only head servos
- 
+
   -- Update the Vision
   if t-last_vision_update_time>vision_update_interval then
     last_vision_update_time = t;
@@ -239,9 +239,9 @@ function update()
   end
 
   World.update_odometry();
-  
+
   -- Update localization
-  if imageProcessed then 
+  if imageProcessed then
     World.update_vision();
     vcm.refresh_debug_message();
   end
@@ -250,7 +250,7 @@ function update()
   if Config.vision.enable_freespace_detection == 1 then
     OccupancyMap.update();
   end
-   
+
   -- Update the relevant engines
   Body.update();
   Motion.update();
@@ -264,7 +264,7 @@ function update()
   if( bodysm_running==1 ) then
     BodyFSM.update();
   end
-  
+
   -- Get a keypress
   process_keyinput();
 
@@ -288,4 +288,3 @@ while 1 do
   update();
   io.stdout:flush();
 end
-

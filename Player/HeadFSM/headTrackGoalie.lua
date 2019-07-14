@@ -9,7 +9,7 @@ t0 = 0;
 
 minDist = Config.fsm.headTrack.minDist;
 fixTh = Config.fsm.headTrack.fixTh;
-trackZ = Config.vision.ball_diameter; 
+trackZ = Config.vision.ball_diameter;
 timeout = Config.fsm.headTrack.timeout;
 tLost = Config.fsm.headTrack.tLost;
 locked_on = false;

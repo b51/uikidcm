@@ -20,7 +20,7 @@ function entry()
   attackAngle = wcm.get_attack_angle();
   defendAngle = wcm.get_defend_angle();
   attackClosest = math.abs(attackAngle) < math.abs(defendAngle);
- 
+
   -- only use top camera
   vcm.set_camera_command(0);
 end
@@ -40,9 +40,9 @@ function update()
   yaw1 = math.min(math.max(yaw0+yawbias, -yawMax), yawMax);
   local yaw, pitch =HeadTransform.ikineCam(
 	dist*math.cos(yaw1),dist*math.sin(yaw1), height);
-  
+
   Body.set_head_command({yaw, pitch*180/math.pi});
-   pitch = pitch + 10*math.pi/180 
+   pitch = pitch + 10*math.pi/180
   Body.set_para_headpos(vector.new({yaw, pitch}));--123456î^²¿
   Body.set_state_headValid(1);--123456î^²¿
 
@@ -58,4 +58,3 @@ end
 
 function exit()
 end
-

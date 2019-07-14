@@ -49,7 +49,7 @@ t0=0;
 t1=0;
 
 --How long does goalie lie down?
-goalie_dive_waittime = Config.goalie_dive_waittime or 3.0; 
+goalie_dive_waittime = Config.goalie_dive_waittime or 3.0;
 
 
 function entry()
@@ -79,10 +79,10 @@ pTorso[3]=zBody;
 aLeft=0; aRight=0;
 
 
-function update() 
+function update()
   if goalie_dive==2 then --Diving
     divedone=dodive();
-    if divedone then 
+    if divedone then
       if diveType == "diveCenter" then
         --walk.start();    -tse
         return "done"
@@ -92,7 +92,7 @@ function update()
     end
   else --Arm motion
     divedone=dodive2();
-    if divedone then 
+    if divedone then
 
       Body.set_larm_command(qLArm0);
       Body.set_rarm_command(qRArm0);
@@ -113,11 +113,11 @@ function dosquat()
   local divedone=false;
   Body.set_para_headpos(vector.new({0,0}));  --tse
   Body.set_state_headValid(1);               --tse
-  
+
   print("do diveCenter Start");
-  Body.set_para_gaitID(vector.new({7,1}));  --------- 调用diveCeter 
+  Body.set_para_gaitID(vector.new({7,1}));  --------- 调用diveCeter
   Body.set_state_specialValid(1);  ------------------ 执行start
-  
+
   if phase==1 then
 
     qLArm4=math.pi/180*vector.new({80,90,0});
@@ -164,7 +164,7 @@ function dosquat()
      Body.set_rarm_command(qRArm0);
 	 print("done")
      divedone=true;
-  end     
+  end
 
   pTorso[1],pTorso[2],pTorso[6]=uTorso[1],uTorso[2],uTorso[3];
   pLLeg[1],pLLeg[2],pLLeg[3],pLLeg[5],pLLeg[6]=uLeft[1],uLeft[2],zLeft,aLeft,uLeft[3];
@@ -193,7 +193,7 @@ function dodive()
 
   t = Body.get_time();
   local divedone=false;
-  
+
   if phase==1 then
 
 --raise hand. squat down
@@ -201,21 +201,21 @@ function dodive()
 	   --print("do diveLeft PH1");
        Body.set_larm_hardness(0.9);
        Body.set_larm_command(qLArm);
-	   
-       Body.set_para_headpos(vector.new({0,0}));  --tse        
-       Body.set_state_headValid(1);               --tse 
+
+       Body.set_para_headpos(vector.new({0,0}));  --tse
+       Body.set_state_headValid(1);               --tse
 	   print("do diveLeft Start");
-	   Body.set_para_gaitID(vector.new({5,1}));  --------- 调用diveCeter 
+	   Body.set_para_gaitID(vector.new({5,1}));  --------- 调用diveCeter
        Body.set_state_specialValid(1);  ------------------ 执行start
     else
        --print("do diveRight PH1");
        Body.set_rarm_hardness(0.9);
        Body.set_rarm_command(qRArm);
-       Body.set_para_headpos(vector.new({0,0}));  --tse        
-       Body.set_state_headValid(1);               --tse 
-	   
+       Body.set_para_headpos(vector.new({0,0}));  --tse
+       Body.set_state_headValid(1);               --tse
+
 	   print("do diveRight Start");
-	   Body.set_para_gaitID(vector.new({6,1}));  --------- 调用diveCeter 
+	   Body.set_para_gaitID(vector.new({6,1}));  --------- 调用diveCeter
        Body.set_state_specialValid(1);  ------------------ 执行start
     end
 
@@ -298,7 +298,7 @@ function dodive()
   elseif phase==5 then
        print("diveDone")
        divedone=true;
-  end     
+  end
 
   pTorso[1],pTorso[2],pTorso[6]=uTorso[1],uTorso[2],uTorso[3];
   pLLeg[1],pLLeg[2],pLLeg[3],pLLeg[5],pLLeg[6]=uLeft[1],uLeft[2],zLeft,aLeft,uLeft[3];
@@ -316,7 +316,7 @@ function dodive2()
 
   t = Body.get_time();
   divedone=false;
-  if t-t0>tDelay1 and phase==1 then 
+  if t-t0>tDelay1 and phase==1 then
 	print("PH1")
         Body.set_larm_hardness(0.9);
         Body.set_rarm_hardness(0.9);
@@ -332,16 +332,15 @@ function dodive2()
   end
   if phase==2 and t-t0>tDelay2 then
      divedone=true;
-  end     
+  end
   return divedone;
 end
 
 function exit()
-  
+
 end
 
 function set_dive(newdive)
   -- set dive type (left/right)
     diveType = newdive;
 end
-

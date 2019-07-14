@@ -13,13 +13,13 @@ fsm.enable_obstacle_detection = 0;
 
 --fsm.playMode = 1; --For Demo without orbit
 --fsm.playMode = 2; --Simple Behavior with orbit
-fsm.playMode = 3; --Advanced Behavior 
+fsm.playMode = 3; --Advanced Behavior
 --fsm.playMode = 4;   --Passing Ball
 fsm.enable_walkkick = 0;
 
 fsm.wait_kickoff = 1; --initial wait at opponent's kickoff
 
-fsm.goalie_reposition = 0; 
+fsm.goalie_reposition = 0;
 --0 for don't reposition at all,
 --1 for repositon for angle error, 2 for reposition for position error
 
@@ -45,12 +45,12 @@ fsm.bodySearch.timeout = 10.0*speedFactor;
 --------------------------------------------------
 fsm.bodyAnticipate={};
 
-fsm.bodyAnticipate.tStartDelay = 1.0*speedFactor; 
+fsm.bodyAnticipate.tStartDelay = 1.0*speedFactor;
 
 --fsm.bodyAnticipate.rMinDive = 1.0;
 fsm.bodyAnticipate.rMinDive = 0.8;  --tse
 fsm.bodyAnticipate.rCloseDive = 1.5;    --tse
-fsm.bodyAnticipate.center_dive_threshold_y = 0.07; 
+fsm.bodyAnticipate.center_dive_threshold_y = 0.07;
 fsm.bodyAnticipate.dive_threshold_y = 1.0;
 
 fsm.bodyAnticipate.ball_velocity_th = 0.5; --min velocity for diving
@@ -95,26 +95,26 @@ fsm.bodyOrbit.tLost = 3.0*speedFactor;
 fsm.bodyPosition={};
 
 --Trajectory parameters
-fsm.bodyPosition.rTurn = 0.25; 
-fsm.bodyPosition.rDist1 = 0.40; 
-fsm.bodyPosition.rDist2 = 0.20; 
-fsm.bodyPosition.rTurn2 = 0.08; 
-fsm.bodyPosition.rOrbit = 0.60; 
+fsm.bodyPosition.rTurn = 0.25;
+fsm.bodyPosition.rDist1 = 0.40;
+fsm.bodyPosition.rDist2 = 0.20;
+fsm.bodyPosition.rTurn2 = 0.08;
+fsm.bodyPosition.rOrbit = 0.60;
 
 
 --New params to reduce sidestepping
---fsm.bodyPosition.rOrbit = 0.60; 
---fsm.bodyPosition.rDist1 = 0.40; 
---fsm.bodyPosition.rDist2 = 0.25; 
+--fsm.bodyPosition.rOrbit = 0.60;
+--fsm.bodyPosition.rDist1 = 0.40;
+--fsm.bodyPosition.rDist2 = 0.25;
 
 
 fsm.bodyPosition.rClose = 0.35;   --tse
---fsm.bodyPosition.rClose = 0.50;	
+--fsm.bodyPosition.rClose = 0.50;
 fsm.bodyPosition.thClose = {0.15,0.15,10*math.pi/180};   --tse
---fsm.bodyPosition.thClose = {0.45,0.45,20*math.pi/180};	
+--fsm.bodyPosition.thClose = {0.45,0.45,20*math.pi/180};
 
-fsm.bodyPosition.tLost =  5.0*speedFactor; 
-fsm.bodyPosition.timeout = 30*speedFactor; 
+fsm.bodyPosition.tLost =  5.0*speedFactor;
+fsm.bodyPosition.timeout = 30*speedFactor;
 
 --Velocity generation parameters
 
@@ -132,8 +132,8 @@ fsm.bodyPosition.maxY2 = 0.04;
 
 --Full speed front dash
 fsm.bodyPosition.maxStep3 = 0.05;
---fsm.bodyPosition.rVel3 = 0.8; 
-fsm.bodyPosition.rVel3 = 0.5; 
+--fsm.bodyPosition.rVel3 = 0.8;
+fsm.bodyPosition.rVel3 = 0.5;
 fsm.bodyPosition.aVel3 = 20*math.pi/180;
 fsm.bodyPosition.maxA3 = 0.0;
 fsm.bodyPosition.maxY3 = 0.0;
@@ -145,7 +145,7 @@ fsm.bodyApproach={};
 fsm.bodyApproach.maxStep = 0.04; --Max walk velocity
 fsm.bodyApproach.timeout = 10.0*speedFactor;
 fsm.bodyApproach.rFar = 0.45; --Max ball distance    --tse
---fsm.bodyApproach.rFar = 0.80; --Max ball distance	
+--fsm.bodyApproach.rFar = 0.80; --Max ball distance
 fsm.bodyApproach.tLost = 3.0*speedFactor;--ball detection timeout
 
 fsm.bodyApproach.aThresholdTurn = 7*math.pi/180;
@@ -159,7 +159,7 @@ fsm.bodyApproach.yTarget11={0.03, 0.05, 0.10}; --min, target ,max
 fsm.bodyApproach.xTarget12={0, 0.13,0.15}; --min, target, max
 fsm.bodyApproach.yTarget12={-0.005, 0.01, 0.05}; --min, target ,max
 
---Target position for straight walkkick 
+--Target position for straight walkkick
 fsm.bodyApproach.xTarget21={0, 0.19,0.21}; --min, target, max
 fsm.bodyApproach.yTarget21={0.020, 0.035, 0.050}; --min, target ,max
 
@@ -167,7 +167,7 @@ fsm.bodyApproach.yTarget21={0.020, 0.035, 0.050}; --min, target ,max
 --fsm.bodyApproach.xTarget22={0, 0.16,0.19}; --min, target, max
 
 --shorter walking sidekick
-fsm.bodyApproach.xTarget22={0, 0.12,0.14}; --min, target, max 
+fsm.bodyApproach.xTarget22={0, 0.12,0.14}; --min, target, max
 fsm.bodyApproach.yTarget22={0.000, 0.015, 0.030}; --min, target ,max
 
 --------------------------------------------------
@@ -178,10 +178,10 @@ fsm.bodyApproach.yTarget22={0.000, 0.015, 0.030}; --min, target ,max
 --------------------------------------------------
 fsm.bodyKick={};
 
---initial wait 
+--initial wait
 fsm.bodyKick.tStartWait = 0.5;
 fsm.bodyKick.tStartWaitMax = 1.0;
-fsm.bodyKick.thGyroMag = 100; 
+fsm.bodyKick.thGyroMag = 100;
 
 --Longer wait (until we set gyro values correctly)
 fsm.bodyKick.tStartWait = 1.0;
@@ -189,7 +189,7 @@ fsm.bodyKick.tStartWaitMax = 1.5;
 
 
 
-fsm.bodyKick.thGyroMag = 10; 
+fsm.bodyKick.thGyroMag = 10;
 fsm.bodyKick.tStartWait = 0.2;
 fsm.bodyKick.tStartWaitMax = 1.0;
 
@@ -203,12 +203,12 @@ fsm.bodyKick.kickTargetSide = {0.12,0.03};
 fsm.bodyKick.kickTh = {0.05,0.05};
 
 --delay for camera following the ball
-fsm.bodyKick.tFollowDelay = 2.2; 
+fsm.bodyKick.tFollowDelay = 2.2;
 --------------------------------------------------
 --BodyWalkKick : Dynamic Kick
 --------------------------------------------------
 fsm.bodyWalkKick={};
-fsm.bodyWalkKick.timeout = 2.0*speedFactor; 
+fsm.bodyWalkKick.timeout = 2.0*speedFactor;
 --------------------------------------------------
 --BodyGotoCenter : Going to center when ball is lost
 --------------------------------------------------
@@ -225,18 +225,18 @@ fsm.headTrack.timeout = 3.0 * speedFactor;
 fsm.headTrack.tLost = 1.5 * speedFactor;  --tse
 --fsm.headTrack.tLost = 3.0 * speedFactor;
 fsm.headTrack.minDist = 0.15;--If ball is closer than this, don't look up  --tse
---fsm.headTrack.minDist = 0.50;--If ball is closer than this, don't look up	
---fsm.headTrack.fixTh={0.20,0.08}; --Fix yaw axis if ball is within this box	
+--fsm.headTrack.minDist = 0.50;--If ball is closer than this, don't look up
+--fsm.headTrack.fixTh={0.20,0.08}; --Fix yaw axis if ball is within this box
 fsm.headTrack.fixTh={0.20,0.08}; --Fix yaw axis if ball is within this box	--tse
 
 --------------------------------------------------
 --HeadReady : Track the horizonal line for localization
 --------------------------------------------------
 fsm.headReady={}
-fsm.headReady.dist = 3.0; 
+fsm.headReady.dist = 3.0;
 --fsm.headReady.height = 0.5;
 fsm.headReady.height = 0.460;	--tse
-fsm.headReady.tScan= 3.0*speedFactor; 
+fsm.headReady.tScan= 3.0*speedFactor;
 
 --------------------------------------------------
 --HeadReadyLookGoal : Look Goal during bodyReady

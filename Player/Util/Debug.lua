@@ -89,4 +89,3 @@ end
 function remove_visiondebugmode(mode)
   visiondebugmode[1] = cutil.bit_and(cutil.bit_not(mode), visiondebugmode[1]);
 end
-

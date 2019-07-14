@@ -16,7 +16,7 @@ package.path = cwd.."/Lib/?.lua;"..package.path;
 package.path = cwd.."/Dev/?.lua;"..package.path;
 package.path = cwd.."/World/?.lua;"..package.path;
 package.path = cwd.."/Vision/?.lua;"..package.path;
-package.path = cwd.."/Motion/?.lua;"..package.path; 
+package.path = cwd.."/Motion/?.lua;"..package.path;
 
 require 'unix'
 require ('Config')
@@ -135,7 +135,7 @@ function push_team_struct(obj,teamOffset)
 
 
   team_t_receive[id]=obj.tReceive;
-  
+
 --states.role[id]=obj.id; --robot id?
   states.teamColor[id]=obj.teamColor;
   states.robotId[id]=obj.id;
@@ -179,25 +179,25 @@ function push_team_struct(obj,teamOffset)
 --  states.landmarkv1[id]=obj.landmarkv[1];
 --  states.landmarkv2[id]=obj.landmarkv[2];
 
-  if id==1 then  
+  if id==1 then
     wcm.set_robotNames_n1(obj.robotName);
-  elseif id==2 then  
+  elseif id==2 then
     wcm.set_robotNames_n2(obj.robotName);
-  elseif id==3 then  
+  elseif id==3 then
     wcm.set_robotNames_n3(obj.robotName);
-  elseif id==4 then  
+  elseif id==4 then
     wcm.set_robotNames_n4(obj.robotName);
-  elseif id==5 then  
+  elseif id==5 then
     wcm.set_robotNames_n5(obj.robotName);
-  elseif id==6 then  
+  elseif id==6 then
     wcm.set_robotNames_n6(obj.robotName);
-  elseif id==7 then  
+  elseif id==7 then
     wcm.set_robotNames_n7(obj.robotName);
-  elseif id==8 then  
+  elseif id==8 then
     wcm.set_robotNames_n8(obj.robotName);
-  elseif id==9 then  
+  elseif id==9 then
     wcm.set_robotNames_n9(obj.robotName);
-  elseif id==10 then  
+  elseif id==10 then
     wcm.set_robotNames_n10(obj.robotName);
   end
 
@@ -261,7 +261,7 @@ while( true ) do
     if t and (t.teamNumber) then
       t.tReceive = unix.time();
       count=count+1;
-      if #teamToTrack==1 then 
+      if #teamToTrack==1 then
         if (t.teamNumber == teamToTrack[1]) and (t.id) then
           push_team_struct(t,0);
 	  push_labelB(t,0);

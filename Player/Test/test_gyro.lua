@@ -82,15 +82,15 @@ calibrated=false;
 
 function update()
   count = count + 1;
-  
-  	if (not init)  then
+
+	if (not init)  then
     if (calibrating) then
       if (Body.calibrate(count)) then
         Speak.talk('Calibration done');
         calibrating = false;
         ready = true;
       end
-      
+
     elseif (ready) then
     --[[
       -- initialize state machines
@@ -104,7 +104,7 @@ function update()
       BodyFSM.entry();
       HeadFSM.entry();
       GameFSM.entry();
-      
+
       if( webots ) then
         BodyFSM.sm:add_event('button');
       end
@@ -125,7 +125,7 @@ function update()
       if (count % 100 == 0) then
         initToggle = not initToggle;
         if (initToggle) then
-          Body.set_indicator_state({1,1,1}); 
+          Body.set_indicator_state({1,1,1});
         else
           Body.set_indicator_state({0,0,0});
         end
@@ -145,10 +145,10 @@ function update()
 	return;
   elseif count>100 and count<200  then
 	imuGyr = Body.get_sensor_imuGyr();
-   	gyro0[1],gyro0[2]=gyro0[1]+imuGyr[1],gyro0[2]+imuGyr[2];
-   	gyroMax[1],gyroMax[2]=math.max(gyroMax[1],math.abs(imuGyr[1])),
+	gyro0[1],gyro0[2]=gyro0[1]+imuGyr[1],gyro0[2]+imuGyr[2];
+	gyroMax[1],gyroMax[2]=math.max(gyroMax[1],math.abs(imuGyr[1])),
 		math.max(gyroMax[2],math.abs(imuGyr[2]));
-   	gyroMin[1],gyroMin[2]=math.min(gyroMin[1],math.abs(imuGyr[1])),
+	gyroMin[1],gyroMin[2]=math.min(gyroMin[1],math.abs(imuGyr[1])),
 		math.min(gyroMin[2],math.abs(imuGyr[2]));
 	gyrocount=gyrocount+1;
 	return;
@@ -161,13 +161,13 @@ function update()
            Speak.talk("Gyro recalibrating")
 	   count=99;
 	   return;
-       else	
+       else
 	   gyro0[1]=gyro0[1]/gyrocount;
 	   gyro0[2]=gyro0[2]/gyrocount;
 	   print("Calibration done, ",unpack(gyro0));
 	   Speak.talk("Calibration done")
-  	   walk.gyro0=gyro0;
-  	   kick.gyro0=gyro0;
+	   walk.gyro0=gyro0;
+	   kick.gyro0=gyro0;
        end
   end
 --]]
@@ -187,19 +187,19 @@ function update()
   local str=getch.get();
   if #str>0 then
 	local byte=string.byte(str,1);
-		if byte==string.byte("i") then		
+		if byte==string.byte("i") then
 			targetvel[1]=targetvel[1]+0.01;
-		elseif byte==string.byte("j") then	
+		elseif byte==string.byte("j") then
 			targetvel[3]=targetvel[3]+0.1;
-		elseif byte==string.byte("k") then	
+		elseif byte==string.byte("k") then
 			targetvel[1],targetvel[2],targetvel[3]=0,0,0;
-		elseif byte==string.byte("l") then	
+		elseif byte==string.byte("l") then
 			targetvel[3]=targetvel[3]-0.1;
-		elseif byte==string.byte(",") then	
+		elseif byte==string.byte(",") then
 			targetvel[1]=targetvel[1]-0.01;
-		elseif byte==string.byte("h") then	
+		elseif byte==string.byte("h") then
 			targetvel[2]=targetvel[2]+0.01;
-		elseif byte==string.byte(";") then	
+		elseif byte==string.byte(";") then
 			targetvel[2]=targetvel[2]-0.01;
 		elseif byte==string.byte("[") then
 			targetvel[1]=-targetvel[1];
@@ -211,28 +211,28 @@ function update()
 		--Move the head around--
 		elseif byte==string.byte("w") then
 			headangle[2]=headangle[2]-5*math.pi/180;
-		elseif byte==string.byte("a") then	
+		elseif byte==string.byte("a") then
 			headangle[1]=headangle[1]+5*math.pi/180;
-		elseif byte==string.byte("s") then	
+		elseif byte==string.byte("s") then
 			headangle[1],headangle[2]=0,0;
-		elseif byte==string.byte("d") then	
+		elseif byte==string.byte("d") then
 			headangle[1]=headangle[1]-5*math.pi/180;
-		elseif byte==string.byte("x") then	
+		elseif byte==string.byte("x") then
 			headangle[2]=headangle[2]+5*math.pi/180;
-		
+
     elseif byte==string.byte("`") then
       print(instructions);
-      
-		elseif byte==string.byte("1") then	
+
+		elseif byte==string.byte("1") then
 			walk.doWalkKickLeft();
-		elseif byte==string.byte("2") then	
+		elseif byte==string.byte("2") then
 			walk.doWalkKickRight();
 
 		elseif byte==string.byte("7") then	Motion.event("sit");
-		elseif byte==string.byte("8") then	
+		elseif byte==string.byte("8") then
 			walk.stop();
 			Motion.event("standup");
-		elseif byte==string.byte("9") then	
+		elseif byte==string.byte("9") then
 			Motion.event("walk");
 			walk.start();
 
@@ -289,9 +289,9 @@ function update()
 			Config.walk.hipImuParamY[3] = Config.walk.hipImuParamY[3] - .001;
 		elseif byte==string.byte("N") then
 			Config.walk.hipImuParamY[3] = Config.walk.hipImuParamY[3] + .001;
-		
 
-	
+
+
 
 		end
 		print(string.format("\n Walk Velocity: (%.2f, %.2f, %.2f)",unpack(targetvel)));
@@ -301,9 +301,8 @@ function update()
 			headangle[1]*180/math.pi,
 			headangle[2]*180/math.pi));
 		print(string.format("Gyro Settings ({alpha, gain, deadband, max}):\n ankleImuParamX: {%.2f, %.4f, %.3f, %.3f}\n ankleImuParamY: {%.2f, %.4f, %.3f, %.3f}\n kneeImuParamX: {%.2f, %.4f, %.3f, %.3f}\n hipImuParamY: {%.2f, %.4f, %.3f, %.3f}\n", Config.walk.ankleImuParamX[1], Config.walk.ankleImuParamX[2], Config.walk.ankleImuParamX[3], Config.walk.ankleImuParamX[4], Config.walk.ankleImuParamY[1], Config.walk.ankleImuParamY[2], Config.walk.ankleImuParamY[3], Config.walk.ankleImuParamY[4], Config.walk.kneeImuParamX[1], Config.walk.kneeImuParamX[2], Config.walk.kneeImuParamX[3], Config.walk.kneeImuParamX[4], Config.walk.hipImuParamY[1], Config.walk.hipImuParamY[2], Config.walk.hipImuParamY[3], Config.walk.hipImuParamY[4]));
-		
+
 
   end
 
 end
-

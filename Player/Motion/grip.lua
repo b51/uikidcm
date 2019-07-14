@@ -65,8 +65,8 @@ qLArm1 = math.pi/180*vector.new({55, 5,30});
 qRArm1 = math.pi/180*vector.new({90,-8,-40});
 
 --Grasp
-qLArm2 = math.pi/180*vector.new({55, 5,-40});	
-qRArm2 = math.pi/180*vector.new({90, -8,40});	
+qLArm2 = math.pi/180*vector.new({55, 5,-40});
+qRArm2 = math.pi/180*vector.new({90, -8,40});
 
 
 
@@ -78,7 +78,7 @@ bodyTilt1 = 20*math.pi/180;
 --pickup
 qLArm1 = math.pi/180*vector.new({55, 5,30});
 --grasp
-qLArm2 = math.pi/180*vector.new({55, 5,-40});	
+qLArm2 = math.pi/180*vector.new({55, 5,-40});
 
 
 
@@ -92,10 +92,10 @@ bodyShift1 = 0.01;
 bodyHeight1 = 0.19;
 
 qLArm1 = math.pi/180*vector.new({45, 15, 40});
-qLArm2 = math.pi/180*vector.new({45, 15,-40});	
+qLArm2 = math.pi/180*vector.new({45, 15,-40});
 
 qRArm1 = math.pi/180*vector.new({170, -15,0});
-qRArm2 = math.pi/180*vector.new({170, -15,0});	
+qRArm2 = math.pi/180*vector.new({170, -15,0});
 
 
 bodyHeight2 = 0.21;
@@ -114,9 +114,9 @@ bodyYaw1=0*math.pi/180;
 bodyShift1 = 0.0;
 
 qLArm1 = math.pi/180*vector.new({90, 30, 35});
-qLArm2 = math.pi/180*vector.new({90, 30,-40});	
+qLArm2 = math.pi/180*vector.new({90, 30,-40});
 qRArm1 = math.pi/180*vector.new({170, -15,0});
-qRArm2 = math.pi/180*vector.new({170, -15,0});	
+qRArm2 = math.pi/180*vector.new({170, -15,0});
 bodyHeight1 = 0.20;
 bodyHeight2 = 0.21;
 bodyShift2 = -0.01;
@@ -134,11 +134,11 @@ t_throw = {1.0,2.0,3.0};
 
 
 --Windup
-qLArm3 = math.pi/180*vector.new({-80,5,-40});	
+qLArm3 = math.pi/180*vector.new({-80,5,-40});
 qRArm3 = qRArm0;
 
 --Throw
-qLArm4 = math.pi/180*vector.new({0,5,35});	
+qLArm4 = math.pi/180*vector.new({0,5,35});
 qRArm4 = qRArm0;
 
 
@@ -186,7 +186,7 @@ active=false;
 
 --[[
 walk.starting_foot=1; --after left kick, start walking with left foot
-walk.starting_foot=0; 
+walk.starting_foot=0;
 --]]
 
 function entry()
@@ -236,7 +236,7 @@ function update()
   t=t-t0;
   if throw==0 then
     local t_pickup = t_grab;
-    if t<t_pickup[1] then 
+    if t<t_pickup[1] then
       --Open grip and extend hand, lower body
       ph = t/t_pickup[1];
       qLArm = qLArm1*1.0;
@@ -302,7 +302,7 @@ function update()
      if ph < 0.1 then
        qLArm[3] = qLArm2[3];
      end
-    --]] 
+    --]]
 
 --bodyShift = bodyShift3;
    elseif t<t_pickup[3] then
@@ -317,7 +317,7 @@ function update()
 	--bodyShift = bodyShift0*ph+ bodyShift2*(1-ph);
    else
      walk.has_ball=0;
-     return "done";	
+     return "done";
    end
   end
 
@@ -327,7 +327,7 @@ function update()
   pLLeg[1],pLLeg[2],pLLeg[3],pLLeg[5],pLLeg[6]=uLeft[1],uLeft[2],zLeft,aLeft,uLeft[3];
   pRLeg[1],pRLeg[2],pRLeg[3],pRLeg[5],pRLeg[6]=uRight[1],uRight[2],zRight,aRight,uRight[3];
   uTorso=util.pose_global(vector.new({-footX,0,0}),uBody);
-  
+
 pTorso[1],pTorso[2],pTorso[6]=uTorso[1]+bodyShift,uTorso[2],uTorso[3]+bodyYaw;
   motion_legs();
   Body.set_larm_command(qLArm);

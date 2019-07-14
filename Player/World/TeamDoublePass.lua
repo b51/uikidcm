@@ -44,7 +44,7 @@ role=1;
 team_task_state={0,0};
 
 function recv_msgs()
-  while (Comm.size() > 0) do 
+  while (Comm.size() > 0) do
     msg = Comm.receive();
     t = serialization.deserialize(msg);
 
@@ -100,7 +100,7 @@ function update()
   -- The player with bigger player ID act as the right player (role 2)
   -- After one role change, never change again
 
-  for id = 1,5 do 
+  for id = 1,5 do
     if states[id] then
      --Got message from somebody
       --Change my role if mine is 1 and his player ID is smaller than mine
@@ -116,10 +116,10 @@ function update()
     end
   end
   -- update shm
-  update_shm() 
+  update_shm()
 end
 
-function update_shm() 
+function update_shm()
   -- update the shm values
   gcm.set_team_role(role);
   gcm.set_team_task_state(team_task_state);
@@ -133,7 +133,7 @@ function get_role()
 end
 
 function set_role(r)
-  if role ~= r then 
+  if role ~= r then
     role = r;
     Body.set_indicator_role(role);
     if role == 1 then
@@ -149,7 +149,7 @@ end
 set_role(1);
 
 function get_player_id()
-  return playerID; 
+  return playerID;
 end
 
 function min(t)

@@ -28,7 +28,7 @@ function entry()
 	Body.set_para_velocity(vector.new({0,0,0}));
 	Body.set_state_gaitValid(1);
 	Body.set_state_torqueEnable(0);
-  
+
 	--unix.sleep(1.0);    --tse
 	fState = 'start'
 	print('start falling state machine', t0);
@@ -69,4 +69,3 @@ function exit()
   local qSensor = Body.get_sensor_position();
   Body.set_actuator_command(qSensor);
 end
-

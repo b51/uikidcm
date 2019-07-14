@@ -25,7 +25,7 @@ shared.obstacle.angle_range = vector.zeros(5 * 2);
 shared.obstacle.nearest = vector.zeros(5 * 2);
 
 
--- Robot Centroid x y on Map 
+-- Robot Centroid x y on Map
 shared.occ.robot_pos = vector.zeros(2);
 
 shsize.occ = shared.occ.map + 2^16;
@@ -67,4 +67,3 @@ function get_obstacle_dist()
   end
   return dist;
 end
-

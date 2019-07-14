@@ -47,7 +47,7 @@ Motion.entry();
 darwin = false;
 webots = false;
 
--- Enable OP specific 
+-- Enable OP specific
 if(Config.platform.name == 'OP') then
   darwin = true;
   --SJ: OP specific initialization posing (to prevent twisting)
@@ -63,7 +63,7 @@ getch.enableblock(1);
 unix.usleep(1E6*1.0);
 Body.set_body_hardness(0);
 
---This is robot specific 
+--This is robot specific
 webots = false;
 init = false;
 calibrating = false;
@@ -91,16 +91,16 @@ function process_keyinput()
     elseif byte==string.byte("h") then	targetvel[2]=targetvel[2]+0.02;
     elseif byte==string.byte(";") then	targetvel[2]=targetvel[2]-0.02;
 
-    elseif byte==string.byte("1") then	
+    elseif byte==string.byte("1") then
       kick.set_kick("kickForwardLeft");
       Motion.event("kick");
-    elseif byte==string.byte("2") then	
+    elseif byte==string.byte("2") then
       kick.set_kick("kickForwardRight");
       Motion.event("kick");
-    elseif byte==string.byte("3") then	
+    elseif byte==string.byte("3") then
       kick.set_kick("kickSideLeft");
       Motion.event("kick");
-    elseif byte==string.byte("4") then	
+    elseif byte==string.byte("4") then
       kick.set_kick("kickSideRight");
       Motion.event("kick");
     elseif byte==string.byte("5") then
@@ -158,15 +158,15 @@ function process_keyinput()
 	    grip.throw=1;
 	    Motion.event("pickup");
 
-    elseif byte==string.byte("7") then	
+    elseif byte==string.byte("7") then
       Motion.event("sit");
-    elseif byte==string.byte("8") then	
+    elseif byte==string.byte("8") then
       if walk.active then walk.stop();end
       Motion.event("standup");
   --   headsm_running=0;
   --    Body.set_para_headpos(0.1,0);
   --    Body.set_state_headValid(1);
-    elseif byte==string.byte("9") then	
+    elseif byte==string.byte("9") then
     --  Motion.event("walk");
     --  walk.start();
     end
@@ -203,14 +203,14 @@ function update()
       if (count % 100 == 0) then
         initToggle = not initToggle;
         if (initToggle) then
-          Body.set_indicator_state({1,1,1}); 
+          Body.set_indicator_state({1,1,1});
         else
           Body.set_indicator_state({0,0,0});
         end
       end
     end
   else
-    -- update state machines 
+    -- update state machines
     process_keyinput();
     Motion.update();
     Body.update();
@@ -222,33 +222,33 @@ function update()
 		--	Motion.event("standup");
 	      walk.start();
     if vcm.get_line_detect()==1 then
-    	local a = vcm.get_line_angle();
-   
+	local a = vcm.get_line_angle();
+
         if((a*180/math.pi)>90) then
-    	    b=a*180/math.pi-180;
+	    b=a*180/math.pi-180;
             print("Find a line!!!!!!!!!!!!!!!!!!!!!!!,angle of the line is" ,b);
-   	else
-       	    print("Find a line!!!!!!!!!!!!!,angle of the line is",a*180/math.pi);
+	else
+	    print("Find a line!!!!!!!!!!!!!,angle of the line is",a*180/math.pi);
             b=a*180/math.pi;
-  	end
+	end
     end
     if vcm.get_line_detect()==1 then
-    	if (b>35) then
-    		print("I should trun left~~~~~~~~~~~~~~~~~");
-    		--walk.set_velocity(0.02,0.03,0.3);
-    		targetvel[1] = 0.02; 
+	if (b>35) then
+		print("I should trun left~~~~~~~~~~~~~~~~~");
+		--walk.set_velocity(0.02,0.03,0.3);
+		targetvel[1] = 0.02;
 		targetvel[2] = 0.02;
 		targetvel[3] = 0.1;
-   	elseif (b<-15) then 
-   		print("I should turn Right~~~~~~~~~~~~~~~~~~");
-  		--walk.set_velocity(0.01,-0.03,-0.3);
-		targetvel[1] = 0.02; 
+	elseif (b<-15) then
+		print("I should turn Right~~~~~~~~~~~~~~~~~~");
+		--walk.set_velocity(0.01,-0.03,-0.3);
+		targetvel[1] = 0.02;
 		targetvel[2] = -0.02;
 		targetvel[3] = -0.1;
-   	else 
-   		print("I should go straight!~~~~~~~~~~~~~~~");
-   		--walk.set_velocity(0.02,0,0);
-		targetvel[1] = 0.02; 
+	else
+		print("I should go straight!~~~~~~~~~~~~~~~");
+		--walk.set_velocity(0.02,0,0);
+		targetvel[1] = 0.02;
 		targetvel[2] = 0.0;
 		targetvel[3] = 0.0;
         end
@@ -267,7 +267,7 @@ function update()
     -- update battery indicator
     Body.set_indicator_batteryLevel(Body.get_battery_level());
   end
-  
+
   -- check if the last update completed without errors
   lcount = lcount + 1;
   if (count ~= lcount) then

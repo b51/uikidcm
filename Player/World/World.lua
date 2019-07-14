@@ -22,7 +22,7 @@ end
 
 mod_angle = util.mod_angle;
 
-require('Velocity');	
+require('Velocity');
 
 --Are we using same colored goals?
 use_same_colored_goal = Config.world.use_same_colored_goal or 0;
@@ -50,7 +50,7 @@ ball.x = 1.0;
 ball.y = 0;
 ball.vx = 0;
 ball.vy = 0;
-ball.p = 0; 
+ball.p = 0;
 
 pose = {};
 pose.x = 0;
@@ -61,7 +61,7 @@ pose.tGoal = 0; --Goal detection time
 uOdometry0 = vector.new({0, 0, 0});
 count = 0;
 imuYaw_count = 0;
-cResample = Config.world.cResample; 
+cResample = Config.world.cResample;
 cimuYaw_count = Config.world.cimuYaw_count;
 
 playerID = Config.game.playerID;
@@ -92,7 +92,7 @@ function init_particles()
       SoundFilter.reset();
     end
   else
-    PoseFilter.initialize(nil, nil);  
+    PoseFilter.initialize(nil, nil);
   end
 end
 
@@ -207,7 +207,7 @@ imuangle = Body.get_sensor_imuAngle();
     --Use GPS pose instead of using particle filter
     pose.x,pose.y,pose.a=gps_pose[1],gps_pose[2],gps_pose[3];
     --Use GPS ball pose instead of ball filter
-    ballGlobal=wcm.get_robot_gps_ball();    
+    ballGlobal=wcm.get_robot_gps_ball();
     ballLocal = util.pose_relative(ballGlobal,gps_pose);
     ball.x, ball.y = ballLocal[1],ballLocal[2];
     wcm.set_ball_v_inf({ball.x,ball.y}); --for bodyAnticipate
@@ -279,7 +279,7 @@ imuangle = Body.get_sensor_imuAngle();
     end
 
   end
-    
+
   -- ball
   ball_gamma = 0.3;
   if (vcm.get_ball_detect() == 1) then
@@ -289,11 +289,11 @@ imuangle = Body.get_sensor_imuAngle();
     local v = vcm.get_ball_v();
     local dr = vcm.get_ball_dr();
     local da = vcm.get_ball_da();
-    --print("v :"..v[1],v[2]);	--b51 
+    --print("v :"..v[1],v[2]);	--b51
     ballFilter:observation_xy(v[1], v[2], dr, da);
     --Green insted of red for indicating
     --As OP tend to detect red eye as balls
-    ball_led={0,1,0}; 
+    ball_led={0,1,0};
 
     -- Update the velocity
 --    Velocity.update(v[1],v[2]);
@@ -308,7 +308,7 @@ imuangle = Body.get_sensor_imuAngle();
     ball_led={0,0,0};
   end
   -- TODO: handle goal detections more generically
-  
+
   if vcm.get_goal_detect() == 1 then
     pose.tGoal = Body.get_time();
     local color = vcm.get_goal_color();
@@ -322,9 +322,9 @@ imuangle = Body.get_sensor_imuAngle();
       --  0 - unknown
       -- -1 - yellow    defending
       -- +1 - cyan      attacking
---[[      
+--[[
       if (useSoundLocalization > 0) then
-        attackingOrDefending = SoundFilter.resolve_goal_detection(goalType, v); 
+        attackingOrDefending = SoundFilter.resolve_goal_detection(goalType, v);
       end
 --]]
       local yellowOrCyan = 0;
@@ -394,7 +394,7 @@ imuangle = Body.get_sensor_imuAngle();
           -- indicator
           Body.set_indicator_goal({1,1,0});
         end
-      
+
       elseif (attackingOrDefending == -1) then
         -- defending goal
         if (gcm.get_team_color() == 1) then
@@ -516,7 +516,7 @@ imuangle = Body.get_sensor_imuAngle();
   ball.x, ball.y = ballFilter:get_xy();
   --print("ball :"..ball.x,ball.y);		--b51
   pose.x,pose.y,pose.a = PoseFilter.get_pose();
-  
+
 --print(string.format("\t%.2f,\t%.2f,\t%.2f,\t%.2f",pose.x*100,pose.y*100,pose.a*180/math.pi,imua*180/math.pi));
 --Use team vision information when we cannot find the ball ourselves
 
@@ -529,14 +529,14 @@ imuangle = Body.get_sensor_imuAngle();
     team_ball_score > team_ball_threshold then
 
     ballLocal = util.pose_relative(
-	{team_ball[1],team_ball[2],0},{pose.x,pose.y,pose.a}); 
+	{team_ball[1],team_ball[2],0},{pose.x,pose.y,pose.a});
     ball.x = ballLocal[1];
     ball.y = ballLocal[2];
     ball.t = t;
-    ball_led={0,1,1}; 
+    ball_led={0,1,1};
 --print("TEAMBALL")
   end
-  
+
   --update_led();
   update_shm();
 end
@@ -570,7 +570,7 @@ end
 function update_shm()
   -- update shm values
 
-  --print(string.format( 
+  --print(string.format(
   wcm.set_robot_pose({pose.x, pose.y, pose.a});
   wcm.set_robot_time(Body.get_time());
 
@@ -650,7 +650,7 @@ function get_goal_attack()
     return {PoseFilter.postCyan[1][1], 0, 0};
   else
     -- blue attack yellow goal
-    return {PoseFilter.postYellow[1][1], 0, 0};	
+    return {PoseFilter.postYellow[1][1], 0, 0};
   end
 end
 
@@ -708,5 +708,3 @@ function pose_relative(pGlobal, pose)
   local pa = pGlobal[3]-pose[3];
   return vector.new{ca*px + sa*py, -sa*px + ca*py, mod_angle(pa)};
 end
-
-

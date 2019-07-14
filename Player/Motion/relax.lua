@@ -28,7 +28,7 @@ function entry()
     Body.set_rarm_hardness(0);
 --    Body.set_lleg_command({0,0,0,0,knee_pitch_target,0,0});
 --    Body.set_rleg_command({0,0,0,0,knee_pitch_target,0,0});
-    
+
     Body.set_lleg_command({0,0,hip_pitch_target,0,0,0});
     Body.set_rleg_command({0,0,hip_pitch_target,0,0,0});
 

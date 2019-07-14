@@ -1,7 +1,7 @@
 module(..., package.seeall);
 require('vector')
 
---Localization parameters 
+--Localization parameters
 
 world={};
 world.n = 250;  --tse
@@ -26,7 +26,7 @@ world.landmarkCyan = {0.0, -2.4};
 world.landmarkYellow = {0.0, 2.4};
 world.cResample = 10; --Resampling interval
 
---SJ: Now kidsize is using SPL field 
+--SJ: Now kidsize is using SPL field
 --Kidsize values
 world.Lcorner={};
 --Field edge
@@ -54,9 +54,9 @@ world.Lcorner[17]={2.4,2};
 
 
 --[[
---SJ: NSL penalty box is very wide 
+--SJ: NSL penalty box is very wide
 --And sometimes they can be falsely detected as T edges
---Penalty box T edge #2 
+--Penalty box T edge #2
 world.Lcorner[18]={2.4,-2};
 world.Lcorner[19]={-2.4,2};
 world.Lcorner[20]={-2.4,-2};
@@ -64,10 +64,10 @@ world.Lcorner[20]={-2.4,-2};
 
 
 --SJ: OP does not use yaw odometry data (only use gyro)
---world.odomScale = {1, 1, 0};  
+--world.odomScale = {1, 1, 0};
 --world.imuYaw = 1;
 --Vision only testing (turn off yaw gyro)
-world.odomScale = {1, 1, 1};  
+world.odomScale = {1, 1, 1};
 world.imuYaw = 0;
 
 world.imuYaw_update = 1;

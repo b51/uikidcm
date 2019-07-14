@@ -9,7 +9,7 @@ t0 = 0;
 
 minDist = Config.fsm.headTrack.minDist;
 fixTh = Config.fsm.headTrack.fixTh;
-trackZ = Config.vision.ball_diameter; 
+trackZ = Config.vision.ball_diameter;
 timeout = Config.fsm.headTrack.timeout;
 tLost = Config.fsm.headTrack.tLost;
 
@@ -47,15 +47,15 @@ function update()
 
   local yaw, pitch =
 	HeadTransform.ikineCam(ball.x, ball.y, trackZ, bottom);
-	
+
 --	print("yaw,pitch :"..yaw,pitch);
 --	print("ball.x,ball.y :"..ball.x,ball.y);
-	
+
   -- Fix head yaw while approaching (to reduce position error)
 --  if ball.x<fixTh[1] and math.abs(ball.y) < fixTh[2] then
---        yaw=0.0; 
+--        yaw=0.0;
 --  end
- 
+
 --b51: From Mos
   lastHeadAngles = {Body.get_sensor_headpos()[2],Body.get_sensor_headpos()[1]};
   deltaAngles[1] = yaw - lastHeadAngles[1];
@@ -72,18 +72,18 @@ function update()
 	  if (deltaYawCal > (45*math.pi/180)) then
 		  yaw = lastHeadAngles[1] + 45*math.pi/180;
 	  elseif (deltaYawCal < (-45*math.pi/180)) then
-	  	  yaw = lastHeadAngles[1] - 45*math.pi/180;
+		  yaw = lastHeadAngles[1] - 45*math.pi/180;
 	  else
 		  yaw = lastHeadAngles[1];
 	  end
   elseif headAngleCal[2]<0 then
-  	  pitch = 0;
+	  pitch = 0;
   end
   lastDeltaAngles = deltaAngles;
   yaw = math.min((math.pi/2),math.max((-math.pi/2),yaw));
 
   Body.set_head_command({yaw, pitch});
-  
+
   Body.set_para_headpos(vector.new({yaw, pitch}));--123456î^²¿
   Body.set_state_headValid(1);--123456î^²¿
 

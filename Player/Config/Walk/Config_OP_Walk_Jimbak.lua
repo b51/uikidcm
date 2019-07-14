@@ -14,13 +14,13 @@ walk.stanceLimitA={0*math.pi/180,30*math.pi/180};
 walk.velLimitX={-.03,.08};
 walk.velLimitY={-.03,.03};
 walk.velLimitA={-.4,.4};
-walk.velDelta={0.02,0.02,0.15} 
+walk.velDelta={0.02,0.02,0.15}
 
 ----------------------------------------------
 -- Stance parameters
 ---------------------------------------------
-walk.bodyHeight = 0.295; 
-walk.bodyTilt=20*math.pi/180; 
+walk.bodyHeight = 0.295;
+walk.bodyTilt=20*math.pi/180;
 walk.footX= -0.025
 walk.footY = 0.035;
 walk.supportX = 0;
@@ -89,7 +89,7 @@ walk.supportSideY = 0.02; --Lean sideways when sidestepping
 --------------------------------------------
 walk.walkKickDef={}
 
---tStep stepType supportLeg stepHeight 
+--tStep stepType supportLeg stepHeight
 -- SupportMod shiftFactor footPos1 footPos2
 
 walk.walkKickDef["FrontLeft"]={
@@ -142,8 +142,8 @@ walk.servoBias = {0,0,0,0,0,0,0,0,0,0,0,0};
 walk.footXComp = 0;
 walk.footYComp = 0;
 
---Default pitch angle offset of OP 
-walk.headPitchBias = 40* math.pi / 180; 
+--Default pitch angle offset of OP
+walk.headPitchBias = 40* math.pi / 180;
 walk.headPitchBiasComp = 0;
 
 local robotName = unix.gethostname();

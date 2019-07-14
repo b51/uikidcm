@@ -71,7 +71,7 @@ walkKickSupportMod = Config.walk.walkKickSupportMod or {{-0.03,0},{-0.03,0}};
 walkKickHeightFactor = Config.walk.walkKickHeightFactor or 1.5;
 tStepWalkKick = Config.walk.tStepWalkKick or tStep;
 
---Sidekick parameters 
+--Sidekick parameters
 sideKickVel1 = Config.walk.sideKickVel1 or {0.04,0.04};
 sideKickVel2 = Config.walk.sideKickVel2 or {0.09,0.05};
 sideKickVel3 = Config.walk.sideKickVel3 or {0.09,-0.02};
@@ -121,12 +121,12 @@ tLastStep = Body.get_time();
 
 stopRequest = 2;
 canWalkKick = 1; --Can we do walkkick with this walk code?
-walkKickRequest = 0; 
+walkKickRequest = 0;
 walkKickType = 0;
 
 initial_step=2;
 ----------------------------------------------------------
--- End initialization 
+-- End initialization
 ----------------------------------------------------------
 
 function entry()
@@ -160,7 +160,7 @@ function update()
   if  bodyHeightCurrent<bodyHeight-0.01 then
     return;
   end
-  if (not active) then 
+  if (not active) then
 	specialValid = Body.get_state_specialValid(); --123456walk 停止
 	isComplete = Body.get_state_specialGaitPending();
 	if (specialValid[1] == 0 and isComplete[1] == 0) then
@@ -176,7 +176,7 @@ function update()
 	  end
 	end--123456walk 停止，我们需要站立不动吗？
     update_still();
-    return; 
+    return;
   end
 
   if not started then
@@ -204,7 +204,7 @@ function update()
 
   wkstate = Body.get_state_walkkick();--123456检测walkkick标记
   isComplete = Body.get_state_walkkickPending();
-  
+
   -- New step
   if (iStep > iStep0) then
     update_velocity();
@@ -219,7 +219,7 @@ function update()
 
     if (walkKickRequest>0 or wkstate[1] == 1 or wkstate[2] == 1 or isComplete[1] == 1) then--123456后于完成
       print('walkkickstart');
-      check_walkkick(); 
+      check_walkkick();
       --If stop signal sent, put two feet together
     elseif (stopRequest==1) then  --Final step
       stopRequest=2;
@@ -239,7 +239,7 @@ function update()
         uLeft2 = util.pose_global({0,2*footY,0}, uRight1);
       end
     else --Normal walk, advance steps
-      tStep=tStep0; 
+      tStep=tStep0;
       if supportLeg == 0 then-- Left support
         uRight2 = step_right_destination(velCurrent, uLeft1, uRight1);
       else  -- Right support
@@ -250,14 +250,14 @@ function update()
       if velCurrent[1]>0.06 then
         supportMod[1] = supportFront;
       elseif velCurrent[1]<0 then
-        supportMod[1] = supportBack; 
+        supportMod[1] = supportBack;
       end
       if velCurrent[2]>0.015 then
-        supportMod[1] = supportSideX; 
-        supportMod[2] = supportSideY; 
+        supportMod[1] = supportSideX;
+        supportMod[2] = supportSideY;
       elseif velCurrent[2]<-0.015 then
-        supportMod[1] = supportSideX; 
-        supportMod[2] = -supportSideY; 
+        supportMod[1] = supportSideX;
+        supportMod[2] = -supportSideY;
       end
     end
 
@@ -268,7 +268,7 @@ function update()
       local uLeftTorso = util.pose_relative(uLeft1,uTorso1);
       local uTorsoModded = util.pose_global(
       vector.new({supportMod[1],supportMod[2],0}),uTorso);
-      local uLeftModded = util.pose_global (uLeftTorso,uTorsoModded); 
+      local uLeftModded = util.pose_global (uLeftTorso,uTorsoModded);
       uSupport = util.pose_global(
       {supportX, supportY, 0},uLeftModded);
       Body.set_lleg_hardness(hardnessSupport);
@@ -277,7 +277,7 @@ function update()
       local uRightTorso = util.pose_relative(uRight1,uTorso1);
       local uTorsoModded = util.pose_global(
       vector.new({supportMod[1],supportMod[2],0}),uTorso);
-      local uRightModded = util.pose_global (uRightTorso,uTorsoModded); 
+      local uRightModded = util.pose_global (uRightTorso,uTorsoModded);
       uSupport = util.pose_global(
       {supportX, -supportY, 0}, uRightModded);
       Body.set_lleg_hardness(hardnessSwing);
@@ -295,7 +295,7 @@ function update()
     uTorso1[2], uTorso2[2]);
   end --End new step
 
-  xFoot, zFoot = foot_phase(ph);  
+  xFoot, zFoot = foot_phase(ph);
   if initial_step>0 then zFoot=0;  end --Don't lift foot at initial step
   pLLeg[3], pRLeg[3] = 0;
   if supportLeg == 0 then    -- Left support
@@ -308,9 +308,9 @@ function update()
     end
     pRLeg[3] = stepHeight*zFoot;
   else    -- Right support
-    if walkKickRequest == 4 and walkKickType>1 then --side kick 
+    if walkKickRequest == 4 and walkKickType>1 then --side kick
       if xFoot<0.5 then uLeft = util.se2_interpolate(xFoot*2, uLeft1, uLeft15);
-      else uLeft = util.se2_interpolate(xFoot*2-1, uLeft15, uLeft2);      
+      else uLeft = util.se2_interpolate(xFoot*2-1, uLeft15, uLeft2);
       end
     else
       uLeft = util.se2_interpolate(xFoot, uLeft1, uLeft2);
@@ -351,25 +351,25 @@ function check_walkkick()
 
   if walkKickRequest ==1 then --If support foot is right, skip 1st step
     print("NEWNEWKICK: WALKKICK START")
-    if supportLeg==walkKickType then 
+    if supportLeg==walkKickType then
       walkKickRequest = 2;
     end
   end
 
-  if walkKickRequest == 1 then 
+  if walkKickRequest == 1 then
     -- Feet together
-    if supportLeg == 0 then uRight2 = util.pose_global({0,-2*footY,0}, uLeft1); 
-    else uLeft2 = util.pose_global({0,2*footY,0}, uRight1); 
+    if supportLeg == 0 then uRight2 = util.pose_global({0,-2*footY,0}, uLeft1);
+    else uLeft2 = util.pose_global({0,2*footY,0}, uRight1);
     end
     walkKickRequest = walkKickRequest + 1;
 
-  elseif walkKickRequest ==2 then 
+  elseif walkKickRequest ==2 then
     -- Support step forward
-    if supportLeg == 0 then 
+    if supportLeg == 0 then
       uRight2 = util.pose_global({walkKickVel[1],-2*footY,0}, uLeft1);
       shiftFactor = 0.7; --shift final torso to right foot
-    else 
-      uLeft2 = util.pose_global({walkKickVel[1],2*footY,0}, uRight1); 
+    else
+      uLeft2 = util.pose_global({walkKickVel[1],2*footY,0}, uRight1);
       shiftFactor = 0.3; --shift final torso to left foot
     end
     supportMod = walkKickSupportMod[1];
@@ -378,7 +378,7 @@ function check_walkkick()
     --Slow down tStep for two kick step
     tStep=tStepWalkKick;
 
-  elseif walkKickRequest ==3 then 
+  elseif walkKickRequest ==3 then
     -- Kicking step forward
     if supportLeg == 0 then uRight2 = util.pose_global({walkKickVel[2],-2*footY,0}, uLeft1);
     else uLeft2 = util.pose_global({walkKickVel[2],2*footY,0}, uRight1);--RS
@@ -386,13 +386,13 @@ function check_walkkick()
     supportMod = walkKickSupportMod[2];
     walkKickRequest = walkKickRequest + 1;
 
-  elseif walkKickRequest == 4 then 
+  elseif walkKickRequest == 4 then
     -- Feet together
-    if supportLeg == 0 then uRight2 = util.pose_global({0,-2*footY,0}, uLeft1); 
-    else uLeft2 = util.pose_global({0,2*footY,0}, uRight1); 
+    if supportLeg == 0 then uRight2 = util.pose_global({0,-2*footY,0}, uLeft1);
+    else uLeft2 = util.pose_global({0,2*footY,0}, uRight1);
     end
     walkKickRequest = 0;
-    tStep=tStep0; 
+    tStep=tStep0;
 
   end
 end
@@ -489,8 +489,8 @@ function motion_legs(qLegs)
 end
 
 function motion_arms()
-  local qLArmActual={};   
-  local qRArmActual={};   
+  local qLArmActual={};
+  local qRArmActual={};
 
   if walkKickRequest >2 and walkKickType>1 then --Side kick, wide arm stance
     qLArmActual[1],qLArmActual[2]=qLArmKick0[1]+armShift[1],qLArmKick0[2]+armShift[2];
@@ -586,7 +586,7 @@ function set_velocity(vx, vy, vz)
   velCommand2[2] = vy;
   velCommand2[3] = vz;
 
---[[  
+--[[
   local wkstate = Body.get_state_walkkick();
   local isComplete = Body.get_state_walkkickPending();
   if (wkstate[1] == 0 and wkstate[2] == 0 and isComplete[1] == 0) then
@@ -639,14 +639,14 @@ function stop()
   --  stopRequest = 2; --Stop w/o feet together
 end
 
-function stopAlign() --Depreciated, we always stop with feet together 
+function stopAlign() --Depreciated, we always stop with feet together
   stop()
 end
 
 function doWalkKickLeft()
   if walkKickRequest==0 then
-    walkKickRequest = 1; 
-    walkKickType = 0; --Start with left support 
+    walkKickRequest = 1;
+    walkKickType = 0; --Start with left support
     print("do Walkkick Left");
 	Body.set_para_velocity(vector.new({0.04,0,0}));--123456
 	Body.set_state_gaitValid(0);
@@ -657,7 +657,7 @@ end
 
 function doWalkKickRight()
   if walkKickRequest==0 then
-    walkKickRequest = 1; 
+    walkKickRequest = 1;
     walkKickType = 1; --Start with right support
     print("do Walkkick Right");
 	Body.set_para_velocity(vector.new({0.04,0,0}));--123456
@@ -769,10 +769,10 @@ function foot_phase(ph)
   local xf = .5*(1-math.cos(math.pi*phSingleSkew2));
 
   --Check for walkkick step
-  if walkKickRequest == 4 then 
+  if walkKickRequest == 4 then
     zf = zf * walkKickHeightFactor; --Increase step height
     if walkKickType <2 then --Different trajectory for Front walkkick
-      local kickN = 1.5; 
+      local kickN = 1.5;
       if phSingle<0.5 then xf=kickN*phSingle;
       else xf = (1-kickN)*(2*phSingle-1) + kickN;
       end

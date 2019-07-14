@@ -129,7 +129,7 @@ t0 = Body.get_time();
 
 stopRequest = 2;
 canWalkKick = 1; --Can we do walkkick with this walk code?
-walkKickRequest = 0; 
+walkKickRequest = 0;
 walkKickType = 0;
 
 initdone=false;
@@ -161,7 +161,7 @@ qRArmC=math.pi/180*vector.new({-20,-20,0});
 d2=0.03;
 d3=0.001;
 
-kick={} kick.p=-0.20; 
+kick={} kick.p=-0.20;
 t0=1;t1=0.2;t2=0.5;d1=-0.04; --Works fine w/o non-stabilized 3kg punch
 step_mag = 0.06;
 tStep=0.25;
@@ -173,7 +173,7 @@ tStep=0.25;
 
 
 
---t0=1;t1=0.2;t2=0.4;d1=-0.037; 
+--t0=1;t1=0.2;t2=0.4;d1=-0.037;
 
 I_min=-0.13;I_max=0.05;
 --All disable
@@ -193,18 +193,18 @@ punchDef = {
   }
 
 --Actual OP values
-t0=1;t1=0.4;t2=1.4;p=-0.04;d1=-0.03;d2=0.0; --won't fall 
+t0=1;t1=0.4;t2=1.4;p=-0.04;d1=-0.03;d2=0.0; --won't fall
 
-t0=1;t1=0.3;t2=1.4;p=-0.05;d1=-0.03;d2=0.0; --barely stable 
+t0=1;t1=0.3;t2=1.4;p=-0.05;d1=-0.03;d2=0.0; --barely stable
 
---t0=1;t1=0.3;t2=1.4;p=-0.05;d1=-0.03;d2=0.01; --barely stable 
+--t0=1;t1=0.3;t2=1.4;p=-0.05;d1=-0.03;d2=0.01; --barely stable
 
 step_mag = 0.04;
 tStep=0.35;
 
 qLArmC=math.pi/180*vector.new({20,20,-20});
 qRArmC=math.pi/180*vector.new({20,-20,-20});
-	
+
 
 punchDef = {
     {7, t0, {d1,0,30*math.pi/180},qLArmB,qRArmA},
@@ -235,7 +235,7 @@ function entry()
   pLLeg = vector.new{uLeft[1], uLeft[2], 0, 0, 0, uLeft[3]};
   pRLeg = vector.new{uRight[1], uRight[2], 0, 0, 0, uRight[3]};
   pTorso = vector.new{uTorso[1], uTorso[2], bodyHeight, 0, bodyTilt, uTorso[3]};
-   
+
   qLegs = Kinematics.inverse_legs(pLLeg, pRLeg, pTorso, 0);
   Body.set_lleg_command(qLegs);
 
@@ -306,7 +306,7 @@ function check_step_foot(fx,fy)
        sleg= 0;
     end
 
-    sleg=0; --Force left support testing   
+    sleg=0; --Force left support testing
     sleg=1;
     return sleg;
 end
@@ -388,8 +388,8 @@ print("Gyro roll pitch",gyro_roll,gyro_pitch);
 --  gyromag= math.sqrt(gyro_pitch^2+gyro_roll^2);
   imuMag = math.sqrt(imuPitch^2+imuRoll^2);
 
-  if imuMag>60*math.pi/180 
-     and stepStrategy==0 
+  if imuMag>60*math.pi/180
+     and stepStrategy==0
      and hipStrategy==0 then
      Body.set_body_hardness(0);
      return;
@@ -424,7 +424,7 @@ print("Gyro roll pitch",gyro_roll,gyro_pitch);
       print("Vel: ",unpack(stepStrategyVel));
       stepStrategy = 5; --inter-step strategy
     end
-  elseif stepStrategy == 0 and enable_step_pr==true then	
+  elseif stepStrategy == 0 and enable_step_pr==true then
 --]]
 
 
@@ -433,7 +433,7 @@ print("Gyro roll pitch",gyro_roll,gyro_pitch);
 
 
 
-  if stepStrategy == 0 and enable_step_pr==true and push_recovery_manual==0 then	
+  if stepStrategy == 0 and enable_step_pr==true and push_recovery_manual==0 then
 
 --      if gyromag>gyro_min and stepStrategyTime<t then
 --      if (I<I_min or I>I_max) and stepStrategyTime<t then
@@ -451,25 +451,25 @@ imuTh2=-0.20;
 enable_ankle_pr = true;
 
 
-      if stepStrategyTime<t and ((imuPitch>imuTh) or (imuPitch<imuTh2)) 
+      if stepStrategyTime<t and ((imuPitch>imuTh) or (imuPitch<imuTh2))
 then --for OP, front
 
 
 gyro_pitch=imuPitch; --hack for OP
 gyromag=math.abs(imuPitch);
          supportLegTarget=check_step_foot(gyro_pitch,gyro_roll);
- 
+
          print("Step state 1",I)
          stepStrategy = 1;
          stepStrategyVel = {step_mag*gyro_pitch/gyromag,step_mag*-gyro_roll/gyromag,0};
-        
+
          uRightTarget = limit_right(util.pose_global(stepStrategyVel, uTorso));
          uLeftTarget = limit_left(util.pose_global(stepStrategyVel, uTorso));
          uStepTorsoShift = stepStrategyVel;
-   
+
          uRightTarget = limit_right(util.pose_global(stepStrategyVel, uTorso));
          uLeftTarget = limit_left(util.pose_global(stepStrategyVel, uTorso));
- 	 print("Step strategy velocity:",unpack(stepStrategyVel))
+	 print("Step strategy velocity:",unpack(stepStrategyVel))
       else
 --        print("Gyro IMU:",gyro_pitch,imuPitch*180/math.pi,gyromag)
       end
@@ -504,13 +504,13 @@ gyromag=math.abs(imuPitch);
   elseif hipStrategy ==1 then
     hipAngle[1],hipAngle[2]=hipTargetAngle[1],hipTargetAngle[2];
     if t-hipStrategyTime > tReflex then
---      print("Hip state 2",t) 
+--      print("Hip state 2",t)
       hipStrategy=2;
       hipStrategyTime = t;
     end
   elseif hipStrategy ==2 then
     if t-hipStrategyTime > tRecover then
---      print("Hip state End",t) 
+--      print("Hip state End",t)
       active=false; --stop walking any more
       hipStrategy=0;
       hipStrategyTime = t+3.0;
@@ -536,12 +536,12 @@ function new_step()
     uRight1 = uRight2;
     uTorso1 = uTorso2;
 
-    if stepStrategy==5 then 
+    if stepStrategy==5 then
       stepStrategy = 0;
     end
 
     if stepStrategy==2 then
-       --reactive stepping done, wait a bit 
+       --reactive stepping done, wait a bit
        stepStrategyTime=t;
        stepStrategy=3;
 --       print("Step state 3")
@@ -560,21 +560,21 @@ function new_step()
 
     --Code to check walk-kick phases
     supportMod = {0,0}; --Support Point modulation for walkkick
-   
+
     if walkKickRequest ==1 then --If step is right skip 1st step
-      if supportLeg==walkKickType then 
+      if supportLeg==walkKickType then
 	walkKickRequest = 2;
       end
     end
 
     if walkKickRequest == 1 then -- Feet together
-      if supportLeg == 0 then uRight2 = util.pose_global({0,-2*footY,0}, uLeft1); 
-      else uLeft2 = util.pose_global({0,2*footY,0}, uRight1); 
+      if supportLeg == 0 then uRight2 = util.pose_global({0,-2*footY,0}, uLeft1);
+      else uLeft2 = util.pose_global({0,2*footY,0}, uRight1);
       end
       walkKickRequest = walkKickRequest + 1;
     elseif walkKickRequest ==2 then -- Support step forward
       if supportLeg == 0 then uRight2 = util.pose_global({walkKickVel[1],-2*footY,0}, uLeft1);
-      else uLeft2 = util.pose_global({walkKickVel[1],2*footY,0}, uRight1); 
+      else uLeft2 = util.pose_global({walkKickVel[1],2*footY,0}, uRight1);
       end
       supportMod = walkKickSupportMod[1];
       walkKickRequest = walkKickRequest + 1;
@@ -591,28 +591,28 @@ function new_step()
       else  -- Right support
         uLeft2 = step_left_destination(velCurrent, uLeft1, uRight1);
       end
-      walkKickRequest = 0; 
+      walkKickRequest = 0;
     end
 
     uTorso2 = step_torso(uLeft2, uRight2);
 
-    if stepStrategy==1 then	
+    if stepStrategy==1 then
        --2 means reactive intra-step stepping
 --       print("Step state 2")
        supportLeg = supportLegTarget;
 
        if supportLeg ==0 then --left support
- 	  uRight2 = uRightTarget;
+	  uRight2 = uRightTarget;
           uTorso2 = util.se2_interpolate(1-stepFactor1,uLeft2, uRight2);
        else
- 	  uLeft2=uLeftTarget;
+	  uLeft2=uLeftTarget;
           uTorso2 = util.se2_interpolate(stepFactor1,uLeft2, uRight2);
        end
 
        stepStrategy=2;
 	--More support bias for step strategy from DS
-       if not active then 
- 	 supportMod[2] = 0.04;
+       if not active then
+	 supportMod[2] = 0.04;
        end
     end
 
@@ -684,9 +684,9 @@ function update()
       iStep=iStep0;
       ph = 0;
     end
-  end     
-  
-  xFoot, zFoot = foot_phase(ph);  
+  end
+
+  xFoot, zFoot = foot_phase(ph);
   pLLeg[3], pRLeg[3] = 0;
 
   if stepStrategy ==2 then
@@ -776,7 +776,7 @@ function motion_torso() --Torso swing during walking
   local torsoAngle=math.min(torsoAngleMax,
 	math.max(-torsoAngleMax,
 	footRel/armGain * torsoAngleMax
-	));  
+	));
   uTorso[3]=uTorso[3] + torsoAngle;
 end
 
@@ -862,8 +862,8 @@ function motion_arms()
    local armAngle=math.min(50*math.pi/180,
 	math.max(-50*math.pi/180,
 	footRel/armGain * 50*math.pi/180
-	));  
-  
+	));
+
     armAngle=0;
 
     qLArm[1],qLArm[2]=qLArm0[1]+armShift[1],qLArm0[2]+armShift[2];
@@ -897,7 +897,7 @@ function motion_arms()
     end
   end
   if punchCount>0 then
-    uBodyPunch=util.se2_interpolate(punchPh,uBodyPunch1,punchDef[punchCount][3]);	
+    uBodyPunch=util.se2_interpolate(punchPh,uBodyPunch1,punchDef[punchCount][3]);
     qLArm=util.se2_interpolate(punchPh,qLArmPunch1,punchDef[punchCount][4]);
     qRArm=util.se2_interpolate(punchPh,qRArmPunch1,punchDef[punchCount][5]);
 
@@ -906,7 +906,7 @@ function motion_arms()
 	x0=uBodyPunch1[1];
 	p=kick.p;
 	w=math.sqrt(9.8/0.295);
-	x=(x0-p)/2*(math.exp(w*tPassed)+math.exp(-w*tPassed))+p;    
+	x=(x0-p)/2*(math.exp(w*tPassed)+math.exp(-w*tPassed))+p;
 	uBodyPunch[1]=math.min(x,uBodyPunch[1]);
     end
 --
@@ -1060,14 +1060,14 @@ end
 
 function doWalkKickLeft()
   if walkKickRequest==0 then
-    walkKickRequest = 1; 
-    walkKickType = 0; --Start with left support 
+    walkKickRequest = 1;
+    walkKickType = 0; --Start with left support
   end
 end
 
 function doWalkKickRight()
   if walkKickRequest==0 then
-    walkKickRequest = 1; 
+    walkKickRequest = 1;
     walkKickType = 1; --Start with right support
   end
 end
@@ -1154,7 +1154,7 @@ function foot_phase(ph)
   local xf = .5*(1-math.cos(math.pi*phSingleSkew2));
 
   --Check for walkkick step
-  if walkKickRequest == 4 then 
+  if walkKickRequest == 4 then
     zf = zf * walkKickHeightFactor;
     if phSingle<0.5 then xf=0;
     end
@@ -1208,14 +1208,14 @@ function sensor_torso()
 
   --[[
   print("pLegSensor:",pLegSensor[1],pLegSensor[2],pLegSensor[3],
-	pLegSensor[4]*180/math.pi, 
-	pLegSensor[5]*180/math.pi, 
+	pLegSensor[4]*180/math.pi,
+	pLegSensor[5]*180/math.pi,
 	pLegSensor[6]*180/math.pi);
 
-  
+
   print("pTorsoSensor:",pTorsoSensor[1],pTorsoSensor[2],pTorsoSensor[3],
-	pTorsoSensor[4]*180/math.pi, 
-	pTorsoSensor[5]*180/math.pi, 
+	pTorsoSensor[4]*180/math.pi,
+	pTorsoSensor[5]*180/math.pi,
 	pTorsoSensor[6]*180/math.pi);
   --]]
 

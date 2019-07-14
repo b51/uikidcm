@@ -48,7 +48,7 @@ function update()
   ballA = math.atan2(ball.y, ball.x+0.10);
   vStep[3] = 0.75*ballA;
   walk.set_velocity(vStep[1],vStep[2],vStep[3]);
-  
+
   if ballR_defend>rFar and ballX_defend>rFarX and gcm.get_team_role()==0 then
 
     print("Chase:ballRX", ballR_defend, ballX_defend);

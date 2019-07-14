@@ -51,15 +51,15 @@ function update()
   if fast_approach ==1 then
     uLeft = walk.uLeft;
     uRight = walk.uRight;
-    uFoot = util.se2_interpolate(0.5,uLeft,uRight); --Current origin 
-    if walk.supportLeg ==0 then --left support 
+    uFoot = util.se2_interpolate(0.5,uLeft,uRight); --Current origin
+    if walk.supportLeg ==0 then --left support
       uRight2 = walk.uRight2;
       uLeft2 = util.pose_global({0,2*walk.footY,0},uRight2);
     else --Right support
       uLeft2 = walk.uLeft2;
       uRight2 = util.pose_global({0,-2*walk.footY,0},uLeft2);
     end
-    uFoot2 = util.se2_interpolate(0.5,uLeft2,uRight2); --Projected origin 
+    uFoot2 = util.se2_interpolate(0.5,uLeft2,uRight2); --Projected origin
     uMovement = util.pose_relative(uFoot2,uFoot);
     uBall2 = util.pose_relative({ball.x,ball.y,0},uMovement);
     ball.x=uBall2[1];
@@ -86,7 +86,7 @@ function update()
 --      homePose = position.getDirectAttackerHomePose();
     else
       homePose = position.getAttackerHomePose();
-    end	
+    end
   end
 
   --Field player cannot enter our penalty box
@@ -120,7 +120,7 @@ function update()
    for i=1,obstacle_num do
 
     --Role specific rejection radius
-    if role==0 then --Goalie has the highest priority 
+    if role==0 then --Goalie has the highest priority
       r_reject = 0.4;
 
 
@@ -156,7 +156,7 @@ function update()
     end
    end
   end
-  
+
   walk.set_velocity(vx,vy,va);
 
   if (t - ball.t > tLost) then
@@ -189,15 +189,15 @@ function update()
   daPost1 = math.max(thClose[3],daPost/2 - daPostMargin);
 
   uPose=vector.new({pose.x,pose.y,pose.a})
-  homeRelative = util.pose_relative(homePose, uPose);  
+  homeRelative = util.pose_relative(homePose, uPose);
   angleToTurn = math.max(0, homeRelative[3] - daPost1);
-	
---	homeRelative[1] = homeRelative[1]/2;	
+
+--	homeRelative[1] = homeRelative[1]/2;
 --	print(math.abs(homeRelative[1]),thClose[1]);
 --	print(math.abs(homeRelative[2]),thClose[2]);
 --	print(math.abs(homeRelative[3]),daPost1);
 --	print(ballR,rClose);
-		
+
   if math.abs(homeRelative[1])<thClose[1] and
     math.abs(homeRelative[2])<thClose[2] and
     math.abs(homeRelative[3])<daPost1 and
@@ -211,4 +211,3 @@ end
 
 function exit()
 end
-

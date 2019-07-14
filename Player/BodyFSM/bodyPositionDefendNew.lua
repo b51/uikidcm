@@ -76,15 +76,15 @@ function update()
   if fast_approach ==1 then
     uLeft = walk.uLeft;
     uRight = walk.uRight;
-    uFoot = util.se2_interpolate(0.5,uLeft,uRight); --Current origin 
-    if walk.supportLeg ==0 then --left support 
+    uFoot = util.se2_interpolate(0.5,uLeft,uRight); --Current origin
+    if walk.supportLeg ==0 then --left support
       uRight2 = walk.uRight2;
       uLeft2 = util.pose_global({0,2*walk.footY,0},uRight2);
     else --Right support
       uLeft2 = walk.uLeft2;
       uRight2 = util.pose_global({0,-2*walk.footY,0},uLeft2);
     end
-    uFoot2 = util.se2_interpolate(0.5,uLeft2,uRight2); --Projected origin 
+    uFoot2 = util.se2_interpolate(0.5,uLeft2,uRight2); --Projected origin
     uMovement = util.pose_relative(uFoot2,uFoot);
     uBall2 = util.pose_relative({ball.x,ball.y,0},uMovement);
     ball.x=uBall2[1];
@@ -99,7 +99,7 @@ function update()
 
   ballGlobal=util.pose_global(ballxy,posexya);
   goalGlobal=wcm.get_goal_attack();
-  aBallLocal=math.atan2(ball.y,ball.x); 
+  aBallLocal=math.atan2(ball.y,ball.x);
 
   aBall=math.atan2(ballGlobal[2]-pose.y, ballGlobal[1]-pose.x);
   aGoal=math.atan2(goalGlobal[2]-ballGlobal[2],goalGlobal[1]-ballGlobal[1]);
@@ -120,7 +120,7 @@ function update()
   elseif (role==3) then
     homePose = getSupporterHomePose();
   else
-    homePose=getAttackerHomePose();	
+    homePose=getAttackerHomePose();
   end
 
   --Field player cannot enter our penalty box
@@ -194,7 +194,7 @@ end
 
 function setAttackerVelocity()
   uPose=vector.new({pose.x,pose.y,pose.a})
-  homeRelative = util.pose_relative(homePose, uPose);  
+  homeRelative = util.pose_relative(homePose, uPose);
   rHomeRelative = math.sqrt(homeRelative[1]^2 + homeRelative[2]^2);
   aHomeRelative = math.atan2(homeRelative[2],homeRelative[1]);
   homeRot=math.abs(homeRelative[3]);
@@ -214,12 +214,12 @@ function setAttackerVelocity()
     end
     veltype=1;
   elseif rHomeRelative>rVel2 and homeRot<aVel2 then
-    --Medium speed 
+    --Medium speed
     maxStep = maxStep2;
     maxA = maxA2;
     maxY = maxY2;
     veltype=2;
- 
+
   else --Normal speed
     maxStep = maxStep1;
     maxA = 999;
@@ -227,13 +227,13 @@ function setAttackerVelocity()
     veltype=3;
 
   end
-  
+
   vx,vy,va=0,0,0;
   aTurn=math.exp(-0.5*(rHomeRelative/rTurn)^2);
   vx = maxStep*homeRelative[1]/rHomeRelative;
 
   --Sidestep more if ball is close and sideby
-  if rHomeRelative<rVel2 and  
+  if rHomeRelative<rVel2 and
            math.abs(aHomeRelative)>45*180/math.pi then
      vy = maxStep*homeRelative[2]/rHomeRelative;
      aTurn = 1; --Turn toward the goal
@@ -246,7 +246,7 @@ function setAttackerVelocity()
 
   if math.abs(aHomeRelative)<70*180/math.pi then
     --Don't allow the robot to backstep if ball is in front
-    vx=math.max(0,vx) 
+    vx=math.max(0,vx)
   end
 
   va = 0.5*(aTurn*homeRelative[3] --Turn toward the goal
@@ -265,7 +265,7 @@ end
 
 function getAttackerHomePose()
 
-  --Direct approach 
+  --Direct approach
   if Config.fsm.playMode~=3 then
     local homepose={
 	ballGlobal[1],
@@ -301,14 +301,14 @@ end
 function getDefenderHomePose()
 
   -- Updated to account for defending goal post
- 
+
   --goal_post_width_half=1.6/2;
 
   goalDefend=wcm.get_goal_defend();
   homePosition = 0.5*ballGlobal+0.5*goalDefend;
 
   -- New Positioning based on angle of ball to goal
-  
+
   angle_shift=0.02;
 
   if ballGlobal[1]>0 then
@@ -316,14 +316,14 @@ function getDefenderHomePose()
   else
     angle_ball_goaldefend_center=math.atan((ballGlobal[2]-goalDefend[2])/(goalDefend[1]+math.abs(ballGlobal[1])))
   end
- 
+
   -- Change y co-ordinate according to theta, shift it by a factor of angle_shift and divide the angle by the present theta in degrees
   -- The division is for scaling down when the bot is in the defending half.
   homePosition[2]=homePosition[1]*math.tan((1+angle_shift)*angle_ball_goaldefend_center)/(math.deg(angle_ball_goaldefend_center)+util.sign(angle_ball_goaldefend_center)*0.00000000001)
- 
+
   return homePosition;
 
-  
+
 end
 
 function getSupporterHomePose()
@@ -335,7 +335,7 @@ function getSupporterHomePose()
     homePosition = ballGlobal;
     homePosition[1] = homePosition[1] + 0.75*util.sign(homePosition[1]);
     homePosition[1] = util.sign(homePosition[1])*math.min(2.0, math.abs(homePosition[1]));
-    homePosition[2] = 
+    homePosition[2] =
     --]]
 
     -- move near attacking goal
@@ -345,7 +345,7 @@ function getSupporterHomePose()
     -- go to far post (.75 m from center)
     homePosition[2] = -1*util.sign(ballGlobal[2]) * .75;
 
-    -- face ball 
+    -- face ball
     homePosition[3] = ballGlobal[3];
     return homePosition;
 end
@@ -358,4 +358,3 @@ function sign(s)
   else return -1;
   end
 end
-

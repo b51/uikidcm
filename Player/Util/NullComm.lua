@@ -1,7 +1,7 @@
 module(..., package.seeall);
 --[[
    {"size", lua_darwinopcomm_size},
-  {"receive", lua_darwinopcomm_receive}, 
+  {"receive", lua_darwinopcomm_receive},
   {"send", lua_darwinopcomm_send},
   {"send_label", lua_darwinopcomm_send_label},
   {"send_yuyv", lua_darwinopcomm_send_yuyv},

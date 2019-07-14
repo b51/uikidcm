@@ -67,13 +67,13 @@ function getHomePose()
   if pose.y > 0.5 then side_y = 1;
   elseif pose.y<-0.5 then side_y = -1;
   end
-  if math.abs(pose.x - goal_defend[1]) > 3.5 
+  if math.abs(pose.x - goal_defend[1]) > 3.5
     and math.abs(home[2]) < 0.5 then
-    home[2] = home[2] + side_y * 0.8;    
-  end  
+    home[2] = home[2] + side_y * 0.8;
+  end
 
   --Goalie moves differently
-  if role==0 and phase==1 then 
+  if role==0 and phase==1 then
     home=home*0.7;
   end;
 
@@ -92,14 +92,14 @@ function update()
   attackBearing = wcm.get_attack_bearing();
   vx,vy,va=0,0,0;
 
-  if phase==0 then 
-    if t - t0 < tstart then 
+  if phase==0 then
+    if t - t0 < tstart then
       walk.set_velocity(0,0,0);
       return;
     else walk.start();
       phase=1;
     end
-  elseif phase==1 then --Approach phase 
+  elseif phase==1 then --Approach phase
     vx = maxStep * homeRelative[1]/rhome;
     vy = maxStep * homeRelative[2]/rhome;
     va = .2 * math.atan2(homeRelative[2], homeRelative[1]);
@@ -117,7 +117,7 @@ function update()
   obstacle_dist = wcm.get_obstacle_dist();
 
 
-  --Now larger rejection radius 
+  --Now larger rejection radius
   local r_reject = 1.0;
 
   for i=1,obstacle_num do
@@ -131,17 +131,16 @@ function update()
   end
   walk.set_velocity(vx, vy, va);
 
-  if phase~=3 and rhome < rClose and 
-     math.abs(attackBearing)<thClose then 
-      walk.stop(); 
+  if phase~=3 and rhome < rClose and
+     math.abs(attackBearing)<thClose then
+      walk.stop();
       phase=3;
   end
   --To prevent robot keep walking after falling down
   if phase==3 then
-      walk.stop(); 
+      walk.stop();
   end
 end
 
 function exit()
 end
-

@@ -36,13 +36,13 @@ function entry()
   print("Motion SM:".._NAME.." entry");
 
   -- Final stance foot position6D
-  pTorsoTarget = vector.new({-mcm.get_footX(), 0, bodyHeight, 
+  pTorsoTarget = vector.new({-mcm.get_footX(), 0, bodyHeight,
 		0,bodyTilt,0});
   pLLeg = vector.new({-supportX , footY, 0, 0,0,0});
   pRLeg = vector.new({-supportX , -footY, 0, 0,0,0});
 
-  Body.set_syncread_enable(1); 
-  started=false; 
+  Body.set_syncread_enable(1);
+  started=false;
   tFinish=0;
 
   Body.set_head_command({0,0});
@@ -63,7 +63,7 @@ function update()
   local t = Body.get_time();
 
   --For OP, wait a bit to read joint readings
-  if not started then 
+  if not started then
     if t-t0>tStartWait then
       started=true;
 
@@ -98,10 +98,10 @@ function update()
       t0 = Body.get_time();
       count=1;
 
-      Body.set_syncread_enable(0); 
-    else 
-      Body.set_syncread_enable(1); 
-      return; 
+      Body.set_syncread_enable(0);
+    else
+      Body.set_syncread_enable(1);
+      return;
     end
   end
 

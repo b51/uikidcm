@@ -19,10 +19,10 @@ while (1) do
       lindex = det.lIndex;
       rindex = det.rIndex;
 
-      while (lindex > 512) do 
+      while (lindex > 512) do
          lindex = lindex - 512;
       end
-      while (rindex > 512) do 
+      while (rindex > 512) do
          rindex = rindex - 512;
       end
 

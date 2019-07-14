@@ -116,11 +116,10 @@ while true do
 	local zeroHardness = getch.get();
 	if #zeroHardness > 0 then
 		local byte = string.byte(zeroHardness, 1);
-		if byte == string.byte("y") then 
+		if byte == string.byte("y") then
 			Body.set_body_hardness(0);
 			break;
 		elseif byte == string.byte("n") then break;
 		end
 	end
 end
-

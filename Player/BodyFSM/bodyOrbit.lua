@@ -50,11 +50,11 @@ function update()
   dr = ballR - rOrbit;
   aStep = ballA - direction*(90*math.pi/180 - dr/0.40);
   vx = maxStep*math.cos(aStep);
-  
+
   --Does setting vx to 0 improve performance of orbit?--
-  
+
   vx = 0;
-  
+
   vy = maxStep*math.sin(aStep);
   va = 0.75*ballA;
 
@@ -80,10 +80,9 @@ function update()
   --Overshoot escape
   if direction~=dir then
     return 'done'
-  end  
-  
+  end
+
 end
 
 function exit()
 end
-

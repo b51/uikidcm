@@ -7,7 +7,7 @@ require('vector')
 
 t0 = 0;
 
---Todo 
+--Todo
 timeout = 10.0;
 maxStep = 0.06;
 rFar = 0.50;
@@ -47,7 +47,7 @@ end
 
 function update()
   local t = Body.get_time();
-  -- get ball position 
+  -- get ball position
   ball = wcm.get_ball();
   ballR = math.sqrt(ball.x^2 + ball.y^2);
 
@@ -83,17 +83,17 @@ function update()
   end
 
   if t-ball.t>1.5 then --missed the ball, backstep a bit
-    vStep[1]=-0.03; 
+    vStep[1]=-0.03;
   elseif t-ball.t>0.1 then --we are looking up, stop advancing
     vStep[1]=0;
-  else 
-    --we are tracking the ball. 
+  else
+    --we are tracking the ball.
     --check ball is within threshold
     if (math.abs(ball.y) > 0.03) and (math.abs(ball.y) < 0.06) then
       vStep[1]=0.06;
     end
   end
- 
+
   walk.set_velocity(vStep[1],vStep[2],vStep[3]);
 
   if (t - ball.t > tLost) then

@@ -15,7 +15,7 @@ require('util');
   sm:exit();
 
   states are tables with member functions:
-  state.entry(), event = state.update(), state.exit(event) 
+  state.entry(), event = state.update(), state.exit(event)
 
   events are strings: "timeout", "done", etc.
   actions are optional functions to be called

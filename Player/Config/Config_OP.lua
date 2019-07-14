@@ -3,7 +3,7 @@ module(..., package.seeall);
 require('vector')
 require('unix')
 
-platform = {}; 
+platform = {};
 platform.name = 'OP'
 
 function loadconfig(configName)
@@ -15,7 +15,7 @@ end
 
 --Robot CFG should be loaded first to set PID values
 local robotName=unix.gethostname();
-loadconfig('Robot/Config_OP_Robot') 
+loadconfig('Robot/Config_OP_Robot')
 loadconfig('Walk/Config_OP_Walk')
 loadconfig('World/Config_OP_World')
 loadconfig('Kick/Config_OP_Kick')
@@ -27,7 +27,7 @@ loadconfig('Net/Config_Yolo_Net')
 
 -- Device Interface Libraries
 dev = {};
-dev.body = 'OPBody'; 
+dev.body = 'OPBody';
 dev.camera = 'OPCam';
 dev.kinematics = 'OPKinematics';
 dev.ip_wired = '192.168.2.200';
@@ -38,10 +38,10 @@ dev.game_control = 'OPGameControl';
 dev.team = 'TeamBasic';
 dev.walk = 'BasicWalk';
 dev.kick = 'BasicKick'
-dev.gender = 1; -- 1 for Male and 0 for Female 
+dev.gender = 1; -- 1 for Male and 0 for Female
 
 speak = {}
-speak.enable = false; 
+speak.enable = false;
 
 -- Game Parameters
 game = {};
@@ -50,7 +50,7 @@ game.teamNumber = 6;
 --Default role: 0 for goalie, 1 for attacker, 2 for defender
 game.role = 1;
 
---Default team: 0 for blue, 1 for red  
+--Default team: 0 for blue, 1 for red
 game.teamColor = 0; --Blue team, attacking Yellow goal
 --game.teamColor = 1; --Red team, attacking Cyan goal
 game.robotName = robotName;
@@ -70,7 +70,7 @@ fsm.body = {''};
 --Behavior flags, should be defined in FSM Configs but can be overrided here
 fsm.kickoff_wait_enable = 0;
 fsm.playMode = 3; --1 for demo, 2 for orbit, 3 for direct approach, 4 for passing ball
-fsm.forcePlayer = 0; --1 for attacker, 2 for defender, 3 for goalie 
+fsm.forcePlayer = 0; --1 for attacker, 2 for defender, 3 for goalie
 fsm.enable_walkkick = 0; --Testing
 fsm.enable_sidekick = 0;
 fsm.daPost_check = 1; --aim to the side when close to the ball
@@ -82,7 +82,7 @@ team = {};
 team.msgTimeout = 5.0;
 team.tKickOffWear = 7.0;
 
-team.walkSpeed = 0.25; --Average walking speed 
+team.walkSpeed = 0.25; --Average walking speed
 team.turnSpeed = 1.0; --Average turning time for 360 deg
 team.ballLostPenalty = 4.0; --ETA penalty per ball loss time
 team.fallDownPenalty = 4.0; --ETA penalty per ball loss time
@@ -92,7 +92,7 @@ team.nonDefenderPenalty = 0.5; -- distance penalty from goal
 team.force_defender = 0;--Enable this to force defender mode
 
 --if ball is away than this from our goal, go support
-team.support_dist = 3.0; 
+team.support_dist = 3.0;
 team.supportPenalty = 0.5; --dist from goal
 
 --Team ball parameters
@@ -111,7 +111,7 @@ km.standup_back = 'km_NSLOP_StandupFromBack.lua';
 -- Low battery level
 -- Need to implement this api better...
 bat_low = 117; -- 11.7V warning
-bat_med = 119; -- Slow down walking if voltage drops below this 
+bat_med = 119; -- Slow down walking if voltage drops below this
 
 bat_led = {118,119,122,123,124,125}; --for back LED indicator
 
@@ -129,7 +129,7 @@ fsm.goalie_use_walkkick = 1; --should goalie use front walkkick?
 
 --Goalie diving detection parameters
 fsm.bodyAnticipate.timeout = 3.0;
-fsm.bodyAnticipate.center_dive_threshold_y = 0.05; 
+fsm.bodyAnticipate.center_dive_threshold_y = 0.05;
 fsm.bodyAnticipate.dive_threshold_y = 1.0;
 --fsm.bodyAnticipate.ball_velocity_th = 1.0; --min velocity for diving
 --fsm.bodyAnticipate.ball_velocity_thx = -1.0; --min x velocity for diving
@@ -153,4 +153,3 @@ ball_shift={0,0};
 
 --New multi-blob landmark detection code
 vision.use_multi_landmark = 1;
-

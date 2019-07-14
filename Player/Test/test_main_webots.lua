@@ -50,7 +50,7 @@ GameControl.entry();
 darwin = false;
 webots = false;
 
--- Enable OP specific 
+-- Enable OP specific
 if(Config.platform.name == 'OP') then
   darwin = true;
 end
@@ -108,7 +108,7 @@ function process_keyinput()
     elseif byte==string.byte("5") then
       Speak.talk('Finished');
       gcm.set_game_state(4);
-    elseif byte==string.byte("k") then   
+    elseif byte==string.byte("k") then
       --Blue team kickoff
       if gcm.get_team_color()==0 then
         gcm.set_game_kickoff(1);
@@ -116,22 +116,22 @@ function process_keyinput()
         gcm.set_game_kickoff(0);
       end
       Speak.talk('Blue kickoff');
-    elseif byte==string.byte("l") then   
+    elseif byte==string.byte("l") then
       if gcm.get_team_color()==0 then
         gcm.set_game_kickoff(0);
       else
         gcm.set_game_kickoff(1);
       end
       Speak.talk('Red kickoff');
-    elseif byte==string.byte("q") then 
+    elseif byte==string.byte("q") then
       penalize_player=1;
-    elseif byte==string.byte("w") then 
+    elseif byte==string.byte("w") then
       penalize_player=2;
-    elseif byte==string.byte("e") then 
+    elseif byte==string.byte("e") then
       penalize_player=3;
-    elseif byte==string.byte("r") then 
+    elseif byte==string.byte("r") then
       penalize_player=4;
-    elseif byte==string.byte("t") then 
+    elseif byte==string.byte("t") then
       penalize_player=5;
     end
 
@@ -160,7 +160,7 @@ function update()
         calibrating = false;
         ready = true;
       end
-      
+
     elseif (ready) then
       -- initialize state machines
       package.path = cwd..'/BodyFSM/'..Config.fsm.body[smindex+1]..'/?.lua;'..package.path;
@@ -173,7 +173,7 @@ function update()
       BodyFSM.entry();
       HeadFSM.entry();
       GameFSM.entry();
---[[      
+--[[
       if( webots ) then
         --BodyFSM.sm:add_event('button');
         GameFSM.sm:set_state('gamePlaying');
@@ -195,7 +195,7 @@ function update()
       if (count % 100 == 0) then
         initToggle = not initToggle;
         if (initToggle) then
-          Body.set_indicator_state({1,1,1}); 
+          Body.set_indicator_state({1,1,1});
         else
           Body.set_indicator_state({0,0,0});
         end
@@ -203,7 +203,7 @@ function update()
     end
 
   else
-    -- update state machines 
+    -- update state machines
     GameFSM.update();
     BodyFSM.update();
     HeadFSM.update();
@@ -219,7 +219,7 @@ function update()
     -- update battery indicator
     Body.set_indicator_batteryLevel(Body.get_battery_level());
   end
-  
+
   -- check if the last update completed without errors
   lcount = lcount + 1;
   if (count ~= lcount) then

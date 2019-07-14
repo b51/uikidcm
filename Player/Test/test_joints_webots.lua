@@ -47,7 +47,7 @@ require('util')
 darwin = false;
 webots = false;
 
--- Enable OP specific 
+-- Enable OP specific
 if(Config.platform.name == 'OP') then
   darwin = true;
 end
@@ -122,45 +122,45 @@ function process_keyinput()
 		byte = byte + 32;
 	end
 --[[
-	if byte==string.byte("i") then	
+	if byte==string.byte("i") then
 		langle[jointToCheck]=langle[jointToCheck]+5;
 	elseif byte==string.byte("j") then
 		langle[jointToCheck+6]=langle[jointToCheck+6]-5;
-	elseif byte==string.byte("k") then	
+	elseif byte==string.byte("k") then
 		langle[jointToCheck]=0;
 		langle[jointToCheck+6]=0;
-	elseif byte==string.byte("l") then	
+	elseif byte==string.byte("l") then
 		langle[jointToCheck+6]=langle[jointToCheck+6]+5;
-	elseif byte==string.byte(",") then	
+	elseif byte==string.byte(",") then
 		langle[jointToCheck]=langle[jointToCheck]-5;
-	elseif byte==string.byte("1") then	
-		jointToCheck=jointToCheck-1;	
-		if jointToCheck==0 then jointToCheck=6;end	
-	elseif byte==string.byte("2") then	
-		jointToCheck=jointToCheck%6+1;	
+	elseif byte==string.byte("1") then
+		jointToCheck=jointToCheck-1;
+		if jointToCheck==0 then jointToCheck=6;end
+	elseif byte==string.byte("2") then
+		jointToCheck=jointToCheck%6+1;
 	end
 	Body.set_actuator_command(math.pi/180*langle);
 	print(string.format("%s : L %d R %d",jointNames[jointToCheck],
 		langle[jointToCheck],langle[jointToCheck+6]));
 --]]
 
-	if byte==string.byte("i") then	
+	if byte==string.byte("i") then
 	    tx=tx+0.01;
 	elseif byte==string.byte("j") then
 	    ty=ty+0.01;
-	elseif byte==string.byte("k") then	
+	elseif byte==string.byte("k") then
 	    tx=0;ty=0;
 	elseif byte==string.byte("h") then
 	    ta=ta+0.03;
-	elseif byte==string.byte(";") then	
+	elseif byte==string.byte(";") then
 	    ta=ta-0.03;
-	elseif byte==string.byte("l") then	
+	elseif byte==string.byte("l") then
 	    ty=ty-0.01;
-	elseif byte==string.byte(",") then	
+	elseif byte==string.byte(",") then
 	    tx=tx-0.01;
-	elseif byte==string.byte("u") then	
+	elseif byte==string.byte("u") then
 	    tz=tz+0.005;
-	elseif byte==string.byte("m") then	
+	elseif byte==string.byte("m") then
 	    tz=tz-0.005;
 	end
 	torso_pos = {tx,ty,tz,0,0,ta};
@@ -179,10 +179,10 @@ end
 
 function update()
   Body.set_syncread_enable(0); --read from only head servos
-   
+
   -- Update the relevant engines
   Body.update();
-  
+
   -- Get a keypress
   process_keyinput();
 end
@@ -192,7 +192,7 @@ local ncount = 100;
 local tUpdate = Body.get_time();
 while 1 do
   count = count + 1;
-  
+
   update();
 
   -- Show FPS
@@ -208,4 +208,3 @@ while 1 do
 --  unix.usleep(tDelay);
 
 end
-

@@ -23,10 +23,9 @@ end
 
 
 function get_player_id()
-  return playerID;  
+  return playerID;
 end
 
 function get_team_color()
   return teamColor;
 end
-

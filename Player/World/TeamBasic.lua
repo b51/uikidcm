@@ -37,7 +37,7 @@ states = {};
 states[playerID] = state;
 
 function recv_msgs()
-  while (Comm.size() > 0) do 
+  while (Comm.size() > 0) do
     t = serialization.deserialize(Comm.receive());
     if (t and (t.teamNumber) and (t.teamNumber == state.teamNumber) and (t.id) and (t.id ~= playerID)) then
       t.tReceive = Body.get_time();
@@ -108,7 +108,7 @@ function update()
 --      else
 	 eta[id] = rBall/0.10 + 4*math.max(tBall-1.0,0);
 --      end
-      
+
       -- distance to goal
       dgoalPosition = vector.new(wcm.get_goal_defend());
       pose = wcm.get_pose();
@@ -163,7 +163,7 @@ function update()
       end
 
       if minDDefID == playerID then
-        -- defense 
+        -- defense
         set_role(2);
       else
         -- support
@@ -173,10 +173,10 @@ function update()
   end
 
   -- update shm
-  update_shm() 
+  update_shm()
 end
 
-function update_shm() 
+function update_shm()
   -- update the shm values
   gcm.set_team_role(role);
 end
@@ -189,7 +189,7 @@ function get_role()
 end
 
 function set_role(r)
-  if role ~= r then 
+  if role ~= r then
     role = r;
     Body.set_indicator_role(role);
     if role == 1 then
@@ -219,7 +219,7 @@ else
 end
 
 function get_player_id()
-  return playerID; 
+  return playerID;
 end
 
 function min(t)

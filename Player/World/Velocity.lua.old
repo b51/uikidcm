@@ -67,4 +67,3 @@ end
 function getObservationData()
   return x, y, vx, vy, ep, evp;
 end
-

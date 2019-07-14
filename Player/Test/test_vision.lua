@@ -46,7 +46,7 @@ require('vector')
 BodyFSM=require('BodyFSM');
 HeadFSM=require('HeadFSM');
 require('getch')
-require('vcm'); 
+require('vcm');
 require('Motion');
 require('walk');
 --require('HeadTransform')
@@ -106,32 +106,32 @@ local str=getch.get();
 	-- Move the head around
 
 	bodysm_running=0;
-	
+
 	if byte==string.byte("w") then
 		headsm_running=0;
 		headangle[2]=headangle[2]-5*math.pi/180;
-	elseif byte==string.byte("a") then	
+	elseif byte==string.byte("a") then
 		headangle[1]=headangle[1]+5*math.pi/180;
 		headsm_running=0;
-	elseif byte==string.byte("s") then	
+	elseif byte==string.byte("s") then
 		headangle[1],headangle[2]=0,0;
 		headsm_running=0;
-	elseif byte==string.byte("d") then	
+	elseif byte==string.byte("d") then
 		headangle[1]=headangle[1]-5*math.pi/180;
 		headsm_running=0;
-	elseif byte==string.byte("x") then	
+	elseif byte==string.byte("x") then
 		headangle[2]=headangle[2]+5*math.pi/180;
 		headsm_running=0;
-	elseif byte==string.byte("e") then	
+	elseif byte==string.byte("e") then
 		headangle[2]=headangle[2]-1*math.pi/180;
 		headsm_running=0;
-	elseif byte==string.byte("c") then	
+	elseif byte==string.byte("c") then
 		headangle[2]=headangle[2]+1*math.pi/180;
 		headsm_running=0;
   elseif byte==string.byte("v") then
     HeadFSM.sm:set_state('headFigure8');
 
-	--Camera angle tuning 
+	--Camera angle tuning
 	elseif byte==string.byte("q") then
 		cameraangle=cameraangle-1*math.pi/180;
 			print("Head camera angle:",cameraangle*180/math.pi);
@@ -159,10 +159,10 @@ local str=getch.get();
 	elseif byte==string.byte(";") then	targetvel[2]=targetvel[2]-0.02;
 
   -- HeadFSM setting
-	elseif byte==string.byte("1") then	
+	elseif byte==string.byte("1") then
 		headsm_running = 1-headsm_running;
     if( headsm_running==1 ) then
-  		HeadFSM.sm:set_state('headScan');
+		HeadFSM.sm:set_state('headScan');
     end
 	elseif byte==string.byte("2") then
     headsm_running = 0; -- Turn off the head state machine
@@ -176,7 +176,7 @@ local str=getch.get();
     Body.set_head_command(headangle);
 
 
-	elseif byte==string.byte("3") then	
+	elseif byte==string.byte("3") then
 		if Config.game.robotID==9 then
 			local ball = vcm.ball;
 			pickup.throw=0;
@@ -185,7 +185,7 @@ local str=getch.get();
 			kick.set_kick("kickForwardLeft");
 			Motion.event("kick");
 		end
-	elseif byte==string.byte("4") then	
+	elseif byte==string.byte("4") then
 		if Config.game.robotID==9 then
 			pickup.throw=1;
 			Motion.event("pickup");
@@ -198,19 +198,19 @@ local str=getch.get();
 	elseif byte==string.byte("5") then	--Turn on body SM
 		headsm_running=1;
 		bodysm_running=1;
-   	        BodyFSM.sm:set_state('bodySearch');   
+	        BodyFSM.sm:set_state('bodySearch');
 		HeadFSM.sm:set_state('headScan');
 	elseif byte==string.byte("6") then	--Kick head SM
 		headsm_running=1;
 		HeadFSM.sm:set_state('headKick');
 	elseif byte==string.byte("7") then	Motion.event("sit");
-	elseif byte==string.byte("8") then	
-		if walk.active then 
+	elseif byte==string.byte("8") then
+		if walk.active then
 			walk.stopAlign();
 		end
 		Motion.event("standup");
-		
-	elseif byte==string.byte("9") then	
+
+	elseif byte==string.byte("9") then
 		Motion.event("walk");
 		walk.start();
 	end
@@ -222,7 +222,7 @@ end
 
 function update()
   Body.set_syncread_enable(0); --read from only head servos
-  
+
   -- Update the relevant engines
   Body.update();
   Motion.update();
@@ -250,7 +250,7 @@ local ncount = 100;
 local tUpdate = Body.get_time();
 while 1 do
   count = count + 1;
-  
+
   update();
 
   -- Show FPS
@@ -268,4 +268,3 @@ while 1 do
   unix.usleep(tDelay);
 
 end
-

@@ -62,7 +62,7 @@ function update()
   if not started then --these init codes are moved here for OP
         if 1 then
 --	if dt>0.2 then
-  	  started=true;
+	  started=true;
 	  local qSensor = Body.get_sensor_position();
 	  local dpLLeg = Kinematics.lleg_torso(Body.get_lleg_position());
 	  local dpRLeg = Kinematics.rleg_torso(Body.get_rleg_position());
@@ -91,7 +91,7 @@ function update()
     end
   end
   pLLeg = pLLeg + dpLeft;
-	 
+
   dpRight = pRLegStance - pRLeg;
   for i = 1,6 do
     if (math.abs(dpRight[i]) > tolLimit) then

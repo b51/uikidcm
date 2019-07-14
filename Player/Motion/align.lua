@@ -99,7 +99,7 @@ function update()
     zLeft,zRight=0,0;
     step_count=0;
   end
-  
+
   local t=Body.get_time();
   ph=(t-t0)/tStep;
 
@@ -108,7 +108,7 @@ function update()
     if step_count==2 then
       active=false;
       return "done"
-    else 
+    else
       ph=ph-1;
       t0=t0+tStep;
       supportLeg=1-supportLeg;
@@ -158,7 +158,7 @@ function update()
 end
 
 function motion_torso(ph)
-  --simple static walk with linear body movement 
+  --simple static walk with linear body movement
   local uTorso,uSupport;
   local uMid = util.se2_interpolate(0.5,uLeft,uRight);
   if supportLeg==0 then
@@ -259,8 +259,8 @@ function motion_legs(qLegs)
 end
 
 function motion_arms()
-  local qLArmActual={};   
-  local qRArmActual={};   
+  local qLArmActual={};
+  local qRArmActual={};
   qLArmActual[1],qLArmActual[2]=qLArm0[1]+armShift[1],qLArm0[2]+armShift[2];
   qRArmActual[1],qRArmActual[2]=qRArm0[1]+armShift[1],qRArm0[2]+armShift[2];
   qLArmActual[2]=math.max(8*math.pi/180,qLArmActual[2])
@@ -278,4 +278,3 @@ function exit()
   Body.set_rleg_slope(0);
 
 end
-

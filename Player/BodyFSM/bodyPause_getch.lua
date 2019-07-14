@@ -30,7 +30,7 @@ function update()
     if byte==string.byte("p") then
 		return("done");
     elseif byte == string.byte("a") then
-    		return("go");
+		return("go");
     end
   end
 end
@@ -38,4 +38,3 @@ end
 function exit()
   walk.start();
 end
-

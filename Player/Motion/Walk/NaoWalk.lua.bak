@@ -134,7 +134,7 @@ uSupport = uTorso;
 pLLeg = vector.new{uLeft[1], uLeft[2], 0, 0, 0, uLeft[3]};
 pRLeg = vector.new{uRight[1], uRight[2], 0, 0, 0, uRight[3]};
 pTorso = vector.new{uTorso[1], uTorso[2], bodyHeight, 0, 0, uTorso[3]};
- 
+
 qLegs = Kinematics.inverse_legs(pLLeg, pRLeg, pTorso, 0);
 --end
 
@@ -200,7 +200,7 @@ function entry()
   local dpRight = Kinematics.rleg_torso(Body.get_rleg_position());
   uLeft = pose_global({dpLeft[1], dpLeft[2], dpLeft[6]}, uTorso);
   uRight = pose_global({dpRight[1], dpRight[2], dpRight[6]}, uTorso);
- 
+
   --SJ: there is some discontinuity after kicking
   uLeft = pose_global(vector.new({-supportX, footY, 0}),uTorso);
   uRight = pose_global(vector.new({-supportX, -footY, 0}),uTorso);
@@ -216,7 +216,7 @@ function entry()
   pLLeg = vector.new{uLeft[1], uLeft[2], 0, 0, 0, uLeft[3]};
   pRLeg = vector.new{uRight[1], uRight[2], 0, 0, 0, uRight[3]};
   pTorso = vector.new{uTorso[1], uTorso[2], bodyHeight, 0, 0, uTorso[3]};
-   
+
   qLegs = Kinematics.inverse_legs(pLLeg, pRLeg, pTorso, 0);
   -- This assumes RLeg follows LLeg in servo order:
   Body.set_lleg_command(qLegs);
@@ -267,7 +267,7 @@ function update()
 
   fsrOn = Config.walk.fsrOn or false;
   --------------------------------------
-  
+
 
   t = Body.get_time();
   iStep, ph = math.modf((t-t0)/tStep);
@@ -275,30 +275,30 @@ function update()
   if fsrOn thend
      local fl=Body.get_sensor_fsrLeft();
      local fr=Body.get_sensor_fsrRight();
-	
+
      local fls=fl[1]+fl[2]+fl[3]+fl[4];
      local frs=fr[1]+fr[2]+fr[3]+fr[4];
 	   --print(fls,frs);
 	--]]
 
-     
+
      --local fsr_threshold= Config.walk.fsr_threshold or 0.3;
 
 --[[
 	--Check if the foot is mid-air during the single support phase
-  if ph>0.47 and ph<0.53 and delay2==0 then 
-    local supportLegTemp = iStep % 2; 
-			if supportLegTemp==0 and frs>fsr_threshold then --left foot 
+  if ph>0.47 and ph<0.53 and delay2==0 then
+    local supportLegTemp = iStep % 2;
+			if supportLegTemp==0 and frs>fsr_threshold then --left foot
 			  delaycount=delaycount+1;
 			  print("Early landing",delaycount)
 			elseif supportLegTemp==1 and fls>fsr_threshold then
 			  delaycount=delaycount+1;
-		 	   print("Early landing",delaycount)
+			   print("Early landing",delaycount)
 			else
 			  delaycount=0;
 			end
 		end
-	
+
 --]]
 
 
@@ -306,18 +306,18 @@ function update()
 ---This is the delay code Spencer was working on.  THIS block is the good stuff.--
 	tDelayBalance= Config.walk.tDelayBalance or 1.0;
 	gyroDiffThresh = 160;
-  imuGyr = Body.get_sensor_imuGyr();  
+  imuGyr = Body.get_sensor_imuGyr();
   gyro_roll=-(imuGyr[1]-gyro0[1]);
   gyro_pitch=-(imuGyr[2]-gyro0[2]);
   --print(string.format('Roll: %.5f\t Pitch: %.5f', gyro_roll, gyro_pitch));
   currentRoll = gyro_roll;
   if math.abs(lastRoll - currentRoll) > gyroDiffThresh and stopping==true then
-  	print "Delaying!!!";
-  	delaycount=delaycount+1;
+	print "Delaying!!!";
+	delaycount=delaycount+1;
   end
   lastRoll=currentRoll;
   --]]
-  
+
   --[[
   roll_threshold=350;
   pitch_threshold=1000;
@@ -329,15 +329,15 @@ function update()
 
 --[[
 --delay block, if delay is ever reinstated.  This is what you should re-enable.--
-  if delaycount>0 and delay2==0 and stopping==true then 
+  if delaycount>0 and delay2==0 and stopping==true then
 	delay2=tDelayBalance;
 	delaycount=0;
   end
-  
+
   if stopping==false then
-  	stopping=true;
+	stopping=true;
   end
-  
+
   --]]
 
   --Stop when stop request is received--
@@ -353,8 +353,8 @@ function update()
   if fsrOn then
       --Wait a bit if the foot landed prematurely
 		if (iStep > iStep0) and delay2>0 then
-	 	   t0=t0+ ph*tStep;
-	 	   delay2=math.max(0,delay2-ph*tStep)
+		   t0=t0+ ph*tStep;
+		   delay2=math.max(0,delay2-ph*tStep)
 			 ph=1.0;
 			 iStep=iStep0;
 		end
@@ -365,20 +365,20 @@ function update()
     --initdone=true; --Walk has been initialized at least once.
     if still==false then
 	    update_velocity();
-	  elseif delay <= 0 then 
+	  elseif delay <= 0 then
 			delay=Config.walk.delay or 2;
 			velCurrent[1]=0;
 			velCurrent[2]=0;
-			velCurrent[3]=0;			
+			velCurrent[3]=0;
 		end
-		
+
 		if delay > 0 then
 			delay=delay-1;
 			if delay<=0 then
 				still=false;
 			end
 		end
-		
+
     -- New step
     iStep0 = iStep;
     supportLeg = iStep % 2; -- 0 for left support, 1 for right support
@@ -438,7 +438,7 @@ function update()
   end
 
   xFoot, zFoot = foot_phase(ph);
-  
+
   if initial_step>0 then
      zFoot=0;
   end
@@ -478,7 +478,7 @@ function update()
 
     pLLeg[3] = stepHeight*zFoot;
     pRLeg[3] = 0;
-    
+
     if (phSingle > 0) and (phSingle < 1) then
       qRHipRollCompensation = -hipRollCompensation*
                               math.min(1, phSingle/.1, (1-phSingle)/.1);
@@ -508,16 +508,16 @@ function update()
 
 --[[
    uTorsoCommand=pose_global({uTorsoShift[1],uTorsoShift[2],0},uTorso);
-   pTorso[1], pTorso[2], pTorso[6] = 
+   pTorso[1], pTorso[2], pTorso[6] =
 	uTorsoCommand[1], uTorsoCommand[2],
 	uTorsoCommand[3];
 --]]
 
-  pTorso[1], pTorso[2], pTorso[6] = 
+  pTorso[1], pTorso[2], pTorso[6] =
 	uTorso[1]+uTorsoShift[1], uTorso[2]+uTorsoShift[2], uTorso[3];
 
   qLegs = Kinematics.inverse_legs(pLLeg, pRLeg, pTorso, supportLeg);
-  
+
   qLegs[2] = qLegs[2] + qLHipRollCompensation;
   qLegs[8] = qLegs[8] + qRHipRollCompensation;
 
@@ -587,9 +587,9 @@ function update()
 --  qLegs[11] = qLegs[11]  + Config.walk.anklePitchComp[2];
 
 
-  qLegs[5] = qLegs[5]  + 
+  qLegs[5] = qLegs[5]  +
 	Config.walk.anklePitchComp[1]*math.cos(spread);
-  qLegs[11] = qLegs[11]  + 
+  qLegs[11] = qLegs[11]  +
 	Config.walk.anklePitchComp[2]*math.cos(spread);
 
 
@@ -654,12 +654,12 @@ end
 
 function set_velocity(vx, vy, vz)
   vz=math.min(math.max(vz,maxZ[1]),maxZ[2]);
-  
+
 --  local angleFactor=math.min(1.0, 1.5-math.abs(vz/maxZ[1]));
   local angleFactor=1;
   local stepMag=math.sqrt(vx^2+vy^2);
   local magFactor=math.min(0.06,stepMag)/(stepMag+0.000001);
-  
+
 
   velCommand[1]=vx*magFactor*angleFactor;
   velCommand[2]=vy*magFactor*angleFactor;
@@ -680,9 +680,9 @@ function update_velocity()
 
 
   velCurrent[1] = math.min(math.max(velCurrent[1]+velDiff[1],
- 	maxX[1]), maxX[2]);
+	maxX[1]), maxX[2]);
   velCurrent[2] = math.min(math.max(velCurrent[2]+velDiff[2],
- 	maxY[1]), maxY[2]);
+	maxY[1]), maxY[2]);
   velCurrent[3] = math.min(math.max(velCurrent[3]+velDiff[3],
 	 maxZ[1]), maxZ[2]);
 
@@ -729,11 +729,10 @@ function get_body_offset()
 end
 
 function procFunc(a,deadband,maxvalue)
-  if a>0 then 
+  if a>0 then
 	b=math.min( math.max(0,math.abs(a)-deadband), maxvalue);
-  else 
+  else
 	b=-math.min( math.max(0,math.abs(a)-deadband), maxvalue);
   end
   return b;
 end
-

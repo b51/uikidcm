@@ -4,7 +4,7 @@ require('vector');
 require('util')
 
 enableVelocity = Config.vision.enable_velocity_detection or 0;
---SJ: We can use the ball model (x,y,dx,dy) 
+--SJ: We can use the ball model (x,y,dx,dy)
 --and update the model using current estimate of velocity
 --TODO!
 
@@ -91,4 +91,3 @@ mt.__index.get_deviation = get_deviation;
 mt.__index.observation_ra = observation_ra;
 mt.__index.observation_xy = observation_xy;
 mt.__index.odometry = odometry;
-

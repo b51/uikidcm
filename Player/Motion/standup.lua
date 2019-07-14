@@ -68,9 +68,9 @@ function update()
 			local imuAngle = Body.get_sensor_imuAngle();
 			local maxImuAngle = math.max(math.abs(imuAngle[1]),
 													math.abs(imuAngle[2]));
-			
+
 			fall = mcm.get_motion_fall_check();  --tse
-			if (maxImuAngle > 30*math.pi/180 and fall==1) then 
+			if (maxImuAngle > 30*math.pi/180 and fall==1) then
 				do return "fail"; end
 			else
 				--Set velocity to 0 to prevent falling--

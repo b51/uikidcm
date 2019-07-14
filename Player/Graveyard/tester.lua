@@ -71,7 +71,7 @@ Body.set_head_hardness({0.4,0.4});
 
 Motion.fall_check=0; --auto getup disabled
 
-instructions = " Key commands \n 7:sit down 8:stand up 9:walk\n i/j/l/,/h/; :control walk velocity\n k : walk in place\n [, ', / :Reverse x, y, / directions\n 1/2/3/4 :kick\n w/a/s/d/x :control head\n t/T :alter walk speed\t f/F :alter step phase\t r/R :alter step height\t c/C :alter supportX\t v/V :alter supportY \t q/Q: alter footY\t y/Y: alter bodyHeight\t u/U: alter bodyTilt\n "; 
+instructions = " Key commands \n 7:sit down 8:stand up 9:walk\n i/j/l/,/h/; :control walk velocity\n k : walk in place\n [, ', / :Reverse x, y, / directions\n 1/2/3/4 :kick\n w/a/s/d/x :control head\n t/T :alter walk speed\t f/F :alter step phase\t r/R :alter step height\t c/C :alter supportX\t v/V :alter supportY \t q/Q: alter footY\t y/Y: alter bodyHeight\t u/U: alter bodyTilt\n ";
 -- main loop
 print(instructions);
 local tUpdate = unix.time();
@@ -87,7 +87,7 @@ calibrated=false;
 function update()
 
   count = count + 1;
-  
+
 	if (not init)  then
     if (calibrating) then
       if (Body.calibrate(count)) then
@@ -95,7 +95,7 @@ function update()
         calibrating = false;
         ready = true;
       end
-      
+
     elseif (ready) then
     --[[
       -- initialize state machines
@@ -109,7 +109,7 @@ function update()
       BodyFSM.entry();
       HeadFSM.entry();
       GameFSM.entry();
-      
+
       if( webots ) then
         BodyFSM.sm:add_event('button');
       end
@@ -130,7 +130,7 @@ function update()
       if (count % 100 == 0) then
         initToggle = not initToggle;
         if (initToggle) then
-          Body.set_indicator_state({1,1,1}); 
+          Body.set_indicator_state({1,1,1});
         else
           Body.set_indicator_state({0,0,0});
         end
@@ -149,7 +149,7 @@ function update()
   if byte==string.byte("\t") then
     parameters=not parameters;
     if parameters then
-      instructions = " Key commands \n 7:sit down 8:stand up 9:walk\n i/j/l/,/h/; :control walk velocity\n k : walk in place\n [, ', / :Reverse x, y, / directions\n 1/2/3/4 :kick\n w/a/s/d/x :control head\n t/T :alter walk speed\t f/F :alter step phase\t r/R :alter step height\t c/C :alter supportX\t v/V :alter supportY\n b/B :alter foot sensor threshold \t n/N :alter delay time.\n 3/4/5 :turn imu feedback/joint encoder feedback/foot sensor feedback on or off."; 
+      instructions = " Key commands \n 7:sit down 8:stand up 9:walk\n i/j/l/,/h/; :control walk velocity\n k : walk in place\n [, ', / :Reverse x, y, / directions\n 1/2/3/4 :kick\n w/a/s/d/x :control head\n t/T :alter walk speed\t f/F :alter step phase\t r/R :alter step height\t c/C :alter supportX\t v/V :alter supportY\n b/B :alter foot sensor threshold \t n/N :alter delay time.\n 3/4/5 :turn imu feedback/joint encoder feedback/foot sensor feedback on or off.";
     else
       instructions = " Key commands \n 7:sit down 8:stand up 9:walk\n i/j/l/,/h/; :control walk velocity\n k : walk in place\n [, ', / :Reverse x, y, / directions\n 1/2/3/4 :kick\n w/a/s/d/x :control head\n y/u/o/p :alter alpha\t q/e/r/t :alter gain\t c/v/b/n :alter deadband\t Letter to decrease, Shift+letter to increase\n z/Z :adjust odom X\t g/G :adjust odom Y\t m/M :adjust odom angle\t #:Reset pose to center";
     end
@@ -157,19 +157,19 @@ function update()
   end
 
   if parameters then
-    if byte==string.byte("i") then		
+    if byte==string.byte("i") then
 			targetvel[1]=targetvel[1]+0.01;
-		elseif byte==string.byte("j") then	
+		elseif byte==string.byte("j") then
 			targetvel[3]=targetvel[3]+0.1;
-		elseif byte==string.byte("k") then	
+		elseif byte==string.byte("k") then
 			targetvel[1],targetvel[2],targetvel[3]=0,0,0;
-		elseif byte==string.byte("l") then	
+		elseif byte==string.byte("l") then
 			targetvel[3]=targetvel[3]-0.1;
-		elseif byte==string.byte(",") then	
+		elseif byte==string.byte(",") then
 			targetvel[1]=targetvel[1]-0.01;
-		elseif byte==string.byte("h") then	
+		elseif byte==string.byte("h") then
 			targetvel[2]=targetvel[2]+0.01;
-		elseif byte==string.byte(";") then	
+		elseif byte==string.byte(";") then
 			targetvel[2]=targetvel[2]-0.01;
 		elseif byte==string.byte("[") then
 			targetvel[1]=-targetvel[1];
@@ -181,13 +181,13 @@ function update()
 		--Move the head around--
 		elseif byte==string.byte("w") then
 			headangle[2]=headangle[2]-5*math.pi/180;
-		elseif byte==string.byte("a") then	
+		elseif byte==string.byte("a") then
 			headangle[1]=headangle[1]+5*math.pi/180;
-		elseif byte==string.byte("s") then	
+		elseif byte==string.byte("s") then
 			headangle[1],headangle[2]=0,0;
-		elseif byte==string.byte("d") then	
+		elseif byte==string.byte("d") then
 			headangle[1]=headangle[1]-5*math.pi/180;
-		elseif byte==string.byte("x") then	
+		elseif byte==string.byte("x") then
 			headangle[2]=headangle[2]+5*math.pi/180;
 
 		--Change configuration params in real time--
@@ -230,10 +230,10 @@ function update()
 		elseif byte== string.byte('Z') then
 			Config.walk.tStepWalkKick = Config.walk.tStepWalkKick + .01;
 		elseif byte== string.byte('m') then
-			Config.walk.walkKickHeightFactor = 
+			Config.walk.walkKickHeightFactor =
         Config.walk.walkKickHeightFactor - .01;
 		elseif byte== string.byte('M') then
-			Config.walk.walkKickHeightFactor = 
+			Config.walk.walkKickHeightFactor =
        Config.walk.walkKickHeightFactor + .01;
 		elseif byte== string.byte('b') then
 			Config.walk.walkKickVel[1] = Config.walk.walkKickVel[1] - .01;
@@ -246,22 +246,22 @@ function update()
     elseif byte==string.byte('\\') then
       walkKick=not walkKick;
     elseif byte==string.byte("1") then
-      if walkKick then	
+      if walkKick then
         walk.doWalkKickLeft();
       else
-      	targetvel[1]=0;
-      	targetvel[2]=0;
-      	targetvel[3]=0;
-        kick.set_kick("kickForwardLeft");	
+	targetvel[1]=0;
+	targetvel[2]=0;
+	targetvel[3]=0;
+        kick.set_kick("kickForwardLeft");
         Motion.event("kick");
       end
     elseif byte==string.byte("2") then
       if walkKick then
         walk.doWalkKickRight();
       else
-      	targetvel[1]=0;
-      	targetvel[2]=0;
-      	targetvel[3]=0;
+	targetvel[1]=0;
+	targetvel[2]=0;
+	targetvel[3]=0;
         kick.set_kick("kickForwardRight");
         Motion.event("kick");
       end
@@ -274,29 +274,29 @@ function update()
 			Config.walk.fsrOn = not Config.walk.fsrOn;
 
 		elseif byte==string.byte("7") then	Motion.event("sit");
-		elseif byte==string.byte("8") then	
+		elseif byte==string.byte("8") then
 			walk.stop();
 			Motion.event("standup");
-		elseif byte==string.byte("9") then	
+		elseif byte==string.byte("9") then
 			Motion.event("walk");
 			walk.start();
     elseif byte==string.byte("`") then
       print(instructions);
     end
   else
-    if byte==string.byte("i") then		
+    if byte==string.byte("i") then
 			targetvel[1]=targetvel[1]+0.01;
-		elseif byte==string.byte("j") then	
+		elseif byte==string.byte("j") then
 			targetvel[3]=targetvel[3]+0.1;
-		elseif byte==string.byte("k") then	
+		elseif byte==string.byte("k") then
 			targetvel[1],targetvel[2],targetvel[3]=0,0,0;
-		elseif byte==string.byte("l") then	
+		elseif byte==string.byte("l") then
 			targetvel[3]=targetvel[3]-0.1;
-		elseif byte==string.byte(",") then	
+		elseif byte==string.byte(",") then
 			targetvel[1]=targetvel[1]-0.01;
-		elseif byte==string.byte("h") then	
+		elseif byte==string.byte("h") then
 			targetvel[2]=targetvel[2]+0.01;
-		elseif byte==string.byte(";") then	
+		elseif byte==string.byte(";") then
 			targetvel[2]=targetvel[2]-0.01;
 		elseif byte==string.byte("[") then
 			targetvel[1]=-targetvel[1];
@@ -308,28 +308,28 @@ function update()
 		--Move the head around--
 		elseif byte==string.byte("w") then
 			headangle[2]=headangle[2]-5*math.pi/180;
-		elseif byte==string.byte("a") then	
+		elseif byte==string.byte("a") then
 			headangle[1]=headangle[1]+5*math.pi/180;
-		elseif byte==string.byte("s") then	
+		elseif byte==string.byte("s") then
 			headangle[1],headangle[2]=0,0;
-		elseif byte==string.byte("d") then	
+		elseif byte==string.byte("d") then
 			headangle[1]=headangle[1]-5*math.pi/180;
-		elseif byte==string.byte("x") then	
+		elseif byte==string.byte("x") then
 			headangle[2]=headangle[2]+5*math.pi/180;
-		
+
     elseif byte==string.byte("`") then
       print(instructions);
-      
-		elseif byte==string.byte("1") then	
+
+		elseif byte==string.byte("1") then
 			walk.doWalkKickLeft();
-		elseif byte==string.byte("2") then	
+		elseif byte==string.byte("2") then
 			walk.doWalkKickRight();
 
 		elseif byte==string.byte("7") then	Motion.event("sit");
-		elseif byte==string.byte("8") then	
+		elseif byte==string.byte("8") then
 			walk.stop();
 			Motion.event("standup");
-		elseif byte==string.byte("9") then	
+		elseif byte==string.byte("9") then
 			Motion.event("walk");
 			walk.start();
 
@@ -386,8 +386,8 @@ function update()
 			Config.walk.hipImuParamY[3] = Config.walk.hipImuParamY[3] - .001;
 		elseif byte==string.byte("N") then
 			Config.walk.hipImuParamY[3] = Config.walk.hipImuParamY[3] + .001;
-		
-    --Adjust odometry values--  
+
+    --Adjust odometry values--
     elseif byte==string.byte("z") then
       Config.walk.odomScale[1] = Config.walk.odomScale[1] + .01;
     elseif byte==string.byte("Z") then
@@ -414,12 +414,12 @@ function update()
 		Body.set_para_headpos(headangle);
 		Body.set_state_headValid(1);
 		print(Body.get_state_headValid()[1]);
-  	print(string.format("Head angle: %d, %d",
+	print(string.format("Head angle: %d, %d",
 			headangle[1]*180/math.pi,
 			headangle[2]*180/math.pi));
 		print(string.format("Walk settings:\n tStep: %.2f\t phSingle: {%.2f, %.2f}\t stepHeight: %.3f\n supportX: %.3f\t supportY: %.3f\t footY: %.3f\t "..
-      "bodyHeight: %.3f\t bodyTilt: %.3f", 
-          Config.walk.tStep, Config.walk.phSingle[1], Config.walk.phSingle[2], Config.walk.stepHeight, 
+      "bodyHeight: %.3f\t bodyTilt: %.3f",
+          Config.walk.tStep, Config.walk.phSingle[1], Config.walk.phSingle[2], Config.walk.stepHeight,
           Config.walk.supportX, Config.walk.supportY, Config.walk.footY,
           Config.walk.bodyHeight,Config.walk.bodyTilt));
     --print(string.format("Walk kick settings:\n tStepWalkKick: %.2f\t walkKickHeightFactor: %.2f\t walkKickVel: {%.2f, %.2f}\n", Config.walk.tStepWalkKick or Config.walk.tStep, Config.walk.walkKickHeightFactor, Config.walk.walkKickVel[1], Config.walk.walkKickVel[2]))
@@ -437,10 +437,9 @@ function update()
     --print(string.format("Odometry settings:\n odomScale: {%.2f, %.2f, %.2f}\n", Config.walk.odomScale[1], Config.walk.odomScale[2], Config.walk.odomScale[3]));
   end
 
- 
+
 --  wcm.set_robot_odomScale(Config.walk.odomScale)
 wcm.set_robot_odomScale(Config.world.odomScale)
 
   end
 end
-

@@ -14,7 +14,7 @@ function serialize_orig(o)
       str = str..string.format("[%s]=%s,",serialize_orig(k),serialize_orig(v));
     end
     str = str.."}";
-  else	
+  else
     str = "nil";
   end
   return str;
@@ -37,11 +37,11 @@ function serialize(o)
     str = "{";
     local is_num=true;
     for k,v in pairs(o) do
-      if type(k)=="string" then 
+      if type(k)=="string" then
         if type(v) == "number" then
 	  if v%1==0 then --quickest check for integer
             str = str..string.format("[%q]=%d,",k,v);
-    	  else
+	  else
 	    str = str..string.format("[%q]=%.2f,",k,v);
 	  end
 	elseif type(v)=="string" then
@@ -53,7 +53,7 @@ function serialize(o)
         if type(v) == "number" then
 	  if v%1==0 then --quickest check for integer
             str = str..string.format("%d,",v);
-    	  else
+	  else
 	    str = str..string.format("%.2f,",v);
 	  end
 	elseif type(v)=="string" then
@@ -65,7 +65,7 @@ function serialize(o)
 
     end
     str = str.."}";
-  else	
+  else
     str = "nil";
   end
   return str;
@@ -91,7 +91,7 @@ function serialize_array(ud, width, height, dtype, arrName, arrID)
   for p = 1,npackets do
     local crows = math.min(nrows, rowsRemaining);
     rowsRemaining = rowsRemaining - crows;
-    local name = string.format('%s.%d.%d.%d', arrName, arrID, p, npackets); 
+    local name = string.format('%s.%d.%d.%d', arrName, arrID, p, npackets);
     ret[p] = cutil.array2string(cptr, width, crows, dtype, name);
     cptr = cutil.ptr_add(cptr, width*crows, dtype);
   end
@@ -115,7 +115,7 @@ function serialize_array2(ud, width, height, dtype, arrName, arrID)
   -- determine break size account for byte->ascii
   local rowSize = 2*width*dsize;
   local nrows = math.floor(maxSize/rowSize)*2; --skip every other line
-  local npackets = math.ceil(height/nrows); 
+  local npackets = math.ceil(height/nrows);
 
   local ret = {};
   local cptr = ud;
@@ -123,7 +123,7 @@ function serialize_array2(ud, width, height, dtype, arrName, arrID)
   for p = 1,npackets do
     local crows = math.min(nrows, rowsRemaining);
     rowsRemaining = rowsRemaining - crows;
-    local name = string.format('%s.%d.%d.%d', arrName, arrID, p, npackets); 
+    local name = string.format('%s.%d.%d.%d', arrName, arrID, p, npackets);
     ret[p] = cutil.array2string2(cptr, width, crows, dtype, name);
 	--skip every other line
     cptr = cutil.ptr_add(cptr, width*crows, dtype);
@@ -138,7 +138,7 @@ function serialize_label(ud, width, height, dtype, arrName, arrID)
   local arrSize = width*height*dsize;
   local ret = {};
   local cptr = ud;
-  local name = string.format('%s.%d.1.1', arrName, arrID); 
+  local name = string.format('%s.%d.1.1', arrName, arrID);
   ret = cutil.label2string(cptr, width*height, dtype, name);
   return ret;
 end
@@ -149,7 +149,7 @@ function serialize_label_double(ud, width, height, dtype, arrName, arrID)
   local arrSize = width*height*dsize;
   local ret = {};
   local cptr = ud;
-  local name = string.format('%s.%d.1.1', arrName, arrID); 
+  local name = string.format('%s.%d.1.1', arrName, arrID);
   ret = cutil.label2string_double(cptr, width*height, dtype, name);
   return ret;
 end
@@ -160,7 +160,7 @@ function serialize_label_rle(ud, width, height, dtype, arrName, arrID)
   local arrSize = width*height*dsize;
   local ret = {};
   local cptr = ud;
-  local name = string.format('%s.%d.1.1', arrName, arrID); 
+  local name = string.format('%s.%d.1.1', arrName, arrID);
   ret = cutil.label2string_rle(cptr, width*height, dtype, name);
   return ret;
 end
@@ -173,7 +173,7 @@ function deserialize(s)
   -- protected loadstring call
   ok, ret = pcall(loadstring('return '..s));
   --local x = loadstring("return "..s)();
-  if not ok then 
+  if not ok then
     --print(string.format("Warning: Could not deserialize message:\n%s",s));
     return '';
   else

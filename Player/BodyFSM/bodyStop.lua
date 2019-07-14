@@ -19,7 +19,7 @@ function update()
     started = true;
     end
   end
-  
+
 end
 
 function exit()

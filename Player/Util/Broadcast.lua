@@ -41,10 +41,10 @@ subsampling2=Config.vision.subsampling2 or 0;
 function sendB()
   -- labelB --
   labelB = vcm.get_image_labelB();
-  width = vcm.get_image_width()/8; 
+  width = vcm.get_image_width()/8;
   height = vcm.get_image_height()/8;
   count = vcm.get_image_count();
-  
+
   array = serialization.serialize_array(labelB, width, height, 'uint8', 'labelB', count);
 
   sendlabelB = {};
@@ -63,7 +63,7 @@ function sendB()
     CommWired.send(senddata);
     t2=unix.time();
     stime2=stime2+t2-t1;
-  end 
+  end
   if debug>0 then
     print("LabelB info num:",#array,"Total",infosize);
     print("Total serialization time:",stime1);
@@ -76,16 +76,16 @@ end
 function sendA()
   -- labelA --
   labelA = vcm.get_image_labelA();
-  width = vcm.get_image_width()/2; 
+  width = vcm.get_image_width()/2;
   height = vcm.get_image_height()/2;
   count = vcm.get_image_count();
-  
+
   array = serialization.serialize_array(labelA, width, height, 'uint8', 'labelA', count);
   sendlabelA = {};
   sendlabelA.team = {};
   sendlabelA.team.number = gcm.get_team_number();
   sendlabelA.team.player_id = gcm.get_team_player_id();
-  stime1,stime2,infosize=0,0,0;  
+  stime1,stime2,infosize=0,0,0;
   for i=1,#array do
     sendlabelA.arr = array[i];
     t0 = unix.time();
@@ -109,14 +109,14 @@ end
 
 
 --NEW MORE COMPACT ENCODING (1/4 previous size)
---We don't need to divide packet any more 
+--We don't need to divide packet any more
 function sendB()
   -- labelB --
   labelB = vcm.get_image_labelB();
-  width = vcm.get_image_width()/2/Config.vision.scaleB; 
+  width = vcm.get_image_width()/2/Config.vision.scaleB;
   height = vcm.get_image_height()/2/Config.vision.scaleB;
   count = vcm.get_image_count();
-  
+
 --  array = serialization.serialize_label_double(
 --	labelB, width, height, 'uint8', 'labelB',count);
   array = serialization.serialize_label_rle(
@@ -146,11 +146,11 @@ function sendB()
 end
 
 --NEW MORE COMPACT ENCODING (1/4 previous size)
---We don't need to divide packet any more 
+--We don't need to divide packet any more
 function sendA()
   -- labelA --
   labelA = vcm.get_image_labelA();
-  width = vcm.get_image_width()/2; 
+  width = vcm.get_image_width()/2;
   height = vcm.get_image_height()/2;
   count = vcm.get_image_count();
 
@@ -158,7 +158,7 @@ function sendA()
 --	labelA, width, height, 'uint8', 'labelA',count);
   array = serialization.serialize_label_rle(
 	labelA, width, height, 'uint8', 'labelA',count);
-  
+
   sendlabelA = {};
   sendlabelA.team = {};
   sendlabelA.team.number = gcm.get_team_number();
@@ -185,25 +185,25 @@ end
 function sendmap()
   -- occmap --
   occmap = ocm.get_occ_map();
-  width = Config.occ.mapsize; 
+  width = Config.occ.mapsize;
   height = Config.occ.mapsize;
   count = vcm.get_image_count();
 
   array = serialization.serialize_array2(
 	occmap, width, height, 'int32', 'occmap',count);
-  
+
   sendoccmap = {};
   sendoccmap.team = {};
   sendoccmap.team.number = gcm.get_team_number();
   sendoccmap.team.player_id = gcm.get_team_player_id();
 
   local tSerialize=0;
-  local tSend=0;  
+  local tSend=0;
   local totalSize=0;
   for i=1,#array do
     sendoccmap.arr = array[i];
     t0 = unix.time();
-    senddata=serialization.serialize(sendoccmap);     
+    senddata=serialization.serialize(sendoccmap);
     t1 = unix.time();
     tSerialize= tSerialize + t1-t0;
     CommWired.send(senddata);
@@ -228,10 +228,10 @@ function sendImg()
   width = vcm.get_image_width()/2; -- number of yuyv packages
   height = vcm.get_image_height();
   count = vcm.get_image_count();
-  
-  array = serialization.serialize_array2(yuyv, width, height, 
+
+  array = serialization.serialize_array2(yuyv, width, height,
 	'int32', 'yuyv', count);
---  array = serialization.serialize_array(yuyv, width, height, 
+--  array = serialization.serialize_array(yuyv, width, height,
 --	'int32', 'yuyv', count);
 
   sendyuyv = {};
@@ -240,12 +240,12 @@ function sendImg()
   sendyuyv.team.player_id = gcm.get_team_player_id();
 
   local tSerialize=0;
-  local tSend=0;  
+  local tSend=0;
   local totalSize=0;
   for i=1,#array do
     sendyuyv.arr = array[i];
     t0 = unix.time();
-    senddata=serialization.serialize(sendyuyv);     
+    senddata=serialization.serialize(sendyuyv);
     t1 = unix.time();
     tSerialize= tSerialize + t1-t0;
     CommWired.send(senddata);
@@ -269,10 +269,10 @@ function sendImgSub2()
   width = vcm.get_image_width()/4; -- number of yuyv packages
   height = vcm.get_image_height()/2;
   count = vcm.get_image_count();
-  
---  array = serialization.serialize_array(yuyv2, width, height, 
+
+--  array = serialization.serialize_array(yuyv2, width, height,
 --		'int32', 'ysub2', count);
-  array = serialization.serialize_array2(yuyv2, width, height, 
+  array = serialization.serialize_array2(yuyv2, width, height,
 		'int32', 'ysub2', count);
   sendyuyv2 = {};
   sendyuyv2.team = {};
@@ -280,7 +280,7 @@ function sendImgSub2()
   sendyuyv2.team.player_id = gcm.get_team_player_id();
 
   local tSerialize=0;
-  local tSend=0;  
+  local tSend=0;
   local totalSize=0;
   for i=1,#array do
     sendyuyv2.arr = array[i];
@@ -311,7 +311,7 @@ function sendImgSub4()
   height = vcm.get_image_height()/4;
   count = vcm.get_image_count();
 
-  array = serialization.serialize_array2(yuyv3, width, height, 
+  array = serialization.serialize_array2(yuyv3, width, height,
 		'int32', 'ysub4', count);
   sendyuyv3 = {};
   sendyuyv3.team = {};
@@ -319,7 +319,7 @@ function sendImgSub4()
   sendyuyv3.team.player_id = gcm.get_team_player_id();
 
   local tSerialize=0;
-  local tSend=0;  
+  local tSend=0;
   for i=1,#array do
     sendyuyv3.arr = array[i];
     t0 = unix.time();
@@ -344,8 +344,8 @@ function update(enable)
   if enable == 0 then return; end
   --At level 3, we only send yuyv for logging and nothing else
   if enable == 3 then return; end
-	
-  send = {};	
+
+  send = {};
   for shmHandlerkey,shmHandler in pairs(sendShm) do
     send[shmHandlerkey] = {};
     for sharedkey,sharedvalue in pairs(shmHandler.shared) do
@@ -359,9 +359,9 @@ function update(enable)
 --print(string.format("shmHandlerKey %s sharedkey %s itemkey %s\n",
 --	shmHandlerkey,sharedkey,itemkey));
 
-  	  send[shmHandlerkey][sharedkey][itemkey] = 
+	  send[shmHandlerkey][sharedkey][itemkey] =
                  shmHandler['get_'..sharedkey..'_'..itemkey]();
- 	end
+	end
       end
     end
   end
@@ -389,7 +389,7 @@ function update_img( enable, imagecount )
     end
   elseif(enable==2) then
     --2: Vision debug mode
-    --Send everything 
+    --Send everything
     if subsampling>0 then
       sendImgSub2();
       sendA();

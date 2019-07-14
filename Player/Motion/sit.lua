@@ -45,7 +45,7 @@ function entry()
   Body.set_larm_hardness(.1);
   Body.set_rarm_hardness(.1);
   t0=Body.get_time();
-  Body.set_syncread_enable(1); 
+  Body.set_syncread_enable(1);
   walk.stance_reset();--123456停止walk（walk-->sit）
   Body.set_para_velocity(vector.new({0,0,0}));
   Body.set_state_gaitValid(1);------------123456站立 开始（复位？）
@@ -59,7 +59,7 @@ function update()
      return;
   end
   --For OP, wait a bit to read joint readings
-  if not started then 
+  if not started then
     if t-t0>tStartWait then
       started=true;
 
@@ -78,7 +78,7 @@ function update()
       Body.set_rleg_hardness(0.7);
       t0 = Body.get_time();
       count=1;
-      Body.set_syncread_enable(0); 
+      Body.set_syncread_enable(0);
 
       if qLArm then
         Body.set_larm_command(qLArm);
@@ -88,9 +88,9 @@ function update()
       end
 
 
-    else 
-      Body.set_syncread_enable(1); 
-      return; 
+    else
+      Body.set_syncread_enable(1);
+      return;
     end
   end
 
@@ -98,11 +98,11 @@ function update()
   t0 = t;
 
 --[[
-  if not started then 
+  if not started then
     started=true;
     --Now we assume that the robot always start sitting from stance position
     pTorso = vector.new({-footX,0,vcm.get_camera_bodyHeight(),
-	  	         0,vcm.get_camera_bodyTilt(),0});
+		         0,vcm.get_camera_bodyTilt(),0});
     pLeft = vector.new({-supportX,footY,0,0,0,0});
     pRight= vector.new({-supportX,-footY,0,0,0,0});
     Body.set_lleg_hardness(1);

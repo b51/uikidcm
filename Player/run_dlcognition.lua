@@ -20,4 +20,3 @@ while (true) do
 end
 
 dlcognition.exit();
-

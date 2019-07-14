@@ -12,7 +12,7 @@ t0 = 0;
 maxStep = Config.fsm.bodyGotoCenter.maxStep;
 rClose = Config.fsm.bodyGotoCenter.rClose;
 timeout = Config.fsm.bodyGotoCenter.timeout;
---TODO: Goalie handling, velocity limit 
+--TODO: Goalie handling, velocity limit
 
 function entry()
   print(_NAME.." entry");
@@ -79,4 +79,3 @@ end
 
 function exit()
 end
-

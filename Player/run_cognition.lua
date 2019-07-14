@@ -20,4 +20,3 @@ while (true) do
 end
 
 cognition.exit();
-

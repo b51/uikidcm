@@ -33,10 +33,10 @@ stance.dpLimitStance=vector.new({.04, .03, .07, .4, .4, .4});
 stance.initangle = vector.new({
   0,0,
   105, 30, -45,
---  0,  -2, -16, 110, -119, 2, 
+--  0,  -2, -16, 110, -119, 2,
 --  0, 2, -16, 110, -119, -2,
 
-  0,  -2, -26, 110, -119, 2, 
+  0,  -2, -26, 110, -119, 2,
   0, 2, -26, 110, -119, -2,
 
   105, -30, -45,
@@ -52,8 +52,8 @@ head.yawMin = -90*math.pi/180;
 head.yawMax = 90*math.pi/180;
 head.cameraPos = {{0.00, 0.0, 0.065}} --OP, spec value, may need to be recalibrated
 head.cameraAngle = {{0.0,0}}; -- We set it zero here
---head.neckZ=0.0765; --From CoM to neck joint 
-head.neckZ=0.04; --From CoM to neck joint         	--tse
+--head.neckZ=0.0765; --From CoM to neck joint
+head.neckZ=0.04; --From CoM to neck joint		--tse
 --head.neckX=0.013; --From CoM to neck joint
 head.neckX=0.001; --From CoM to neck joint	        --tse
 
@@ -64,13 +64,13 @@ acc={};
 acc.xyz={2,1,3};	--axis remap
 
 angle={};
-angle.gMax = 1.2;  
+angle.gMax = 1.2;
 angle.gMin= 0.8;
 angle.accFactor=0.2;
 
--- Spec, 0.0008 V/dps  / (1.5/512) V/step 
+-- Spec, 0.0008 V/dps  / (1.5/512) V/step
 -- Output unit:degree per sec
-gyro.sensitivity=vector.new({1,-1,-1})/0.273 
+gyro.sensitivity=vector.new({1,-1,-1})/0.273
 gyro.zero=vector.new({512,512,512});
 
 --Those biases can be measured using test_imu.lua
@@ -156,4 +156,3 @@ else -- For new, PID firmware with 14-bit precision
   servo.steps[21] = 1024;
   --]]
 end
-

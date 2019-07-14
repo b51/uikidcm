@@ -50,7 +50,7 @@ Motion.entry();
 darwin = false;
 webots = false;
 
--- Enable OP specific 
+-- Enable OP specific
 if(Config.platform.name == 'OP') then
   darwin = true;
 end
@@ -63,7 +63,7 @@ getch.enableblock(1);
 unix.usleep(1E6*1.0);
 Body.set_body_hardness(0);
 
---This is robot specific 
+--This is robot specific
 webots = false;
 init = false;
 calibrating = false;
@@ -105,7 +105,7 @@ button_pressed = {0,0};
 
 function process_keyinput()
   --Robot specific head pitch bias
-  headPitchBiasComp = 
+  headPitchBiasComp =
 	mcm.get_walk_headPitchBiasComp();
   headPitchBias = mcm.get_headPitchBias()
 
@@ -114,11 +114,11 @@ function process_keyinput()
     button_pressed[1]=1;
   else
     if button_pressed[1]==1 then
-      if bodysm_running==0 then 
+      if bodysm_running==0 then
         Body.set_head_hardness(0.5);
         headsm_running=1;
         bodysm_running=1;
-        BodyFSM.sm:set_state('bodySearch');   
+        BodyFSM.sm:set_state('bodySearch');
         HeadFSM.sm:set_state('headScan');
         walk.start();
       else
@@ -144,14 +144,14 @@ function process_keyinput()
     elseif byte==string.byte(";") then	targetvel[2]=targetvel[2]-0.02;
 
     -- reset OccMap
-    elseif byte==string.byte("/") then 
+    elseif byte==string.byte("/") then
       print("reset occomap");
       ocm.set_occ_reset(1);
     elseif byte==string.byte(".") then
       print("get obstacles");
       nob = ocm.get_ob_num();
       print(nob,' obstacle found');
-      if (nob > 0) then 
+      if (nob > 0) then
         obx = ocm.get_ob_x();
         print('obstacle x')
         util.ptable(obx);
@@ -163,7 +163,7 @@ function process_keyinput()
         util.ptable(obdist);
       end
 
-    --switch camera 
+    --switch camera
     elseif byte==string.byte("-") then
       vcm.set_camera_command(1);
     elseif byte==string.byte("=") then
@@ -181,42 +181,42 @@ function process_keyinput()
       headsm_running=0;headangle[1],headangle[2]=0,0;
 
     -- Head pitch fine tuning (for camera angle calibration)
-    elseif byte==string.byte("e") then	
+    elseif byte==string.byte("e") then
       headsm_running=0;headangle[2]=headangle[2]-1*math.pi/180;
-    elseif byte==string.byte("c") then	
+    elseif byte==string.byte("c") then
       headsm_running=0;headangle[2]=headangle[2]+1*math.pi/180;
 
-    -- Camera angle bias fine tuning 
-    elseif byte==string.byte("q") then	
+    -- Camera angle bias fine tuning
+    elseif byte==string.byte("q") then
       headsm_running=0;
       headPitchBiasComp = headPitchBiasComp+math.pi/180;
       mcm.set_walk_headPitchBiasComp(headPitchBiasComp);
       print("\nCamera pitch bias:",headPitchBiasComp*180/math.pi);
-    elseif byte==string.byte("z") then	
+    elseif byte==string.byte("z") then
       headsm_running=0;
       headPitchBiasComp = headPitchBiasComp-math.pi/180;
       mcm.set_walk_headPitchBiasComp(headPitchBiasComp);
       print("\nCamera pitch bias:",headPitchBiasComp*180/math.pi);
     -- Head FSM testing
-    elseif byte==string.byte("1") then	
+    elseif byte==string.byte("1") then
       headsm_running = 1-headsm_running;
       if (headsm_running == 1) then
         Body.set_head_hardness(0.5);
         HeadFSM.sm:set_state('headScan');
       end
 
-    elseif byte==string.byte("2") then	
+    elseif byte==string.byte("2") then
     -- Camera transform testing
       headsm_running = 0;
       local ball = wcm.get_ball();
-      local trackZ = Config.vision.ball.diameter/2; 
+      local trackZ = Config.vision.ball.diameter/2;
       -- TODO: Nao needs to add the camera select
       headangle = vector.zeros(2);
-      headangle[1],headangle[2] = 
- 	HeadTransform.ikineCam(ball.x,	ball.y, trackZ);
-      headangle[2]=headangle[2]+headPitchBias; 
+      headangle[1],headangle[2] =
+	HeadTransform.ikineCam(ball.x,	ball.y, trackZ);
+      headangle[2]=headangle[2]+headPitchBias;
 	--this is substracted below
-      print("Head Angles for looking directly at the ball:", 
+      print("Head Angles for looking directly at the ball:",
 	unpack(headangle*180/math.pi));
 
     elseif byte==string.byte("f") then
@@ -240,7 +240,7 @@ function process_keyinput()
       headsm_running=1;
       bodysm_running=1;
       Body.set_head_hardness(0.5);
-      BodyFSM.sm:set_state('bodySearch');   
+      BodyFSM.sm:set_state('bodySearch');
       HeadFSM.sm:set_state('headScan');
        ocm.set_occ_reset(1);
 
@@ -253,35 +253,35 @@ function process_keyinput()
 
       local ball = wcm.get_ball();
       footX = Config.walk.footX or 0;
-      print("foot center to ball pos: ",ball.x,ball.y);      
+      print("foot center to ball pos: ",ball.x,ball.y);
 
-    elseif byte==string.byte("g") then	
+    elseif byte==string.byte("g") then
       --Broadcast selection
       local mymod = 4;
       broadcast_enable = (broadcast_enable+1)%mymod;
 
       print("\nBroadcast:", broadcast_enable);
     --Left kicks (for camera angle calibration)
---    elseif byte==string.byte("3") then	
+--    elseif byte==string.byte("3") then
 --      kick.set_kick("kickForwardLeft");
 --      Motion.event("kick");
     elseif byte==string.byte("t") then
       walk.doWalkKickLeft();
     elseif byte==string.byte("y") then
       walk.doSideKickLeft();
-    elseif byte==string.byte("7") then	
+    elseif byte==string.byte("7") then
       headsm_running,bodysm_running=0,0;
       Motion.event("sit");
-    elseif byte==string.byte("8") then	
+    elseif byte==string.byte("8") then
       if walk.active then walk.stop();end
       bodysm_running=0;
       Motion.event("standup");
-    elseif byte==string.byte("9") then	
+    elseif byte==string.byte("9") then
 ocm.set_occ_reset(1);
 
       Motion.event("walk");
       walk.start();
-    elseif byte==string.byte("0") then	
+    elseif byte==string.byte("0") then
       Motion.event("diveready");
     elseif byte==string.byte('o') then
       print("reset occ map")
@@ -332,7 +332,7 @@ function update()
       init = true;
     else
       if (count % 20 == 0) then
---start calibrating without waiting 
+--start calibrating without waiting
 --        if (Body.get_change_state() == 1) then
           Speak.talk('Calibrating');
           calibrating = true;
@@ -342,16 +342,16 @@ function update()
       if (count % 100 == 0) then
         initToggle = not initToggle;
         if (initToggle) then
-          Body.set_indicator_state({1,1,1}); 
+          Body.set_indicator_state({1,1,1});
         else
           Body.set_indicator_state({0,0,0});
         end
       end
     end
   else
-    -- update state machines 
+    -- update state machines
     process_keyinput();
-    
+
 --[[
     if wcm.get_attack_bearing() ~= nil then
     ob_num = ocm.get_obstacle_num();
@@ -372,7 +372,7 @@ function update()
     end
 
     if obstacle == 1 then
-      if dir == 1 then 
+      if dir == 1 then
         attackBearing = wcm.get_attack_bearing() - 25 * math.pi/180;
       elseif dir == 2 then
         attackBearing = wcm.get_attack_bearing() + 25 * math.pi/180;
@@ -392,22 +392,22 @@ function update()
 			bodysm_running=0;
 			Motion.event("standup");
 	      walk.start();
-    		if wcount == 0 then 
-    			tStart = unix.time();
-    		end
-    		unix.usleep(5000);
+		if wcount == 0 then
+			tStart = unix.time();
+		end
+		unix.usleep(5000);
 		if unix.time() - tStart < 20 then
 			targetvel[1] = 0.06;
 			targetvel[2] = -0.01;
 			targetvel[3] = 0;
 		elseif unix.time() - tStart >20 and unix.time() - tStart < 30 then
 			targetvel[1] = 0.02;
-			targetvel[2] = 0; 
+			targetvel[2] = 0;
 			targetvel[3] = 0.2;
 		elseif unix.time() - tStart > 30 then
 			targetvel[1] = 0.06;
- 			targetvel[2] = 0;
- 			targetvel[3] = 0;
+			targetvel[2] = 0;
+			targetvel[3] = 0;
 		end
 		wcount = wcount + 1;
     walk.set_velocity(unpack(targetvel));	--cancel for bodyfsm test
@@ -431,7 +431,7 @@ function update()
     -- update battery indicator
     Body.set_indicator_batteryLevel(Body.get_battery_level());
   end
-  
+
   -- check if the last update completed without errors
   lcount = lcount + 1;
   if (count ~= lcount) then

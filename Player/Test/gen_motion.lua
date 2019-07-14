@@ -4,7 +4,7 @@ require('os')
 
 webots = false;
 
-local cwd = '../.' 
+local cwd = '../.'
 -- the webots sim is run from the WebotsController dir (not Player)
 if string.find(cwd, "WebotsController") then
   webots = true;
@@ -41,7 +41,7 @@ require('util')
 getch.enableblock(1);
 
 local str = getch.get();
--- initialize 
+-- initialize
 jp = Body.get_sensor_position();
 Body.set_actuator_command(jp);
 rlhardness = 1;
@@ -121,10 +121,10 @@ function toggle_hardness()
   else
     s = 'on';
   end
-  
+
   local j = Body.get_sensor_position();
   Body.set_actuator_command(j);
-  
+
   print('Toggling hardness '..s);
   Body.set_body_hardness(hardness);
 end
@@ -140,7 +140,7 @@ function toggle_rleg()
 
   local j = Body.get_sensor_position();
   Body.set_actuator_command(j);
-  
+
   print('Toggling right leg hardness '..s);
   Body.set_rleg_hardness(rlhardness);
 end
@@ -156,7 +156,7 @@ function toggle_lleg()
 
   local j = Body.get_sensor_position();
   Body.set_actuator_command(j);
-  
+
   print('Toggling left leg hardness '..s);
   Body.set_lleg_hardness(llhardness);
 end
@@ -172,7 +172,7 @@ function toggle_rarm()
 
   local j = Body.get_sensor_position();
   Body.set_actuator_command(j);
-  
+
   print('Toggling right arm hardness '..s);
   Body.set_rarm_hardness(rahardness);
 end
@@ -189,12 +189,12 @@ function toggle_larm()
 
   local j = Body.get_sensor_position();
   Body.set_actuator_command(j);
-  
+
   print('Toggling left arm hardness '..s);
   Body.set_larm_hardness(lahardness);
 end
 
-  
+
 
 function print_help()
   print('command\tjoint');
@@ -239,7 +239,7 @@ function save_frame()
 end
 
 function remove_last_frame()
-  -- pop last frame  
+  -- pop last frame
   if #frames > 0 then
     frames[#frames] = nil;
     print('Last frame removed.');
@@ -287,7 +287,7 @@ utilFunctions = {inc_res,
 		toggle_rleg,
 		toggle_lleg,
 		toggle_rarm,
-		toggle_larm, 
+		toggle_larm,
                 print_help,
                  save_frame,
                  remove_last_frame,
@@ -341,7 +341,7 @@ function update()
       for i = 1,#utilCommands do
         if byte == string.byte(utilCommands[i]) then
           -- util command received
-          utilFunctions[i](); 
+          utilFunctions[i]();
         end
       end
     end
@@ -354,4 +354,3 @@ while(true) do
   update()
   unix.usleep(100);
 end
-

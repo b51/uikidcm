@@ -64,10 +64,10 @@ function update()
 
   t = Body.get_time();
   -- update shm
-  update_shm() 
+  update_shm()
 end
 
-function update_shm() 
+function update_shm()
   -- update the shm values
   gcm.set_team_role(role);
 end
@@ -80,7 +80,7 @@ function get_role()
 end
 
 function set_role(r)
-  if role ~= r then 
+  if role ~= r then
     role = r;
     Body.set_indicator_role(role);
 
@@ -110,7 +110,7 @@ else
 end
 
 function get_player_id()
-  return playerID; 
+  return playerID;
 end
 
 function min(t)

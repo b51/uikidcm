@@ -27,7 +27,7 @@ function update()
 
   if (t - t0 > timeout) then
     if goalie_dive==1 then --arm motion only
-      return "reanticipate"; --Quick timeout 
+      return "reanticipate"; --Quick timeout
     else
       return "timeout";
     end

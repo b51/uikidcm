@@ -102,7 +102,7 @@ function update()
   Body.set_head_command({yaw, pitch-pitchBias});
   Body.set_para_headpos(vector.new({yaw, pitch-pitchBias}));--123456
   Body.set_state_headValid(1);--123456
-  
+
   local ball = wcm.get_ball();
   if (t - ball.t < 0.1) then
     return "ball";

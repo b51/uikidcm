@@ -83,10 +83,10 @@ function entry()
   walk.stop();
   walk.zero_velocity();
   torsoShiftX=0;
-  
+
   started = false;
   active = true;
- 
+
   --Parse kick definition
   kickDef = kickDefList[kickType].def;
   supportLeg = kickDefList[kickType].supportLeg;
@@ -149,7 +149,7 @@ function update()
 
     ph=0;
     t0=Body.get_time();
-    if supportLeg ==0 then --left support 
+    if supportLeg ==0 then --left support
         Body.set_lleg_slope(1);
         Body.set_rleg_slope(0);
     else --right support
@@ -169,7 +169,7 @@ function update()
   end
 
   if kickState==2 then --Lift step
-    if kickStepType==2 then 
+    if kickStepType==2 then
 --Instant roll compensation
 --      qRHipRollCompensation= -hipRollCompensation*ph;
       qRHipRollCompensation= -hipRollCompensation;
@@ -186,7 +186,7 @@ function update()
   end
 
   if kickStepType==1 then
-    uBody=util.se2_interpolate(ph,uBody1,kickDef[kickState][3]);	
+    uBody=util.se2_interpolate(ph,uBody1,kickDef[kickState][3]);
     if #kickDef[kickState]>=4 then
       zBody=ph*kickDef[kickState][4] + (1-ph)*zBody1;
     end
@@ -219,14 +219,14 @@ function update()
     aRight=kickDef[kickState][6]
 
   elseif kickStepType ==6 then --Returning to walk stance
-    uBody=util.se2_interpolate(ph,uBody1,kickDef[kickState][3]);	
+    uBody=util.se2_interpolate(ph,uBody1,kickDef[kickState][3]);
     zBody=ph*bodyHeight + (1-ph)*zBody1;
     bodyRoll=(1-ph)*bodyRoll1;
     qLArm = vector.new({qLArm0[1],qLArm0[2],qLArm0[3]});
     qRArm = vector.new({qRArm0[1],qRArm0[2],qRArm0[3]});
 
   elseif kickStepType ==7 then --Upper body movement
-    uBody=util.se2_interpolate(ph,uBody1,kickDef[kickState][3]);	
+    uBody=util.se2_interpolate(ph,uBody1,kickDef[kickState][3]);
     qLArm=util.se2_interpolate(ph,qLArm1,kickDef[kickState][4]);
     qRArm=util.se2_interpolate(ph,qRArm1,kickDef[kickState][5]);
     if #kickDef[kickState]>=6 then
@@ -311,7 +311,7 @@ function motion_arms()
     local armAngle=math.min(50*math.pi/180,
 	math.max(-50*math.pi/180,
 	footRel/armGain * 50*math.pi/180
-	));  
+	));
     qLArm[1],qLArm[2]=qLArm0[1]+armShift[1],qLArm0[2]+armShift[2];
     qRArm[1],qRArm[2]=qRArm0[1]+armShift[1],qRArm0[2]+armShift[2];
     qLArm[1]=qLArm[1]+armAngle;

@@ -146,7 +146,7 @@ end
 
 
 --SJ: normalize gyro values here
---Value should be Roll-pitch-yaw, in degree per seconds 
+--Value should be Roll-pitch-yaw, in degree per seconds
 function get_sensor_imuGyrRPY()
   return 0;
 end
@@ -165,7 +165,7 @@ end
 
 
 --[[
-function 
+function
 for k,v in actuatorShm.next, actuatorShm do
   actuator[k] = carray.cast(actuatorShm:pointer(k));
   getfenv()["set_actuator_"..k] =

@@ -150,11 +150,11 @@ function initialize_unified(p0,p1,dp)
   --Half of the particles at p1
   p0 = p0 or {0, 0, 0};
   p1 = p1 or {0, 0, 0};
-  --Low spread  
+  --Low spread
   dp = dp or {.15*xMax, .15*yMax, math.pi/6};
 
   for i=1,n/2 do
-    xp[i]=p0[1]+dp[1]*(math.random()-.5); 
+    xp[i]=p0[1]+dp[1]*(math.random()-.5);
     yp[i]=p0[2]+dp[2]*(math.random()-.5);
     ap[i]=p0[3]+dp[3]*(math.random()-.5);
 
@@ -166,7 +166,7 @@ function initialize_unified(p0,p1,dp)
 end
 
 function initialize_heading(aGoal)
-  --Particle initialization at bodySet 
+  --Particle initialization at bodySet
   --When bodySet, all players should face opponents' goal
   --So reduce weight of  particles that faces our goal
   print('init_heading particles');
@@ -346,7 +346,7 @@ function triangulate(pos,v)
   pose.x=x;
   pose.y=y;
   pose.a=a;
- 
+
   aGoal = util.mod_angle((aPost[1]+aPost[2])/2);
 
   return pose,dGoal,aGoal;
@@ -375,13 +375,13 @@ function triangulate2(pos,v)
 	 math.sqrt((v[1][1]-v[2][1])^2+(v[1][2]-v[2][2])^2)
 	));
 
---SJ: still testing 
+--SJ: still testing
    postfix=1;
    postfix=0;
 
    if postfix>0 then
 
-     if d1>d2 then 
+     if d1>d2 then
        --left post correction based on right post
        -- v1=kcos(a1),ksin(a1)
        -- k^2 - 2k(v[2][1]cos(a1)+v[2][2]sin(a1)) + d2Post[2]-goalWidth^2 = 0
@@ -397,18 +397,18 @@ function triangulate2(pos,v)
          k1=b-math.sqrt(b*b-c);
          k2=b+math.sqrt(b*b-c);
          vcm.add_debug_message(string.format("d1: %.1f v1: %.1f %.1f\n",
-    		d1,v[1][1],v[1][2]));
+		d1,v[1][1],v[1][2]));
          vcm.add_debug_message(string.format("k1: %.1f v1_1: %.1f %.1f\n",
 		k1,k1*ca,k1*sa ));
          vcm.add_debug_message(string.format("k2: %.1f v1_2: %.1f %.1f\n",
 		k2,k2*ca,k2*sa ));
          if math.abs(d2-k1)<math.abs(d2-k2) then
-  	        v[1][1],v[1][2]=k1*ca,k1*sa;
+	        v[1][1],v[1][2]=k1*ca,k1*sa;
          else
 	          v[1][1],v[1][2]=k2*ca,k2*sa;
          end
        end
-     else 
+     else
      --right post correction based on left post
      -- v2=kcos(a2),ksin(a2)
      -- k^2 - 2k(v[1][1]cos(a2)+v[1][2]sin(a2)) + d2Post[1]-goalWidth^2 = 0
@@ -416,12 +416,12 @@ function triangulate2(pos,v)
      local sa=math.sin(aPost[2]);
      local b=v[1][1]*ca+ v[1][2]*sa;
      local c=d2Post[1]-goalWidth^2;
-  
+
      if b*b-c>0 then
        k1=b-math.sqrt(b*b-c);
        k2=b+math.sqrt(b*b-c);
        vcm.add_debug_message(string.format("d2: %.1f v2: %.1f %.1f\n",
-  	d2,v[2][1],v[2][2]));
+	d2,v[2][1],v[2][2]));
        vcm.add_debug_message(string.format("k1: %.1f v2_1: %.1f %.1f\n",
 	k1,k1*ca,k1*sa ));
        vcm.add_debug_message(string.format("k2: %.1f v2_2: %.1f %.1f\n",
@@ -445,11 +445,11 @@ function triangulate2(pos,v)
      aGoal=-math.atan2 ( v[1][1]-v[2][1] , -(v[1][2]-v[2][2]) ) ;
    else
      aGoal=-math.atan2 ( v[2][1]-v[1][1] , -(v[2][2]-v[1][2]) ) ;
-   end   
+   end
 
    ca=math.cos(aGoal);
    sa=math.sin(aGoal);
-   
+
    local dx = ca*vGoalX-sa*vGoalY;
    local dy = sa*vGoalX+ca*vGoalY;
 
@@ -497,7 +497,7 @@ function goal_observation(pos, v)
 --SJ: testing
 triangulation_threshold=4.0;
 
-  if dGoal<triangulation_threshold then 
+  if dGoal<triangulation_threshold then
 
 
     for ip = 1,n do
@@ -672,8 +672,8 @@ function line(v, a)
     local xGlobal = v[1]*ca - v[2]*sa + xp[ip];
     local yGlobal = v[1]*sa + v[2]*ca + yp[ip];
 
-    wBounds = math.max(xGlobal - xLineBoundary, 0) + 
-              math.max(-xGlobal - xLineBoundary, 0) + 
+    wBounds = math.max(xGlobal - xLineBoundary, 0) +
+              math.max(-xGlobal - xLineBoundary, 0) +
               math.max(yGlobal - yLineBoundary, 0) +
               math.max(-yGlobal - yLineBoundary, 0);
     wp[ip] = wp[ip] - (wBounds/.20);
@@ -792,7 +792,7 @@ function resample()
 
   local nEffective = (wSum^2) / wSum2;
   if nEffective > .25*n then
-    return; 
+    return;
   end
 
   -- cum sum of weights
@@ -812,7 +812,7 @@ function resample()
   --Add n more particles and resample high n weighted particles
   local rx = util.randu(n);
   local wSum_sz = #wSum;
-  for i = 1,n do 
+  for i = 1,n do
     table.insert(wSum, {rx[i], n+i});
   end
 
@@ -820,7 +820,7 @@ function resample()
   table.sort(wSum, function(a,b) return a[1] < b[1] end);
 
   -- resample (replace low weighted particles)
-  xp2 = vector.zeros(n); 
+  xp2 = vector.zeros(n);
   yp2 = vector.zeros(n);
   ap2 = vector.zeros(n);
   nsampleSum = 1;

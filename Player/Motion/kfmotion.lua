@@ -53,4 +53,3 @@ end
 function set_motion(m)
   motion = m;
 end
-

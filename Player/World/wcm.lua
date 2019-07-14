@@ -104,7 +104,7 @@ shared.sound.detRIndex = vector.zeros(1);
 
 -----------------------------------------------
 -- This shm is used for wireless team monitoring only
--- Indexed by player ID + teamOffset 
+-- Indexed by player ID + teamOffset
 -----------------------------------------------
 listen_monitor = Config.listen_monitor or 0;
 
@@ -163,7 +163,7 @@ if listen_monitor>0 then
   processed_img_height = Config.camera.height;
   processed_img_width = processed_img_width / 2;
   processed_img_height = processed_img_height / 2;
- 
+
   labelB_size =  ((processed_img_width/Config.vision.scaleB)*
      (processed_img_height/Config.vision.scaleB));
 
@@ -200,8 +200,8 @@ util.init_shm_segment(getfenv(), _NAME, shared, shsize);
 -- helper functions for access the data in the same manner as World
 
 function get_ball()
-  return {x=get_ball_x(), y=get_ball_y(), 
-	vx=get_ball_velx(), vy=get_ball_vely(), 
+  return {x=get_ball_x(), y=get_ball_y(),
+	vx=get_ball_velx(), vy=get_ball_vely(),
 	t=get_ball_t(),	p=get_ball_p()};
 end
 

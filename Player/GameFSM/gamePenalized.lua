@@ -23,7 +23,7 @@ end
 
 function update()
   local state = gcm.get_game_state();
-  -- check for penalty 
+  -- check for penalty
   if not gcm.in_penalty() then
     if (state == 0) then
       return 'initial';

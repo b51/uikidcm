@@ -41,7 +41,7 @@ darwin = false;
 webots = false;
 
 
--- Enable OP specific 
+-- Enable OP specific
 if(Config.platform.name == 'OP') then
 	darwin = true;
 	--SJ: OP specific initialization posing (to prevent twisting)
@@ -54,7 +54,7 @@ end
 getch.enableblock(1);
 unix.usleep(1E6*1.0);
 
---This is robot specific 
+--This is robot specific
 webots = false;
 
 init = false;
@@ -85,16 +85,16 @@ function process_keyinput()
 		elseif byte==string.byte("h") then	targetvel[2]=targetvel[2]+0.02;
 		elseif byte==string.byte(";") then	targetvel[2]=targetvel[2]-0.02;
 
-		elseif byte==string.byte("1") then	
+		elseif byte==string.byte("1") then
 			kick.set_kick("kickForwardLeft");
 			Motion.event("kick");
-		elseif byte==string.byte("2") then	
+		elseif byte==string.byte("2") then
 			kick.set_kick("kickForwardRight");
 			Motion.event("kick");
-		elseif byte==string.byte("3") then	
+		elseif byte==string.byte("3") then
 			kick.set_kick("kickSideLeft");
 			Motion.event("kick");
-		elseif byte==string.byte("4") then	
+		elseif byte==string.byte("4") then
 			kick.set_kick("kickSideRight");
 			Motion.event("kick");
 
@@ -106,21 +106,21 @@ function process_keyinput()
 
 
 		elseif byte==string.byte("a") then
-			grip.throw = 0;			
+			grip.throw = 0;
 			Motion.event('pickup')
 		elseif byte==string.byte("f") then
 			grip.throw = 1;
 			Motion.event('pickup')
 
 
-		elseif byte==string.byte("7") then	
+		elseif byte==string.byte("7") then
 			Motion.event("sit");
-		elseif byte==string.byte("8") then	
-			if walk.active then 
+		elseif byte==string.byte("8") then
+			if walk.active then
 				walk.stopAlign();
 			end
 			Motion.event("standup");
-		elseif byte==string.byte("9") then	
+		elseif byte==string.byte("9") then
 			Motion.event("walk");
 			walk.start();
 		end
@@ -160,7 +160,7 @@ function update()
 			if (count % 100 == 0) then
 				initToggle = not initToggle;
 				if (initToggle) then
-					Body.set_indicator_state({1,1,1}); 
+					Body.set_indicator_state({1,1,1});
 				else
 					Body.set_indicator_state({0,0,0});
 				end
@@ -168,7 +168,7 @@ function update()
 		end
 
 	else
-		-- update state machines 
+		-- update state machines
 		Motion.update();
 		Body.update();
 	end

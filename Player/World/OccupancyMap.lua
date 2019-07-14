@@ -1,6 +1,6 @@
 module(... or "", package.seeall);
 
-require('Config');	
+require('Config');
 require('Body')
 require('shm');
 require('vcm');
@@ -26,16 +26,16 @@ lastTime = 0;
 
 function entry()
   lastTime = unix.time();
-  OccMap.init(Config.occ.mapsize, Config.occ.robot_pos[1], 
+  OccMap.init(Config.occ.mapsize, Config.occ.robot_pos[1],
               Config.occ.robot_pos[2], lastTime);
   nCol = vcm.get_freespace_nCol();
 --  OccMap.vision_init(nCol);
 
   occmap = OccMap.retrieve_map();
-  ocm.set_occ_map(occmap); 
+  ocm.set_occ_map(occmap);
   occdata = OccMap.retrieve_data();
 	ocm.set_occ_robot_pos(occdata.robot_pos);
-end 
+end
 
 function cur_odometry()
   if mcm.get_walk_isFallDown() == 1 then
@@ -78,7 +78,7 @@ function vision_update()
 --  print("scanned freespace width "..nCol);
 end
 
-lastPos = vector.zeros(3); 
+lastPos = vector.zeros(3);
 function velocity_update()
   curTime = unix.time();
   uOdonmetry = cur_odometry();
@@ -87,12 +87,12 @@ function velocity_update()
   ocm.set_occ_vel(vel);
 
 --  print(vel[1], vel[2], vel[3]);
-  lastPos = uOdometry; 
+  lastPos = uOdometry;
   lastTime = curTime;
 end
 
 function obs_in_occ()
---  print('try find obstacle in occmap'); 
+--  print('try find obstacle in occmap');
   local maxOb = 5;
   start = unix.time();
   obstacle = OccMap.get_obstacle();
@@ -108,7 +108,7 @@ function obs_in_occ()
     centroid[(i-1)*2+1] = obstacle[i + 1].centroid[1];
     centroid[(i-1)*2+2] = obstacle[i + 1].centroid[2];
 --    print('angle_range')
---    print(obstacle[i].angle_range[1] * 180 / math.pi, 
+--    print(obstacle[i].angle_range[1] * 180 / math.pi,
 --          obstacle[i].angle_range[2] * 180 / math.pi);
     angle_range[(i-1)*2+1] = obstacle[i + 1].angle_range[1];
     angle_range[(i-1)*2+2] = obstacle[i + 1].angle_range[2];
@@ -139,13 +139,13 @@ function update()
 
 	-- Odometry Update
   odom_update();
-	
+
 	-- shm Update
   odom = OccMap.retrieve_odometry();
   ocm.set_occ_odom(vector.new({odom.x, odom.y, odom.a}));
 --  print('odom from map',odom.x..' '..odom.y..' '..odom.a);
 	occmap = OccMap.retrieve_map();
-	ocm.set_occ_map(occmap);		
+	ocm.set_occ_map(occmap);
 
   local reset = ocm.get_occ_reset();
   if reset == 1 then

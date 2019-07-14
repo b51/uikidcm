@@ -8,7 +8,7 @@ t0 = 0;
 function entry()
   print(_NAME..' entry');
   t0 = Body.get_time();
-  
+
   Motion.event("sit");
 --  Motion.sm:set_state('resit');
 --  Motion.sm:set_state('standstill');

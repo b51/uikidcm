@@ -63,7 +63,7 @@ txPeriod = 1.0;
 txLeftEarOnly = 1;
 -- max detection count (likelihood)
 maxDetCount = 100;
--- per detection 
+-- per detection
 updateRate = 20;
 -- decay period (seconds)
 decayPeriod = 1.0;
@@ -117,7 +117,7 @@ function update()
          if (distToGoal < 1.0) then
             -- play sound every X seconds
             if (unix.time() - lastTx > txPeriod) then
-              if (signalTone == '\0') then 
+              if (signalTone == '\0') then
                 -- play pseudo random signal with random touch tone
                 srow = symbols[math.random(#symbols)];
                 symbol = srow[math.random(#srow)];
@@ -138,16 +138,16 @@ function update()
       if (det.count ~= lastDet.count) then
          -- save a copy of the detection
          lastDet = det;
-   
+
          -- new detection, update histogram accordingly
          --    only accept detections with a reasonable disparity
-         if (det.lIndex ~= -1 and det.rIndex ~= -1 
+         if (det.lIndex ~= -1 and det.rIndex ~= -1
                and math.abs(det.lIndex - det.rIndex) <= disparityThres) then
 
             -- get the current head angles
             local headAngles = Body.get_head_position();
 
-            print(string.format('pan: %f, lindex: %d, rindex: %d, dindex: %d', 
+            print(string.format('pan: %f, lindex: %d, rindex: %d, dindex: %d',
                                  headAngles[1], det.lIndex, det.rIndex, det.lIndex - det.rIndex));
 
             -- full orientation of the robot, body + head
@@ -178,7 +178,7 @@ function update()
             lastCorr[iback] = unix.time();
 
 
-            -- decrease count for non adjacent cells 
+            -- decrease count for non adjacent cells
             if (decreaseNonAdjacent > 0) then
                local skipInd = {};
                skipInd[1] = (ifront - 1) % #detFilter;
@@ -224,8 +224,8 @@ function update()
          detFilter[i] = math.max(0, detFilter[i]);
       end
       lastDecay = unix.time();
-   end 
-   
+   end
+
    -- distance decay
    if (distanceDecay > 0) then
      local dx = lastDistanceDecayPose.x - odomPose.x;
@@ -241,9 +241,9 @@ function update()
        end
 
        -- store last pose
-       lastDistanceDecayPose.x = odomPose.x; 
-       lastDistanceDecayPose.y = odomPose.y; 
-       lastDistanceDecayPose.a = odomPose.a; 
+       lastDistanceDecayPose.x = odomPose.x;
+       lastDistanceDecayPose.y = odomPose.y;
+       lastDistanceDecayPose.a = odomPose.a;
      end
    end
 
@@ -311,11 +311,11 @@ function resolve_goal_detection(gtype, vgoal)
    -- vgoal:   goal post poses, {(x,y,a), (x,y,a)} relative to the robot
    -- return:  0 - unknown
    --         +1 - attacking
-   --         -1 - defending 
+   --         -1 - defending
    if (gcm.get_team_player_id() == 1) then
       return 0;
    end
-   
+
    -- direction of the goalie (-1 for unknown)
    local mind = get_sound_direction();
    if (mind == -1) then
@@ -427,4 +427,3 @@ end
 
 function exit()
 end
-

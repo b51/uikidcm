@@ -57,7 +57,7 @@ require('vector')
 BodyFSM=require('BodyFSM');
 HeadFSM=require('HeadFSM');
 require('getch')
-require('vcm'); 
+require('vcm');
 require('Motion');
 require('walk');
 --require('HeadTransform')
@@ -124,33 +124,33 @@ function update()
 		  headsm_running=0;
 		  headangle[2]=headangle[2]-5*math.pi/180;
 		  head_moved=1;
-	  elseif byte==string.byte("a") then	
+	  elseif byte==string.byte("a") then
 		  headangle[1]=headangle[1]+5*math.pi/180;
 		  headsm_running=0;
 		  head_moved=1;
-	  elseif byte==string.byte("s") then	
+	  elseif byte==string.byte("s") then
 		  headangle[1],headangle[2]=0,0;
 		  headsm_running=0;
 		  head_moved=1;
-	  elseif byte==string.byte("d") then	
+	  elseif byte==string.byte("d") then
 		  headangle[1]=headangle[1]-5*math.pi/180;
 		  headsm_running=0;
 		  head_moved=1;
-	  elseif byte==string.byte("x") then	
+	  elseif byte==string.byte("x") then
 		  headangle[2]=headangle[2]+5*math.pi/180;
 		  headsm_running=0;
 		  head_moved=1;
-	  elseif byte==string.byte("e") then	
+	  elseif byte==string.byte("e") then
 		  headangle[2]=headangle[2]-1*math.pi/180;
 		  headsm_running=0;
 		  head_moved=1;
-	  elseif byte==string.byte("c") then	
+	  elseif byte==string.byte("c") then
 		  headangle[2]=headangle[2]+1*math.pi/180;
 		  headsm_running=0;
 		  head_moved=1;
          elseif byte==string.byte("v") then
                  HeadFSM.sm:set_state('headFigure8');
-	  --Camera angle tuning 
+	  --Camera angle tuning
 	  elseif byte==string.byte("q") then
 		  cameraangle=cameraangle-1*math.pi/180;
 			  print("Head camera angle:",cameraangle*180/math.pi);
@@ -184,14 +184,14 @@ function update()
 	  elseif byte==string.byte("h") then	targetvel[2]=targetvel[2]+0.02;
 	  elseif byte==string.byte(";") then	targetvel[2]=targetvel[2]-0.02;
 
-	  elseif byte==string.byte("1") then	
+	  elseif byte==string.byte("1") then
 		  headsm_running=1;
   --		HeadFSM.sm:set_state('headScan');
 		  HeadFSM.sm:set_state('headLookLandmarks');
 
 	  elseif byte==string.byte("2") then	headsm_running=2;
 
-	  elseif byte==string.byte("3") then	
+	  elseif byte==string.byte("3") then
 		  if Config.game.robotID==9 then
 			  local ball = vcm.ball;
 			  pickup.throw=0;
@@ -200,7 +200,7 @@ function update()
 			  kick.set_kick("kickForwardLeft");
 			  Motion.event("kick");
 		  end
-	  elseif byte==string.byte("4") then	
+	  elseif byte==string.byte("4") then
 		  if Config.game.robotID==9 then
 			  pickup.throw=1;
 			  Motion.event("pickup");
@@ -213,7 +213,7 @@ function update()
 	  elseif byte==string.byte("5") then	--Turn on body SM
 		  headsm_running=1;
 		  bodysm_running=1;
-     	        BodyFSM.sm:set_state('bodySearch');   
+	        BodyFSM.sm:set_state('bodySearch');
 		  HeadFSM.sm:set_state('headScan');
 		  vcm.world.reset[1]=0;
 
@@ -221,16 +221,16 @@ function update()
 		  headsm_running=1;
 		  HeadFSM.sm:set_state('headKick');
 	  elseif byte==string.byte("7") then	Motion.event("sit");
-	  elseif byte==string.byte("8") then	
-		  if walk.active then 
+	  elseif byte==string.byte("8") then
+		  if walk.active then
 			  walk.stopAlign();
   --			vcm.world.reset[1]=1;
 		  else
   --			vcm.world.reset[1]=0;
 		  end
 		  Motion.event("standup");
-		
-	  elseif byte==string.byte("9") then	
+
+	  elseif byte==string.byte("9") then
 		  Motion.event("walk");
 		  walk.start();--]]
 	  end
@@ -250,7 +250,7 @@ function update()
 
 --[[
   if broadcast_enable>0 and count%25==12 then
- 	Broadcast.update_particle();
+	Broadcast.update_particle();
   end
 --]]
 --[[
@@ -259,8 +259,8 @@ function update()
 	vcmcount=vcmcount+1;
 
 	local ball = vcm.ball;
-	if( ball.detect[1]==1 ) then 
-    ballcount=ballcount+1; 
+	if( ball.detect[1]==1 ) then
+    ballcount=ballcount+1;
   end
 	visioncount=visioncount+1;
 
@@ -271,8 +271,8 @@ function update()
 
   if t-last_update_time>t_update then
         local ballworld=vcm.world.ball;
-        print(string.format("Ball: %d%% XY:%.1f,%.1f seen %.1f sec ago Walk %d fps Vision %d fps", 
-		ballcount/visioncount*100, ballworld[1],ballworld[2],t-ballworld[3], 
+        print(string.format("Ball: %d%% XY:%.1f,%.1f seen %.1f sec ago Walk %d fps Vision %d fps",
+		ballcount/visioncount*100, ballworld[1],ballworld[2],t-ballworld[3],
 		count/t_update,vcmcount/t_update
 	));
 	ballcount,visioncount=0,0;
