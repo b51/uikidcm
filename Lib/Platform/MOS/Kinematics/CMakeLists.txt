@@ -11,5 +11,12 @@ add_library(Kinematics SHARED
   Transform.cc
 )
 
-# set library prefix to "" otherwise it will create libunix.so
 set_target_properties(Kinematics PROPERTIES PREFIX "")
+
+install(TARGETS Kinematics
+  PERMISSIONS
+    OWNER_EXECUTE OWNER_WRITE OWNER_READ
+    GROUP_READ GROUP_WRITE GROUP_EXECUTE
+    WORLD_READ WORLD_EXECUTE
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}
+)

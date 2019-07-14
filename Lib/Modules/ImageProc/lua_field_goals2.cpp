@@ -98,7 +98,7 @@ void segment_init(){
 void segment_refresh(){
   //end active segments if they were not updated for one line scan
   for(int i=0;i<num_segments;i++){
-    if ((segments[i].state==1) && (segments[i].updated==0)){ 
+    if ((segments[i].state==1) && (segments[i].updated==0)){
       if (segments[i].gap>0)
 	segments[i].gap--;
       else
@@ -155,12 +155,12 @@ void addHorizontalPixel(int i, int j, double connect_th, int max_gap){
       double yProj = segments[k].yMean + segments[k].grad*(i-segments[k].xMean);
       double yErr = j-yProj;if (yErr<0) yErr=-yErr;
 	//printf("Checking segment %d\n",k);
-	//printf("xmean %.1f, ymean %.1f, grad %.2f, yErr %.2f\n", 
+	//printf("xmean %.1f, ymean %.1f, grad %.2f, yErr %.2f\n",
 	//segments[k].xMean, segments[k].yMean, segments[k].grad, yErr);
       if (yErr<connect_th){
 	updateStat(&segments[k],i,j,max_gap);
 	segments[k].count++;
-        segments[k].grad=(double) 
+        segments[k].grad=(double)
 		(segments[k].xy- segments[k].x*segments[k].y/segments[k].count)
 		/(segments[k].xx-segments[k].x*segments[k].x/segments[k].count);
         if ((segments[k].grad>1.0) ||(segments[k].grad<-1.0)){
@@ -193,7 +193,7 @@ void addVerticalPixel(int i, int j, double connect_th, int max_gap){
       if (xErr<connect_th){
 	updateStat(&segments[k],i,j,max_gap);
 	segments[k].count++;
-        segments[k].invgrad=(double) 
+        segments[k].invgrad=(double)
 		(segments[k].xy- segments[k].x*segments[k].y/segments[k].count)
 		/(segments[k].yy-segments[k].y*segments[k].y/segments[k].count);
 

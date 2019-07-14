@@ -1,7 +1,7 @@
 CWD= $(shell pwd)
 CHAIN= $(CTCDIR)
 
-all: naoqi 
+all: naoqi
 
 naoqi:
 ifeq ($(CHAIN),)
@@ -18,5 +18,5 @@ else
 endif
 
 clean:
-	make -f Makefile.local clean	
+	make -f Makefile.local clean
 	rm -rf build

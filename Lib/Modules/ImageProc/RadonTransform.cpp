@@ -41,7 +41,7 @@ void RadonTransform::clear() {
 }
 
 void RadonTransform::addPixelToRay(int i, int j, int ith) {
-  int ir = abs(cosTable[ith]*i + sinTable[ith]*j)/NTRIG; 
+  int ir = abs(cosTable[ith]*i + sinTable[ith]*j)/NTRIG;
 //R value: 0 to MAXR-1
 //R index: 0 to NR-1
   int ir1=(ir+1)*NR/MAXR-1;
@@ -56,7 +56,7 @@ void RadonTransform::addPixelToRay(int i, int j, int ith) {
   int iline = (-sinTable[ith]*i + cosTable[ith]*j)/NTRIG;
   lineSum[ith][ir1] += iline;
   if (iline > lineMax[ith][ir1]) lineMax[ith][ir1] = iline;
-  if (iline < lineMin[ith][ir1]) lineMin[ith][ir1] = iline;    
+  if (iline < lineMin[ith][ir1]) lineMin[ith][ir1] = iline;
 }
 
 void RadonTransform::addHorizontalPixel(int i, int j) {
@@ -131,7 +131,7 @@ struct LineStats *RadonTransform::getMultiLineStats(
   }
 
 
-  
+
   int i_bestLines=1;
 
 /*
@@ -180,42 +180,42 @@ struct LineStats *RadonTransform::getMultiLineStats(
       if ((abs(thMaxs[i]-thMaxs[j])<=TH_MERGE)&&
          (abs(rMaxs[i]-rMaxs[j])<=R_MERGE)&&
          (countMaxs[i]>1) && (countMaxs[j]>1)  ){
-	//weighted sum of two lines 
-//   	  thMaxs[i]=(thMaxs[i]*countMaxs[i]+thMaxs[j]*countMaxs[j])/
+	//weighted sum of two lines
+//	  thMaxs[i]=(thMaxs[i]*countMaxs[i]+thMaxs[j]*countMaxs[j])/
 //		  (countMaxs[i]+countMaxs[j]);
-//     	  rMaxs[i]=(rMaxs[i]*countMaxs[i]+rMaxs[j]*countMaxs[j])/
+//	  rMaxs[i]=(rMaxs[i]*countMaxs[i]+rMaxs[j]*countMaxs[j])/
 //		  (countMaxs[i]+countMaxs[j]);
         mergecount++;
 	//Update stats
         if (countMaxs[i]>countMaxs[j]){
 /*
-           lineMax[thMaxs[i]][rMaxs[i]] = 
+           lineMax[thMaxs[i]][rMaxs[i]] =
                min (lineMin[thMaxs[i]][rMaxs[i]] ,
                   lineMin[thMaxs[j]][rMaxs[j]] );
-           lineMin[thMaxs[i]][rMaxs[i]] = 
+           lineMin[thMaxs[i]][rMaxs[i]] =
                max (lineMin[thMaxs[i]][rMaxs[i]] ,
                   lineMin[thMaxs[j]][rMaxs[j]] );
 */
-           lineSum[thMaxs[i]][rMaxs[i]] = 
+           lineSum[thMaxs[i]][rMaxs[i]] =
                 (lineSum[thMaxs[i]][rMaxs[i]]*countMaxs[i]+
                 lineMin[thMaxs[j]][rMaxs[j]]*countMaxs[j])/
 		(countMaxs[i]+countMaxs[j]);
- 	   countMaxs[i]=countMaxs[i]+countMaxs[j]-1;
+	   countMaxs[i]=countMaxs[i]+countMaxs[j]-1;
            countMaxs[j]=1;
         }else{
 /*
-           lineMax[thMaxs[j]][rMaxs[j]] = 
+           lineMax[thMaxs[j]][rMaxs[j]] =
                min (lineMin[thMaxs[i]][rMaxs[i]] ,
                   lineMin[thMaxs[j]][rMaxs[j]] );
-           lineMin[thMaxs[j]][rMaxs[j]] = 
+           lineMin[thMaxs[j]][rMaxs[j]] =
                max (lineMin[thMaxs[i]][rMaxs[i]] ,
                   lineMin[thMaxs[j]][rMaxs[j]] );
 */
-           lineSum[thMaxs[i]][rMaxs[i]] = 
+           lineSum[thMaxs[i]][rMaxs[i]] =
                 (lineSum[thMaxs[i]][rMaxs[i]]*countMaxs[i]+
                 lineMin[thMaxs[j]][rMaxs[j]]*countMaxs[j])/
 		(countMaxs[i]+countMaxs[j]);
- 	   countMaxs[j]=countMaxs[i]+countMaxs[j]-1;
+	   countMaxs[j]=countMaxs[i]+countMaxs[j]-1;
            countMaxs[i]=1;
         }
       }
@@ -246,7 +246,7 @@ struct LineStats *RadonTransform::getMultiLineStats(
 	int i_in = iMin + k* sinTable[thMaxs[i]]/NTRIG;
 	int j_in = jMin + k* cosTable[thMaxs[i]]/NTRIG;
         uint8_t *im_col = im_ptr + ni*j_in + i_in;
-	if (*im_col & colorLine) fillCount=fillCount+1;	
+	if (*im_col & colorLine) fillCount=fillCount+1;
       }
       printf("Count %d, Ang%d, R %d, Fill %d, Len %d\n",
 	countMaxs[i], thMaxs[i], rMaxs[i],100*fillCount/dLine,dLine);
@@ -277,7 +277,7 @@ struct LineStats *RadonTransform::getMultiLineStats(
 
   //Get rid of blank lines
 //  while (countMaxs[i_bestLines-1]==0) i_bestLines--;
-  //Return top lines 
+  //Return top lines
   if (i_bestLines>=MAXLINES) i_bestLines=MAXLINES-1;
   for (int i=0;i<i_bestLines;i++){
     double iR = ((rMaxs[i]+1)*MAXR/NR-1+.5)*cosTable[thMaxs[i]];

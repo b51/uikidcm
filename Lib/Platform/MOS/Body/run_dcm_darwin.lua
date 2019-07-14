@@ -36,7 +36,7 @@ while (loop) do
    readtype= actuatorShm:get('readType') ;
    if readtype==0 then ncount=200;
      else ncount = 40;
-   end 
+   end
 
    if 1/fpsdesired > tPassed then
 --      unix.usleep(1E6*(1/fpsdesired - tPassed));
@@ -59,7 +59,7 @@ while (loop) do
 	)
       t0 = t1;
 
-      print(string.format("Button: %d %d",  unpack(sensorShm:get('button'))));      
+      print(string.format("Button: %d %d",  unpack(sensorShm:get('button'))));
 
       print(string.format("Position:\n Head: %.1f %.1f\n Larm: %.1f %.1f %.1f\n Lleg: %.1f %.1f %.1f %.1f %.1f %.1f\n Rleg: %.1f %.1f %.1f %.1f %.1f %.1f\n Rarm: %.1f %.1f %.1f\n",
 			  unpack(vector.new(sensorShm:get('position'))*180/math.pi)

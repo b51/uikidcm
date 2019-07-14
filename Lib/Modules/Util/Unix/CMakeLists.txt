@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.2)
-project(LuaUnix)
+project(Unix)
 
 add_definitions(-std=c++11)
 
@@ -24,3 +24,7 @@ add_library(stty SHARED
 set_target_properties(unix PROPERTIES PREFIX "")
 set_target_properties(getch PROPERTIES PREFIX "")
 set_target_properties(stty PROPERTIES PREFIX "")
+
+install(TARGETS unix getch stty
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}
+)

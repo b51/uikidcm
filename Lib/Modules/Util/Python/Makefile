@@ -11,7 +11,7 @@ STRIP=strip
 CXXFLAGS= -O1 -fpic
 
 SHLIBEXT= so
-LIBOPTS= -shared -fpic 
+LIBOPTS= -shared -fpic
 
 ifndef OSTYPE
   OSTYPE = $(shell uname -s|awk '{print tolower($$0)}')
@@ -50,7 +50,7 @@ BOOST_INCLUDE_DIRS = -I/usr/include/boost -I/usr/include/boost/python
 INCLUDE_DIRS = -I/usr/local/include $(PYTHON_INC) $(BOOST_INCLUDE_DIRS)
 LIB_DIRS = -L/usr/local/lib
 
-all: pyshm 
+all: pyshm
 
 %.o: %.cc
 	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -o $@ -c $<
@@ -66,4 +66,4 @@ libMonitor.py: libMonitor.i
 	swig -python libMonitor.i
 
 clean:
-	rm -f *.o *.$(SHLIBEXT) 
+	rm -f *.o *.$(SHLIBEXT)

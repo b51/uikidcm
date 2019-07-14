@@ -14,7 +14,7 @@ uint8_t *block_bitor(uint8_t *x, int mx, int nx, int msub, int nsub) {
   for (int iy = 0; iy < my*ny; iy++) {
     block[iy] = 0;
   }
-  
+
   for (int jx = 0; jx < nx; jx++) {
     int jy = jx/nsub;
 
@@ -37,7 +37,7 @@ uint8_t *block_bitor_obs(uint8_t *x, int mx, int nx, int msub, int nsub) {
   for (int iy = 0; iy < my*ny; iy++) {
     block[iy] = 0;
   }
-  
+
   for (int jx = 0; jx < nx; jx++) {
     int jy = jx/nsub;
 
@@ -53,7 +53,7 @@ uint8_t *block_bitor_obs(uint8_t *x, int mx, int nx, int msub, int nsub) {
 //Tilted bitor function
 //Makes a bitor image of 2*m by n
 
-uint8_t *tilted_block_bitor(uint8_t *x, int mx, int nx, 
+uint8_t *tilted_block_bitor(uint8_t *x, int mx, int nx,
 		int msub, int nsub, double tiltangle) {
   static std::vector<uint8_t> block;
 

@@ -48,7 +48,7 @@ function shm_init()
   sensorShm.velocity = vector.zeros(3);--123456实际速度
   sensorShm.headpos = vector.zeros(2);--123456头部实际转交
   sensorShm.bodypos = vector.zeros(7);----123456
-  
+
 
 
   sensortmp.odometry=vector.zeros(3);
@@ -69,7 +69,7 @@ function shm_init()
 
   actuatorShm.torqueEnable = vector.zeros(1); --Global torque on.off
   -- Gain 0: normal gain 1: Kick gain (more stiff)
-  actuatorShm.gain=vector.zeros(nJoint); 
+  actuatorShm.gain=vector.zeros(nJoint);
   actuatorShm.gainChanged=vector.ones(1);  --set compliance once
   actuatorShm.velocityChanged=vector.zeros(1);
   actuatorShm.hardnessChanged=vector.zeros(1);
@@ -87,19 +87,19 @@ function shm_init()
 
   --New PID parameters variables
   --Default value is (32,0,0)
-  actuatorShm.p_param=vector.ones(nJoint)*32; 
-  actuatorShm.i_param=vector.ones(nJoint)*0; 
-  actuatorShm.d_param=vector.ones(nJoint)*0; 
+  actuatorShm.p_param=vector.ones(nJoint)*32;
+  actuatorShm.i_param=vector.ones(nJoint)*0;
+  actuatorShm.d_param=vector.ones(nJoint)*0;
 
   --SJ: list of servo IDs to read
   --0: Head only 1: All servos 2: Head+Leg
   --readID: 1 for readable, 0 for non-readable
-  actuatorShm.readType=vector.zeros(1);   
-  actuatorShm.readID=vector.zeros(nJoint); 
+  actuatorShm.readType=vector.zeros(1);
+  actuatorShm.readID=vector.zeros(nJoint);
 
   --SJ: battery testing mode (read voltage from all joints)
-  actuatorShm.battTest=vector.zeros(1);   
-  
+  actuatorShm.battTest=vector.zeros(1);
+
   --123456flag
   shm.destroy('dcmState');
   stateShm = shm.new('dcmState');
@@ -129,7 +129,7 @@ function shm_init()
   paratmpShm.velocity = vector.zeros(3);
   paratmpShm.headpos = vector.zeros(2);
   paratmpShm.gaitID = vector.zeros(2);
-  
+
 end
 
 
@@ -145,12 +145,12 @@ function carray_init()
   for k,v in actuatorShm.next, actuatorShm do
     actuator[k] = carray.cast(actuatorShm:pointer(k));
   end
-  
+
   state = {};--123456
   for k,v in stateShm.next, stateShm do
     state[k] = carray.cast(stateShm:pointer(k));
   end
-  
+
   para = {};
   for k,v in paraShm.next, paraShm do
     para[k] = carray.cast(paraShm:pointer(k));
@@ -179,7 +179,7 @@ function test_data()
   state.gaitValid[1]=1;
   state.torqueEnable[1]=1;
   state.sensorEnable[1]=1;
-end	
+end
 
 function pass_data()
 --[[
@@ -197,7 +197,7 @@ function pass_data()
   --DspPacket.pass_para(para);
 end
 function stateCtrl()
-  
+
   if(state.specialValid[1]==1)
      then state.specialGaitPending[1]=1;
   end
@@ -210,7 +210,7 @@ function stateCtrl()
   if(state.walkkick[1]+state.walkkick[2]>=1)
      then state.walkkickPending[1]=1;
   end;
-  
+
   state.specialValid[1] = 0;
   state.gaitReset[1] = 0;
   state.odometerReset[1] = 0;
@@ -233,13 +233,13 @@ function receive_data()
   sensortmp.velocity[1],sensortmp.velocity[2],sensortmp.velocity[3]=DspPacket.get_velocity();
   --print(DspPacket.get_headpos());
   sensortmp.headpos[1],sensortmp.headpos[2] = DspPacket.get_headpos();
-  --print(DspPacket.get_odometry()); 
+  --print(DspPacket.get_odometry());
   sensortmp.odometry[1],sensortmp.odometry[2],sensortmp.odometry[3] = DspPacket.get_odometry();
   --print(DspPacket.get_bodypos());
   sensortmp.bodypos[1],sensortmp.bodypos[2],sensortmp.bodypos[3],sensortmp.bodypos[4],sensortmp.bodypos[5],sensortmp.bodypos[6],sensortmp.bodypos[7]=DspPacket.get_bodypos();
   --print(DspPacket.get_imuAngle());
   sensortmp.imuAngle[1], sensortmp.imuAngle[2], sensortmp.imuAngle[3] = DspPacket.get_imuAngle();
- 
+
   sensortrans();
 end
 function sensortrans()
@@ -293,4 +293,3 @@ end
 function exit()
  DspPacket.dsp_exit();
 end
-

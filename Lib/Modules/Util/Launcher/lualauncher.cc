@@ -1,6 +1,6 @@
 /**
  * Lua module to control usb missile launcher
- * 
+ *
  * compatible with Dream Cheeky - Thunder model
  */
 
@@ -82,7 +82,7 @@ static int connect_launcher() {
             printf("failed to reclaim device (%d:%s)\n", ret, strerror(errno));
             return -1;
           }
-        } 
+        }
         printf("done\n");
 
         printf("setting alternate interface...");
@@ -99,7 +99,7 @@ static int connect_launcher() {
   }
 
   printf("no usb device with VID = %d found\n", VID);
-  
+
   return -1;
 }
 

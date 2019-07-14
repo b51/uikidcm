@@ -1,4 +1,4 @@
-/* 
+/*
    Lua interface to Image Processing utilities
 
    To compile on Mac OS X:
@@ -51,7 +51,7 @@ static int lua_subsample_yuyv2yuyv(lua_State *L){
   int m = luaL_checkint(L, 2);
   // 3rd Input: Height (in YUVY macropixels) of the original YUYV image
   int n = luaL_checkint(L, 3);
-  // 4th Input: How much to subsample 
+  // 4th Input: How much to subsample
   int subsample_rate = luaL_checkint(L, 4);
 
   yuyv_array.resize( m*n/subsample_rate/subsample_rate );
@@ -89,7 +89,7 @@ static int lua_subsample_yuyv2yuv(lua_State *L){
   // 3rd Input: Height (in YUVY macropixels) of the original YUYV image
   int n = luaL_checkint(L, 3);
 
-  // 4th Input: How much to subsample 
+  // 4th Input: How much to subsample
   // subsample_amount == 1: use only one of the Y channels
   // subsample_amount == 2: use only one of the Y channels, every other macropixel
   // TODO: subsample_amount == 0: use only both Y channels
@@ -212,7 +212,7 @@ static int lua_yuyv_to_label(lua_State *L) {
     for (int i = 0; i < m; i++) {
 
       // Construct Y6U6V6 index
-      uint32_t index = ((*yuyv & 0xFC000000) >> 26)  
+      uint32_t index = ((*yuyv & 0xFC000000) >> 26)
         | ((*yuyv & 0x0000FC00) >> 4)
         | ((*yuyv & 0x000000FC) << 10);
 
@@ -267,7 +267,7 @@ static int lua_yuyv_to_label_ball(lua_State *L) {
     for (int i = 0; i < m; i++) {
 
       // Construct Y6U6V6 index
-      uint32_t index = ((*yuyv & 0xFC000000) >> 26)  
+      uint32_t index = ((*yuyv & 0xFC000000) >> 26)
         | ((*yuyv & 0x0000FC00) >> 4)
         | ((*yuyv & 0x000000FC) << 10);
 
@@ -283,7 +283,7 @@ static int lua_yuyv_to_label_ball(lua_State *L) {
   }
 
 	/*
-  for (int j = 0; j < n; j++)			//此处里层应该循环width	
+  for (int j = 0; j < n; j++)			//此处里层应该循环width
 	{
 		//std::cout << j ;
 		for (int i = 0; i < m; i++)			//此处的关键问题：m和n是否写反了，最外层应该循环height
@@ -294,7 +294,7 @@ static int lua_yuyv_to_label_ball(lua_State *L) {
 	}
 	std::cout << std::endl;
 
-  for (int j = 0; j < n; j++)			//此处里层应该循环width	
+  for (int j = 0; j < n; j++)			//此处里层应该循环width
 	{
 		//std::cout << j ;
 		for (int i = 0; i < m; i++)			//此处的关键问题：m和n是否写反了，最外层应该循环height
@@ -385,7 +385,7 @@ static int lua_yuyv_to_label_obs(lua_State *L) {
     for (int i = 0; i < m; i++) {
 
       // Construct Y6U6V6 index
-      uint32_t index = ((*yuyv & 0xFC000000) >> 26)  
+      uint32_t index = ((*yuyv & 0xFC000000) >> 26)
         | ((*yuyv & 0x0000FC00) >> 4)
         | ((*yuyv & 0x000000FC) << 10);
 
@@ -419,7 +419,7 @@ static int lua_rgb_to_label_obs(lua_State *L) {
     return luaL_error(L, "Input CDT not light user data");
   }
 
-  // 3rd Input: Width (in pixels) of the original RGB image  
+  // 3rd Input: Width (in pixels) of the original RGB image
   int m = luaL_checkint(L, 3);
   // 4th Input: Width (in pixels) of the original RGB image
   int n = luaL_checkint(L, 4);
@@ -462,7 +462,7 @@ static int lua_rgb_to_label(lua_State *L) {
     return luaL_error(L, "Input CDT not light user data");
   }
 
-  // 3rd Input: Width (in pixels) of the original RGB image  
+  // 3rd Input: Width (in pixels) of the original RGB image
   int m = luaL_checkint(L, 3);
   // 4th Input: Width (in pixels) of the original RGB image
   int n = luaL_checkint(L, 4);
@@ -797,12 +797,12 @@ static int lua_label_to_mask(lua_State *L) {
   for (int cnt = 0; cnt < mx * nx; cnt++)
     mask.push_back(0);
   int idx = 0, counter = 0;
-  for (int n = 0; n < nx; n++) 
+  for (int n = 0; n < nx; n++)
     for (int m = 0; m < mx; m++) {
       idx = n * mx + m;
       if (label[idx] == 0)
-        mask[counter++] = idx; 
-    } 
+        mask[counter++] = idx;
+    }
 
   lua_pushlightuserdata(L, &mask[0]);
 
@@ -828,7 +828,7 @@ static int lua_yuyv_mask_to_lut(lua_State *L) {
     return luaL_error(L, "Input Lut not light user data");
   }
 
-  // 4rd Input: Width (in pixels) of the original RGB image  
+  // 4rd Input: Width (in pixels) of the original RGB image
   int m = luaL_checkint(L, 4);
   // 5th Input: Width (in pixels) of the original RGB image
   int n = luaL_checkint(L, 5);
@@ -838,8 +838,8 @@ static int lua_yuyv_mask_to_lut(lua_State *L) {
     if (mask[cnt] != 0) {
       labelm = mask[cnt] % m;
       labeln = (mask[cnt] - labelm) / m;
-      yuyvidx = labelm + (labeln - 1) * 3 * m; 
-      uint32_t index = ((yuyv[yuyvidx] & 0xFC000000) >> 26)  
+      yuyvidx = labelm + (labeln - 1) * 3 * m;
+      uint32_t index = ((yuyv[yuyvidx] & 0xFC000000) >> 26)
         | ((yuyv[yuyvidx] & 0x0000FC00) >> 4)
         | ((yuyv[yuyvidx] & 0x000000FC) << 10);
         lut[index] = (lut[index] < 1)? lut[index] : 1;
@@ -869,7 +869,7 @@ static int lua_rgb_mask_to_lut(lua_State *L) {
   }
 
 
-  // 4rd Input: Width (in pixels) of the original RGB image  
+  // 4rd Input: Width (in pixels) of the original RGB image
   int m = luaL_checkint(L, 4);
   // 5th Input: Width (in pixels) of the original RGB image
   int n = luaL_checkint(L, 5);
@@ -885,10 +885,10 @@ static int lua_rgb_mask_to_lut(lua_State *L) {
       uint8_t v = 128 + (r-g)/2;
 
       uint32_t index = ((v & 0xFC) >> 2) | ((u & 0xFC) << 4) | ((y & 0xFC) << 10);
-      lut[index] = (lut[index] < 1)? lut[index]:1; 
+      lut[index] = (lut[index] < 1)? lut[index]:1;
     }
   lua_pushlightuserdata(L, &lut[0]);
-  
+
   return 1;
 }
 

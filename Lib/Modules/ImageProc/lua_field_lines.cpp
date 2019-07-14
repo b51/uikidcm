@@ -57,7 +57,7 @@ int lineState(uint8_t label, int i)
     break;
   case STATE_LINE:
     if (label & colorLine){
-      ++width;      
+      ++width;
     }else if(label & colorField){
       state = STATE_FIELD;
       return width;
@@ -83,7 +83,7 @@ int lineState(uint8_t label, int i)
       }else
         ++jump;
     }
-  }   
+  }
   return 0;
 }
 
@@ -109,7 +109,7 @@ struct SegmentStats {
   int updated;
   double length;
   double mean_width;
-  int max_width; 
+  int max_width;
 };
 
 static struct SegmentStats segments[MAX_SEGMENTS];
@@ -136,7 +136,7 @@ void segment_init(){
 void segment_refresh(int max_gap){
   //end active segments if they were not updated for one line scan
   for(int i=0;i<num_segments;i++){
-    if ((segments[i].state==1) && (segments[i].updated==0)){ 
+    if ((segments[i].state==1) && (segments[i].updated==0)){
       if (segments[i].gap>=max_gap+2)
 	      segments[i].gap = 0;
       else{
@@ -207,7 +207,7 @@ void addHorizontalPixel(int i, int j, double connect_th, int max_gap, int width)
         //printf("  Add piece (%d %d) to segment %d starting at (%d %d)\n",
         //  i,j,k,segments[k].x0,segments[k].y0);
 	      updateLineStat(&segments[k],i,j,width,max_gap);
-        segments[k].grad=(double) 
+        segments[k].grad=(double)
 		      (segments[k].xy- segments[k].x*segments[k].y/segments[k].count)
 		      /(segments[k].xx-segments[k].x*segments[k].x/segments[k].count);
         if ((segments[k].grad>1.0) ||(segments[k].grad<-1.0)){
@@ -242,7 +242,7 @@ void addVerticalPixel(int i, int j, double connect_th, int max_gap, int width){
     if(segments[k].state==1){
       double xProj = segments[k].xMean + segments[k].invgrad*(j-segments[k].yMean);
       double xErr = i-xProj;
-      double wErr = double(width-segments[k].mean_width)/width; 
+      double wErr = double(width-segments[k].mean_width)/width;
       if (wErr<0) wErr=-wErr;if (xErr<0) xErr=-xErr;
       double xErrRatio = xErr/segments[k].mean_width;
       //printf("  Checking segments %d. xErr: %.2f; xErrRatio: %.2f; wErr:%.2f\n",
@@ -251,7 +251,7 @@ void addVerticalPixel(int i, int j, double connect_th, int max_gap, int width){
         //printf("  Add piece (%d %d) to segment %d starting at (%d %d)\n",
         //  i,j,k,segments[k].x0,segments[k].y0);
         updateLineStat(&segments[k],i,j,width,max_gap);
-        segments[k].invgrad=(double) 
+        segments[k].invgrad=(double)
 		      (segments[k].xy- segments[k].x*segments[k].y/segments[k].count)
 		      /(segments[k].yy-segments[k].y*segments[k].y/segments[k].count);
 
@@ -260,7 +260,7 @@ void addVerticalPixel(int i, int j, double connect_th, int max_gap, int width){
           segments[k].state=2; //kill anything that exceeds 45 degree
           segments[k].count=0;
         }
-    	  segments[k].updated=1;
+	  segments[k].updated=1;
         segments[k].x1=i;
         segments[k].y1=j;
         seg_updated=seg_updated+1;
@@ -353,7 +353,7 @@ int lua_field_lines(lua_State *L) {
       lua_pushstring(L, "max_width");
       lua_pushnumber(L, segments[k].max_width);
       lua_settable(L, -3);
-      
+
       // average_width field
       lua_pushstring(L, "mean_width");
       lua_pushnumber(L, segments[k].mean_width);
@@ -402,11 +402,11 @@ int lua_line_connect(lua_State *L){
   int nj = luaL_checkint(L, 3);
   int x1 = luaL_checkint(L, 4);
   int y1 = luaL_checkint(L, 5);
-  int x2 = luaL_checkint(L, 6); 
+  int x2 = luaL_checkint(L, 6);
   int y2 = luaL_checkint(L, 7);
-  
+
   //check on the direction where slope is small
-  if (y1==y2 or (y2-y1)<(x2-x1)){ 
+  if (y1==y2 or (y2-y1)<(x2-x1)){
   //make sure x1 is smaller than x2
     if (x1 > x2){
       int xbuf = x1; int ybuf = y1;
@@ -416,7 +416,7 @@ int lua_line_connect(lua_State *L){
     double k = double(y2-y1)/(x2-x1);
     for (int x=x1+1; x<x2; ++x){
       int y = int(k*(x-x1))+y1;
-      uint8_t label = *(im_ptr+y*ni+x);  
+      uint8_t label = *(im_ptr+y*ni+x);
       //printf("  Color at (%d, %d) %d\n",x,y,label);
       if (!(label&colorLine)){
         //printf("Break at (%d %d)\n",x,y);
@@ -442,7 +442,7 @@ int lua_line_connect(lua_State *L){
       if (!(label&colorLine)){
         //printf("  Break at (%d %d)\n",x,y);
         ++error_count;
-        if (error_count > limit){        
+        if (error_count > limit){
           lua_pushnumber(L,0);
           return 1;
         }
@@ -452,4 +452,3 @@ int lua_line_connect(lua_State *L){
   lua_pushnumber(L, 1);
   return 1;
 }
-

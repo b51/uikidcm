@@ -77,7 +77,7 @@ def on_button_press(event):
 
   # display image
   draw_data(rgb, labelA)
-  
+
 if __name__=='__main__':
   # create connection to image shm
   print('Click on the image to update...');

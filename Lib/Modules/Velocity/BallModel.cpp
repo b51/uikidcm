@@ -60,7 +60,7 @@ void BallModel::BallObservation(Gaussian2d &obsGaussian, int dFrame) {
 
   // Need to check cases with dFrame > 1...
   double vx, vy;
-  
+
   // Order of calculation is important here...
   ballVelocity.getMean(vx, vy);
   vx = alphaVelocity*vx;
@@ -82,7 +82,7 @@ ballVelocity.multiply(velObservation);
   ballPosition.addToCovariance(dFrame*sigmaPosition);
   ballPosition.multiply(obsGaussian);
 
-  
+
 
   if (ballPosition.getLogAmplitude() < -20) {
     ballPosition = obsGaussian;
@@ -93,13 +93,13 @@ ballVelocity.multiply(velObservation);
 
   ballPosition.setLogAmplitude(0);
   ballVelocity.setLogAmplitude(0);
-  
+
 }
 
 void
 BallModel::BallMotion(double xMove, double yMove, double aMove)
 {
-  double sigma = .5*sqrt(xMove*xMove + yMove*yMove /*+1E4*/); 
+  double sigma = .5*sqrt(xMove*xMove + yMove*yMove /*+1E4*/);
 
   ballPosition.addToCovariance(.5*sigma);
   ballPosition.translate(-xMove, -yMove);
@@ -107,5 +107,3 @@ BallModel::BallMotion(double xMove, double yMove, double aMove)
 
   ballVelocity.rotate(-aMove);
 }
-
-

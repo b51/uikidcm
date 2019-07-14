@@ -22,7 +22,7 @@ print('Running controller');
 loop = true;
 count = 0;
 t0 = unix.time();
-    
+
 
 --for testing only
 dcm.actuator.readType[1]=1; --Read ALL servos
@@ -33,7 +33,7 @@ ncount=2;
 
 t_timing=unix.time();
 while (loop) do
-   
+
    count = count + 1;
    local t1 = unix.time();
    local tPassed=math.max(math.min(t1-t_timing,0.010),0); --Check for timer overflow
@@ -41,7 +41,7 @@ while (loop) do
    readtype= actuatorShm:get('readType') ;
    if readtype==0 then ncount=20;
      else ncount = 5;
-   end 
+   end
 
    dcm.update()
    if (count % ncount == 0) then
@@ -55,7 +55,7 @@ while (loop) do
 	)
       t0 = t1;
 
-      print(string.format("Button: %d %d",  unpack(sensorShm:get('button'))));      
+      print(string.format("Button: %d %d",  unpack(sensorShm:get('button'))));
 
       print(string.format("Position:\n Head: %.1f %.1f\n Larm: %.1f %.1f %.1f\n Lleg: %.1f %.1f %.1f %.1f %.1f %.1f\n Rleg: %.1f %.1f %.1f %.1f %.1f %.1f\n Rarm: %.1f %.1f %.1f\n",
 			  unpack(vector.new(sensorShm:get('position'))*180/math.pi)

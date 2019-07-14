@@ -21,7 +21,7 @@ class Gaussian2d {
     setMean(x,y);
     setLogAmplitude(0);
   }
-  
+
   void clear() {
     x = y = 0;
     cxx = cyy = DEFAULT_VAR;
@@ -66,7 +66,7 @@ class Gaussian2d {
     double axx = cyy/cDet;
     double ayy = cxx/cDet;
     double axy = -cxy/cDet;
-    
+
     return -.5*(axx*dx*dx+ayy*dy*dy+2*axy*dx*dy);
   }
   */
@@ -220,11 +220,11 @@ class Gaussian2d {
 
     double aCurrent = getLogAmplitude();
     double aRhs = rhs.getLogAmplitude();
-    
+
     const double MERGE_OFFSET = 20;
     double aProduct = product.getLogAmplitude() + MERGE_OFFSET;
 
-//printf("merge: %g %g -> %g\n",aCurrent, aRhs, aProduct); 
+//printf("merge: %g %g -> %g\n",aCurrent, aRhs, aProduct);
     if (aCurrent > 0) aCurrent *= factor;
 
     if ((aProduct > aCurrent) && (aProduct > aRhs)) {
@@ -248,7 +248,7 @@ class Gaussian2d {
   void addLogAmplitude(double c) {
     setLogAmplitude(getLogAmplitude()+c);
   }
-  
+
  private:
   // Representation of Gaussian:
   // exp(a0 -1/2*((v[0]-x,v[1]-y)'*inv([cxx cxy; cxy cyy])(v[0]-x,v[1]-y)

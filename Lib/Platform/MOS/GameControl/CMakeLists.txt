@@ -14,3 +14,7 @@ add_library(GameControlReceiver SHARED
 
 # set library prefix to "" otherwise it will create libComm.so
 set_target_properties(GameControlReceiver PROPERTIES PREFIX "")
+
+install(TARGETS GameControlReceiver
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}
+)

@@ -151,7 +151,7 @@ int lua_tilted_goal_posts(lua_State *L) {
   double tiltAngle = luaL_optnumber(L, 6, 0.0);
   double increment= tan(tiltAngle);
 
-  //Now scan starts from (-m/2,0) to (3m/2,0) 
+  //Now scan starts from (-m/2,0) to (3m/2,0)
   //so now index for countJ, minJ, sumJ has m/2 offset
 
   int index_offset = m/2;

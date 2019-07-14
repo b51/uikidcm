@@ -40,7 +40,7 @@ int init_comm(){
   struct hostent *hostptr = gethostbyname(IP);
     if (hostptr == NULL)
       return -5;
-      
+
     send_fd = socket(AF_INET, SOCK_DGRAM, 0);
     if (send_fd < 0)
       return -6;
@@ -125,4 +125,3 @@ const void* get_front_data(){
 void pop_data(){
   recvQueue.pop_front();
 }
-

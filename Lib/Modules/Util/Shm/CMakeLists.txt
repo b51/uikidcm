@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.2)
-project(LuaShm)
+project(Shm)
 
 add_definitions(-std=c++11)
 
@@ -12,13 +12,19 @@ include_directories(
   ${Boost_INCLUDE_DIRS}
 )
 
+string(TOLOWER ${PROJECT_NAME} LIBRARY_NAME)
+
 # shm main library definition
-add_library(shm SHARED
+add_library(${LIBRARY_NAME} SHARED
   luashm.cc
 )
 
 # set library prefix to "" otherwise it will create libshm.so
-set_target_properties(shm PROPERTIES PREFIX "")
+set_target_properties(${LIBRARY_NAME} PROPERTIES PREFIX "")
 
 # link to rt for shared memory ipc
-target_link_libraries(shm rt)
+target_link_libraries(${LIBRARY_NAME} rt)
+
+install(TARGETS ${LIBRARY_NAME}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}
+)

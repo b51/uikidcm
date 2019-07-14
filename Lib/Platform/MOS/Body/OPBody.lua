@@ -30,18 +30,18 @@ nJoint = controller.nJoint; --DLC
 
 indexHead = 1;			--Head: 1 2
 nJointHead = 2;
-indexLArm = 3;			--LArm: 3 4 5 
-nJointLArm = 3; 		
+indexLArm = 3;			--LArm: 3 4 5
+nJointLArm = 3;
 indexLLeg = 6;			--LLeg: 6 7 8 9 10 11
 nJointLLeg = 6;
-indexRLeg = 12; 		--RLeg: 12 13 14 15 16 17
+indexRLeg = 12;			--RLeg: 12 13 14 15 16 17
 nJointRLeg = 6;
-indexRArm = 18; 		--RArm: 18 19 20
-nJointRArm = 3; 
+indexRArm = 18;			--RArm: 18 19 20
+nJointRArm = 3;
 
 --Aux servo (for gripper / etc)
-indexAux= 21; 
-nJointAux=nJoint-20; 
+indexAux= 21;
+nJointAux=nJoint-20;
 
 --get_time = function() return dcm.get_sensor_time(1); end
 get_time = unix.time; --DLC specific
@@ -129,7 +129,7 @@ function set_rarm_hardness(val)
   if (type(val) == "number") then
     val = val*vector.ones(nJointRArm);
   end
-  set_actuator_hardness(val, indexRArm);  
+  set_actuator_hardness(val, indexRArm);
   set_actuator_hardnessChanged(1);
 end
 function set_lleg_hardness(val)
@@ -187,7 +187,7 @@ function set_aux_command(val)
 end
 
 --Added by SJ
-function set_syncread_enable(val) 
+function set_syncread_enable(val)
   set_actuator_readType(val);
 end
 
@@ -313,4 +313,3 @@ function get_sensor_fsrLeft()
   fsr = {0};
   return fsr
 end
-

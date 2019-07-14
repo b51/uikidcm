@@ -1,4 +1,4 @@
-/* 
+/*
   Lua interface to OP Kinematics
 
   To compile on Mac OS X:
@@ -124,7 +124,7 @@ static int inverse_legs(lua_State *L) {
   std::vector<double> pRLeg = lua_checkvector(L, 2);
   std::vector<double> pTorso = lua_checkvector(L, 3);
   int leg = 0;
-  qLegs = darwinop_kinematics_inverse_legs(&pLLeg[0], 
+  qLegs = darwinop_kinematics_inverse_legs(&pLLeg[0],
 				      &pRLeg[0],
 				      &pTorso[0], leg);
   lua_pushvector(L, qLegs);
@@ -136,7 +136,7 @@ static int inverse_arm(lua_State *L) {
   std::vector<double> dArm = lua_checkvector(L, 1);
   qArm = darwinop_kinematics_inverse_arm(&dArm[0]);
   if(qArm[0]==-999)
-    lua_pushnil(L);    
+    lua_pushnil(L);
   else
     lua_pushvector(L, qArm);
   return 1;
@@ -162,6 +162,6 @@ static const struct luaL_Reg kinematics_lib [] = {
 extern "C"
 int luaopen_Kinematics (lua_State *L) {
   luaL_newlib(L, kinematics_lib);
-  
+
   return 1;
 }

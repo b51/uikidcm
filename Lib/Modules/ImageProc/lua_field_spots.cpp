@@ -88,7 +88,7 @@ int lua_field_spots(lua_State *L) {
   }
 
   std::vector<int> valid;
-  for (int i = 0; i < nlabel; i++) 
+  for (int i = 0; i < nlabel; i++)
   {
     if (CheckArea(props[i], min_area))
     {

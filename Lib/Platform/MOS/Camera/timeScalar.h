@@ -12,4 +12,3 @@ extern "C" {
 #endif
 
 #endif
-

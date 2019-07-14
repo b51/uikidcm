@@ -12,9 +12,12 @@ include_directories(
 )
 
 # Comm main library definition
-add_library(DspPacket SHARED
+add_library(${PROJECT_NAME} SHARED
   luaDspCode.cc
 )
 
-# set library prefix to "" otherwise it will create libComm.so
-set_target_properties(DspPacket PROPERTIES PREFIX "")
+set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
+
+install(TARGETS ${PROJECT_NAME}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}
+)

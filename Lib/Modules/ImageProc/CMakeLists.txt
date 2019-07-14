@@ -6,7 +6,7 @@ project(ImageProc)
 include_directories(../../Lua/src)
 
 # ImageProc main library definition
-add_library(ImageProc SHARED 
+add_library(ImageProc SHARED
               block_bitor.cpp
               color_count.cpp
               ConnectRegions.cpp
@@ -26,6 +26,5 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 # set library prefix to "" otherwise it will create libImageProc.so
 set_target_properties(ImageProc PROPERTIES PREFIX "")
 
-# link to math library 
+# link to math library
 target_link_libraries(ImageProc m)
-

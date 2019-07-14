@@ -36,7 +36,7 @@ int lua_bounding_field_stats(lua_State *L) {
 	int cntr = 0;
 
 	/*
-  for (int j = 0; j < height; j++)	
+  for (int j = 0; j < height; j++)
 	{
 		//std::cout << j ;
 		for (int i = 0; i < width; i++)
@@ -92,9 +92,9 @@ int lua_bounding_field_stats(lua_State *L) {
 	//std::cout << "cntr = " <<cntr <<std::endl;
 
 	rate = (float)cntr/(2*(i1-i0)+2*(j1-j0));
-  // return stats	
+  // return stats
   lua_createtable(L, 0, 1);
-  
+
   // area field
   lua_pushstring(L, "backgroundRatio");
   lua_pushnumber(L, rate);
@@ -138,7 +138,7 @@ int lua_color_stats(lua_State *L) {
     if (j1 > height-1) j1 = height-1;
     lua_pop(L, 4);
   }
-  
+
 	// initialize statistics
 	int area = 0;
 	int minI = width-1, maxI = 0;
@@ -149,7 +149,7 @@ int lua_color_stats(lua_State *L) {
   // accumulate region statistics
 	for (int j = j0; j <= j1; j++) {
 		uint8_t *im_col = im_ptr + width*j;
-		
+
 		for (int i = i0; i <= i1; i++) {
 
 			if (im_col[i] & color) {
@@ -165,7 +165,7 @@ int lua_color_stats(lua_State *L) {
 					minJ = j;
 				if (j > maxJ)
 					maxJ = j;
-				
+
 				sumI += i;
 				sumJ += j;
 				sumII += i*i;
@@ -174,10 +174,10 @@ int lua_color_stats(lua_State *L) {
 			}
 		}
 	}
-	
-  // return stats	
+
+  // return stats
   lua_createtable(L, 0, 6);
-  
+
   // area field
   lua_pushstring(L, "area");
   lua_pushnumber(L, area);
@@ -293,9 +293,9 @@ int lua_tilted_color_stats(lua_State *L) {
     if (i3<0) i3=0;
     for (int i = i2; i <= i3; i++) {
       if (im_col[i] == color) {
-  	  // increment area size
-  	  area++;
-  	  // update min/max row/column values
+	  // increment area size
+	  area++;
+	  // update min/max row/column values
 	  if (i < minI) minI = i;
 	  if (i > maxI) maxI = i;
 	  if (j < minJ) minJ = j;
@@ -369,4 +369,3 @@ int lua_tilted_color_stats(lua_State *L) {
 
   return 1;
 }
-

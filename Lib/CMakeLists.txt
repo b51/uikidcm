@@ -1,20 +1,26 @@
 cmake_minimum_required(VERSION 3.2)
 project(uikidcm)
 
+add_definitions(-std=c++11)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic")
 
-##############################################################
-# Find required libraries
-#find_package(Eigen3 REQUIRED)
-#find_package(OpenCV REQUIRED)
-#find_package(GLog REQUIRED)
-#
-#include_directories(
-#  ${EIGEN3_INCLUDE_DIR}
-#  ${OpenCV_INCLUDE_DIRS}
-#  ${GLog_INCLUDE_DIRS}
-#)
-##############################################################
+set(UIKIDCM_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(UIKIDCM_PLAYER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../Player)
 
-add_subdirectory(Modules)
-add_subdirectory(Platform/MOS)
+if (NOT ${CMAKE_INSTALL_PREFIX})
+  set(CMAKE_INSTALL_PREFIX "${UIKIDCM_PLAYER_DIR}/Lib")
+  message(STATUS "Default install libs to ${CMAKE_INSTALL_PREFIX}")
+endif()
+
+set(MOS_COMPONENTS
+  Modules/Comm
+  #Modules/DLDetection
+  Modules/ImagePreProc
+  Modules/Util
+  Platform/MOS
+)
+
+foreach(subdir ${MOS_COMPONENTS})
+  add_subdirectory(${subdir})
+endforeach(subdir)

@@ -18,7 +18,7 @@ while (loop) do
    count = count + 1;
    if count>ncount then
       count=0;
-   end 
+   end
    dcm.update()
 end
 

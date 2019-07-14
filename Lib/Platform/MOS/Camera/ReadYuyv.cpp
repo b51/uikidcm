@@ -25,7 +25,7 @@ int ReadImgFile(char *fileName, uint32 **buffer, int *fileSize)
   struct stat statbuf;
   int fd = -1;
 
-  if (stat(fileName, &statbuf) != 0) 
+  if (stat(fileName, &statbuf) != 0)
   {
     fprintf(stderr, "Can't stat %s\n", fileName);
     ret = 5;
@@ -36,7 +36,7 @@ int ReadImgFile(char *fileName, uint32 **buffer, int *fileSize)
          statbuf.st_size);
 
   *buffer = (uint32 *)malloc(statbuf.st_size);
-  if (! *buffer) 
+  if (! *buffer)
   {
     fprintf(stderr, "Error allocating memory\n");
     ret = 7;

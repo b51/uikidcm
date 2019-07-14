@@ -19,10 +19,13 @@ add_library(V4LCam SHARED
   timeScalar.cc
 )
 
-# set library prefix to "" otherwise it will create libshm.so
-set_target_properties(V4LCam PROPERTIES PREFIX "")
+set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 
-target_link_libraries(V4LCam
+target_link_libraries(${PROJECT_NAME}
   glog
   v4l2
+)
+
+install(TARGETS ${PROJECT_NAME}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}
 )

@@ -65,13 +65,13 @@ void set(int nshm, const char* key, list values) {
 
   if (pr == NULL) {
     // construct the shm key if it doesn't exist
-    pr = shmHandles[nshm]->construct<value_t>(key)[nvalue]();    
+    pr = shmHandles[nshm]->construct<value_t>(key)[nvalue]();
   } else if (n != nvalue) {
     // if it exists but is not the correct size
     // create a new key with the correct size
     printf("WARNING: Input size %d != current block size %d. Resizing %s block.\n", nvalue, n, key);
     shmHandles[nshm]->destroy_ptr(pr);
-    pr = shmHandles[nshm]->construct<value_t>(key)[nvalue]();    
+    pr = shmHandles[nshm]->construct<value_t>(key)[nvalue]();
   }
 
   for (int i = 0; i < nvalue; i++) {
@@ -97,7 +97,7 @@ list get(int nshm, const char* key){
 
     return ret_list;
   } else {
-    // handle does not correspond to a 
+    // handle does not correspond to a
     printf("WARNING: No Shared Memory Handle exists for id: %d\n", nshm);
     return ret_list;
   }
@@ -128,7 +128,7 @@ const char* next(int nshm, const char* key = NULL) {
 
     if (key == NULL) {
       // first time next is called
-      if (named_beg != named_end) { 
+      if (named_beg != named_end) {
         return named_beg->name();
       } else {
         // there are no keys
@@ -176,4 +176,3 @@ BOOST_PYTHON_MODULE(pyshm) {
   def("set", set);
   def("next", next, next_overloads());
 }
-

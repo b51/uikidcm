@@ -55,4 +55,3 @@ for i = 1,nJoint do
   actuator.command[i] = sensor.position[i];
 --  actuator.position[i] = sensor.position[i];
 end
-

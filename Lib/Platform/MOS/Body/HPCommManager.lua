@@ -23,14 +23,14 @@ USB_bug = 1;
 idMap = Config.servo.idMap;
 nJoint = #idMap;
 scale={};
-for i=1,nJoint do 
+for i=1,nJoint do
 	scale[i]=Config.servo.steps[i]/Config.servo.moveRange[i];
 end
 dirReverse = Config.servo.dirReverse;
 posZero=Config.servo.posZero;
 gyrZero=Config.gyro.zero;
 legBias=Config.walk.servoBias;
-for i=1,12 do 	posZero[i+5]=posZero[i+5]+legBias[i];end
+for i=1,12 do	posZero[i+5]=posZero[i+5]+legBias[i];end
 syncread_enable=Config.servo.syncread;
 
 tLast=0;
@@ -93,9 +93,9 @@ function shm_init()
 
    --New PID parameters variables
    --Default value is (32,0,0)
-   actuatorShm.p_param=vector.ones(nJoint)*32; 
-   actuatorShm.i_param=vector.ones(nJoint)*0; 
-   actuatorShm.d_param=vector.ones(nJoint)*0; 
+   actuatorShm.p_param=vector.ones(nJoint)*32;
+   actuatorShm.i_param=vector.ones(nJoint)*0;
+   actuatorShm.d_param=vector.ones(nJoint)*0;
 
 end
 
@@ -122,7 +122,7 @@ function sync_command()
       if (actuator.hardness[i] > 0) then
 	 n = n+1;
 	 ids[n] = idMap[i];
-	--SJ: HP head linkage is handled here 
+	--SJ: HP head linkage is handled here
          local word=0;
 	 if Config.platform.name=='darwinhp' and i==2 then
 	    linkangle=Config.head.invlinkParam[2]+
@@ -186,7 +186,7 @@ function torque_enable()
    end
    if (n > 0) then
       Dynamixel.sync_write_byte(ids, addr, data);
-   end   
+   end
    print("Torque enable changed")
 end
 
@@ -262,15 +262,15 @@ function sync_led()
 		Dynamixel.sync_write_word({200},26,{packet});
 	        unix.usleep(100);
 		battery_warning=0;
-       
+
 	elseif count%20==10 then --5 fps head led refresh rate
 		packet=actuator.headled[1]+32*actuator.headled[2]+1024*actuator.headled[3];
 		Dynamixel.sync_write_word({200},26,{packet});
 	        unix.usleep(100);
 	end
-	
+
         if count%400==225 then --0.25 fps back led refresh rate
-	--Back LED	
+	--Back LED
 		packet=actuator.backled[1]+2*actuator.backled[2]+4*actuator.backled[3];
 		Dynamixel.sync_write_byte({200},25,{packet});
 	        unix.usleep(100);
@@ -282,7 +282,7 @@ function nonsync_read()
   --Position reading
 	local idToRead={1,2};   --Head only reading
 	if actuator.readType[1]==1 then --All servo reading
-		for i=1,#idMap do 
+		for i=1,#idMap do
 			idToRead[i]=i;
 		end
   elseif actuator.readType[1]==3 then -- Read ankles only
@@ -304,14 +304,14 @@ function nonsync_read()
 	        sensor.position[i] = actuator.command[i];
 	    end;
 
-  	    c_mod=count%4;
-	    if c_mod==1 then	idToRead={6,7,8};  
-	    elseif c_mod==2 then 	idToRead={9,10,11};  
+	    c_mod=count%4;
+	    if c_mod==1 then	idToRead={6,7,8};
+	    elseif c_mod==2 then	idToRead={9,10,11};
 	    elseif c_mod==3 then	idToRead={12,13,14}
-	    else	idToRead={15,16,17};  
+	    else	idToRead={15,16,17};
 	    end
 	elseif actuator.readType[1]==3 then --No reading
-  	    idToRead={}; 
+	    idToRead={};
 	    for i = 1,#idMap do
 	        sensor.position[i] = actuator.command[i];
 	    end;
@@ -322,7 +322,7 @@ function nonsync_read()
 
   -- Update the readings
   for i = 1,#idToRead do
- 	  local id = idMap[idToRead[i]];
+	  local id = idMap[idToRead[i]];
     --Sometimes DCM crashes here... maybe a bug
     local raw=null;
     if id then
@@ -345,7 +345,7 @@ function nonsync_read()
         Config.gyro.sensitivity[i]*
         (DynamixelPacket.byte_to_word(data[offset],data[offset+1])-gyrZero[i]);
 
-      sensor.imuAcc[Config.acc.xyz[i]] = 
+      sensor.imuAcc[Config.acc.xyz[i]] =
         Config.acc.sensitivity[i]*
         (DynamixelPacket.byte_to_word(data[offset+6],data[offset+7])-Config.acc.zero[i]);
 
@@ -371,7 +371,7 @@ function sync_read(timeout)
   local data = Dynamixel.read_data(idCM, addr, len);
   if ((not data) or (#data ~= len)) then
     print("No data")
-    return 
+    return
   end
   sensor.button[1] = data[1];
   local offset = 17;
@@ -381,10 +381,10 @@ function sync_read(timeout)
     sensor.imuGyrRaw[Config.gyro.rpy[i]]=
       DynamixelPacket.byte_to_word(data[offset+6],data[offset+7]);
 
-    sensor.imuGyr[Config.gyro.rpy[i]] = 
+    sensor.imuGyr[Config.gyro.rpy[i]] =
       Config.gyro.sensitivity[i]*
       (sensor.imuGyrRaw[Config.gyro.rpy[i]]-gyrZero[i]);
-    sensor.imuAcc[Config.acc.xyz[i]] = 
+    sensor.imuAcc[Config.acc.xyz[i]] =
       Config.acc.sensitivity[i]*
       (sensor.imuAccRaw[Config.acc.xyz[i]]-Config.acc.zero[i]);
     sensor.imuAngle[i] = (1/1024)*
@@ -415,7 +415,7 @@ end
 function entry()
   Dynamixel.open();
   --   Dynamixel.ping_probe();
-  --We have to manually turn on the MC for OP   
+  --We have to manually turn on the MC for OP
   Dynamixel.set_torque_enable(200,1);
   unix.usleep(200000);
   -- Dynamixel.ping_probe();
@@ -425,7 +425,7 @@ function entry()
   actuator.readType[1]=1;
   -- Read only kankles
   actuator.readType[1]=3;
-  
+
   if syncread_enable==1 then
 	  calibrate_gyro();
   end
@@ -433,13 +433,13 @@ end
 
 function calibrate_gyro()
 	print("Calibrating gyro....");
- 	gyrZero=vector.zeros(3);
+	gyrZero=vector.zeros(3);
 	count=0;
         if syncread_enable==1 then
 	   for i=1,50 do --For HP
 	      local data = Dynamixel.read_data(128,64,120);
 	      local offset=17;
- 	      if data then
+	      if data then
 		count=count+1;
 		for k=1,3 do
 	           gyrZero[k]=gyrZero[k]+
@@ -453,7 +453,7 @@ function calibrate_gyro()
 	  for i=1,100 do
 	      local data=Dynamixel.read_data(200,38,12);
 	      local offset=1;
- 	      if data then
+	      if data then
 		count=count+1;
 		for k=1,3 do
 		   gyrZero[k]=gyrZero[k]+
@@ -475,10 +475,10 @@ function calibrate_acc()
 	local acc=vector.zeros(3);
 	count=0;
         if syncread_enable==1 then --for HP
-	   for i=1,50 do 
+	   for i=1,50 do
 	      local data = Dynamixel.read_data(128,64,120);
 	      local offset=17;
- 	      if data then
+	      if data then
 		count=count+1;
 		for k=1,3 do
 	           acc[k]=acc[k]+
@@ -492,7 +492,7 @@ function calibrate_acc()
 	  for i=1,100 do
 	      local data=Dynamixel.read_data(200,38,12);
 	      local offset=1;
- 	      if data then
+	      if data then
 		count=count+1;
 		for k=1,3 do
 		   acc[k]=acc[k]+
@@ -529,11 +529,11 @@ function update_imu()
 	iAngle=Transform.getRPY(tTrans);
 
         local accMag=sensor.imuAcc[1]^2+sensor.imuAcc[2]^2+sensor.imuAcc[3]^2;
- 	if accMag>Config.angle.gMin and accMag<Config.angle.gMax then
+	if accMag>Config.angle.gMin and accMag<Config.angle.gMax then
            local angY=math.atan2(sensor.imuAcc[1], math.sqrt(sensor.imuAcc[2]^2+sensor.imuAcc[3]^2) );
            local angX=math.atan2(sensor.imuAcc[2], math.sqrt(sensor.imuAcc[1]^2+sensor.imuAcc[3]^2) );
            iAngle[1], iAngle[2] =
- 	        (1-Config.angle.accFactor)*iAngle[1]+Config.angle.accFactor*angX,
+	        (1-Config.angle.accFactor)*iAngle[1]+Config.angle.accFactor*angX,
            (1-Config.angle.accFactor)*iAngle[2]+Config.angle.accFactor*angY;
 	end
 
@@ -554,7 +554,7 @@ if( USB_bug == 1 ) then
         string.find(ttys[i], "ttyUSB")) then
       ttyname = "/dev/"..ttys[i];
       break;
-    end 
+    end
   end
   if( ttyname ~= Dynamixel.dttyname ) then
     if( Dynamixel.dttyname ~= nil ) then
@@ -581,7 +581,7 @@ end
 
    count=count+1;
    sensor.updatedCount[1]=count%100; --This count indicates whether DCM has processed current reading or not
-   if count%100==0 then 
+   if count%100==0 then
 	sync_battery();
    end
    if actuator.hardnessChanged[1]==1 then
@@ -616,4 +616,3 @@ end
 function exit()
    Dynamixel.close();
 end
-

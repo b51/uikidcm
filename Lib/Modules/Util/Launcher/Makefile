@@ -32,5 +32,5 @@ else
 endif
 
 clean:
-	rm -rf build 
+	rm -rf build
 	rm -f *.o *.$(SHLIBEXT) *.$(MEXEXT)

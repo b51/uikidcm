@@ -53,11 +53,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   objGaussian.setCovarianceAxis(errorAzimuthal, errorDepth, angle);
 
   bm.BallObservation(objGaussian, (int)(*uncertainty));
-  
+
   // Send the output
   plhs[0] = mxCreateDoubleMatrix(1, 6, mxREAL);
   double* vals = mxGetPr(plhs[0]);
   bm.getBall( vals[0], vals[1], vals[2], vals[3], vals[4], vals[5] );
 
 }
-

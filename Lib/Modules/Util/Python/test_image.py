@@ -43,5 +43,3 @@ if __name__=='__main__':
   mpl.show();
 
   time.sleep(0.1);
-
-  

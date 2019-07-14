@@ -31,7 +31,7 @@ for line in f:lines() do
   py = t[8];
   ep = t[10];
   evp = t[11];
-  
+
   --print("Predicting...")
   dodge = ballfilter.predictmove( x,y,z,vx,vy,px,py,ep,evp )
 
@@ -62,5 +62,3 @@ isdodge = ballfilter.predictmove(x,y,vx,vy,px,py,ep,evp);
 for i=1,10 do
   print( ballfilter.ballme( i/30, 10, 1 ) );
 end
-
-

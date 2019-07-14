@@ -25,14 +25,14 @@ include_directories(
 ## Build ##
 ###########
 
-add_library(ImagePreProc SHARED
+add_library(${PROJECT_NAME} SHARED
   luaImagePreProc.cc
   TurboDecode.cc
 )
 
-set_target_properties(ImagePreProc PROPERTIES PREFIX "")
+set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 
-target_link_libraries(ImagePreProc
+target_link_libraries(${PROJECT_NAME}
   ${OpenCV_LIBS}
   lua
   glog
@@ -40,4 +40,8 @@ target_link_libraries(ImagePreProc
   #${LIB_TURBOJPEG}
   turbojpeg
   -Wl,--no-whole-archive
+)
+
+install(TARGETS ${PROJECT_NAME}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}
 )

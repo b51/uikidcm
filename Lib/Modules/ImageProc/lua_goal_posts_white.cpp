@@ -165,7 +165,7 @@ struct SegmentStats {
   int x0,y0; //topleft point
   int x1,y1; //bottomright point
   double xMean;//only need xMean to align segments
-  int height; 
+  int height;
   double mean_width;
   int xsum,ysum;
   int gap;//gap handling
@@ -195,7 +195,7 @@ void goal_segment_init(){
 void goal_segment_refresh(){
   //end active segments if they were not updated for one line scan
   for(int i=0;i<num_segments;i++){
-    if ((segments[i].state==1) && (segments[i].updated==0)){ 
+    if ((segments[i].state==1) && (segments[i].updated==0)){
       if (segments[i].gap>0)
 	      segments[i].gap--;
       else
@@ -609,7 +609,7 @@ int lua_goal_posts_white(lua_State *L) {
   if (valid_segments<1) return 0;
   lua_createtable(L, valid_segments, 0);
   int seg_count=0;
- 
+
   for (int i = 0; i < num_segments; i++) {
     if (segments[i].height>min_height){
       lua_createtable(L, 0, 3);

@@ -21,4 +21,3 @@ mex:
 
 clean:
 	rm -f *.so *.o *.$(SHLIBEXT) *.$(MEXEXT)
-

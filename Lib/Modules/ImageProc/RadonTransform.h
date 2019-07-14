@@ -11,7 +11,7 @@ struct LineStats {
   double iMin;
   double jMin;
   double iMax;
-  double jMax;  
+  double jMax;
 };
 
 class RadonTransform {
@@ -25,16 +25,16 @@ class RadonTransform {
     static const int NTH = 45; // Number of angles
     static const int NTRIG = 65536; // Integer trig normalization
     static const int DIAGONAL_THRESHOLD = NTRIG/1.41421356;
-    
+
     void clear();
     void addHorizontalPixel(int i, int j);
     void addVerticalPixel(int i, int j);
     void addPixelToRay(int i, int j, int ith);
-   
+
     struct LineStats &getLineStats();
     struct LineStats *getMultiLineStats(int ni, int nj, uint8_t *im_ptr);
 
-    int countMax;  
+    int countMax;
     int count[NTH][NR];
     int thMax;
     int rMax;

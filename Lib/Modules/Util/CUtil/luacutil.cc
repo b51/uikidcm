@@ -30,10 +30,10 @@ const int8_t byte_lut[] = { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x
 //Map : 0,      1,       2,      3,       4,        5
 
 const int8_t label_color_pack_lut[]=
-	{ 0, 1, 
-	  2, 1, 
-          3, 1, 2, 1, 
-          4, 1, 2, 1, 3, 1, 2, 1, 
+	{ 0, 1,
+	  2, 1,
+          3, 1, 2, 1,
+          4, 1, 2, 1, 3, 1, 2, 1,
           5, 1, 2, 1, 3, 1, 2, 1, 5, 1, 2, 1, 3, 1, 2, 1};
 
 const int8_t label_color_unpack_lut[]={0,1,2,4,8,16};
@@ -62,7 +62,7 @@ static int lua_array2string(lua_State *L) {
   if ((data == NULL) || !lua_islightuserdata(L, 1)) {
     return luaL_error(L, "Input image not light user data");
   }
-  
+
   int width = luaL_checkinteger(L, 2);
   int height = luaL_checkinteger(L, 3);
   std::string dtype(luaL_checkstring(L, 4));
@@ -151,7 +151,7 @@ static int lua_array2string2(lua_State *L) {
   if ((data == NULL) || !lua_islightuserdata(L, 1)) {
     return luaL_error(L, "Input image not light user data");
   }
-  
+
   int width = luaL_checkinteger(L, 2);
   int height = luaL_checkinteger(L, 3);
   std::string dtype(luaL_checkstring(L, 4));
@@ -232,9 +232,9 @@ static int lua_string2userdata2(lua_State *L) {
 
   for (int i=0;i<height/2;i++){
     for (int j=0;j<width*nbyte;j++){
-      uint8_t bh = cdata[cind] >= 'a' ? 
+      uint8_t bh = cdata[cind] >= 'a' ?
 		cdata[cind] - 'a' + 10 : cdata[cind] - '0';
-      uint8_t bl = cdata[cind+1] >= 'a' ? 
+      uint8_t bl = cdata[cind+1] >= 'a' ?
 		cdata[cind+1] - 'a' + 10 : cdata[cind+1] - '0';
       dout[ind] = (uint8_t)((bh<<4) | bl);
       ind += 1;
@@ -257,7 +257,7 @@ static int lua_label2string(lua_State *L) {
   if ((data == NULL) || !lua_islightuserdata(L, 1)) {
     return luaL_error(L, "Input image not light user data");
   }
-  
+
   int arr_size = luaL_checkinteger(L, 2);
   std::string dtype(luaL_checkstring(L, 3));
   std::string name(luaL_checkstring(L, 4));
@@ -328,7 +328,7 @@ static int lua_string2label(lua_State *L) {
 }
 
 //Label-specific string conversion function
-//Bin each label into 6 class 
+//Bin each label into 6 class
 //And pack two pixel into one byte
 
 static int lua_label2string_double(lua_State *L) {
@@ -336,7 +336,7 @@ static int lua_label2string_double(lua_State *L) {
   if ((data == NULL) || !lua_islightuserdata(L, 1)) {
     return luaL_error(L, "Input image not light user data");
   }
-  
+
   int arr_size = luaL_checkinteger(L, 2);
   std::string dtype(luaL_checkstring(L, 3));
   std::string name(luaL_checkstring(L, 4));
@@ -413,7 +413,7 @@ static int lua_string2label_double(lua_State *L) {
 }
 
 //Label-specific string conversion function
-//Bin each label into 6 class 
+//Bin each label into 6 class
 //And run Run-length encoding
 
 static int lua_label2string_rle(lua_State *L) {
@@ -421,7 +421,7 @@ static int lua_label2string_rle(lua_State *L) {
   if ((data == NULL) || !lua_islightuserdata(L, 1)) {
     return luaL_error(L, "Input image not light user data");
   }
-  
+
   int arr_size = luaL_checkinteger(L, 2);
   std::string dtype(luaL_checkstring(L, 3));
   std::string name(luaL_checkstring(L, 4));
@@ -437,7 +437,7 @@ static int lua_label2string_rle(lua_State *L) {
 
   int ind = 0;
   int cind = 0;
-  
+
   int last_data=label_color_pack_lut[data[0]];
   int current_size=1;
   int total_byte = 0;
@@ -549,7 +549,7 @@ static int lua_ptradd(lua_State *L) {
   }
   int nbytes = n * (idataTypeMap->second);
 
-  lua_pushlightuserdata(L, ptr + nbytes); 
+  lua_pushlightuserdata(L, ptr + nbytes);
 
   return 1;
 }
@@ -563,7 +563,7 @@ static int lua_sizeof(lua_State *L) {
   }
   int nbytes = idataTypeMap->second;
 
-  lua_pushinteger(L, nbytes); 
+  lua_pushinteger(L, nbytes);
 
   return 1;
 }
@@ -584,8 +584,8 @@ static int lua_testarray(lua_State *L) {
 }
 
 static int lua_bitand(lua_State *L) {
-  int a = luaL_checkinteger(L, 1); 
-  int b = luaL_checkinteger(L, 2); 
+  int a = luaL_checkinteger(L, 1);
+  int b = luaL_checkinteger(L, 2);
 
   lua_pushinteger(L, a & b);
 
@@ -593,8 +593,8 @@ static int lua_bitand(lua_State *L) {
 }
 
 static int lua_bitor(lua_State *L) {
-  int a = luaL_checkinteger(L, 1); 
-  int b = luaL_checkinteger(L, 2); 
+  int a = luaL_checkinteger(L, 1);
+  int b = luaL_checkinteger(L, 2);
 
   lua_pushinteger(L, a | b);
 
@@ -602,8 +602,8 @@ static int lua_bitor(lua_State *L) {
 }
 
 static int lua_bitxor(lua_State *L) {
-  int a = luaL_checkinteger(L, 1); 
-  int b = luaL_checkinteger(L, 2); 
+  int a = luaL_checkinteger(L, 1);
+  int b = luaL_checkinteger(L, 2);
 
   lua_pushinteger(L, a ^ b);
 
@@ -611,7 +611,7 @@ static int lua_bitxor(lua_State *L) {
 }
 
 static int lua_bitnot(lua_State *L) {
-  int a = luaL_checkinteger(L, 1); 
+  int a = luaL_checkinteger(L, 1);
 
   lua_pushinteger(L, ~a);
 

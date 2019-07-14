@@ -35,7 +35,7 @@ typedef struct
   float evaluation;
 }Candidate;
 
-typedef struct 
+typedef struct
 {
 	double cameraTilt;
 	double cameraAngleSpead;

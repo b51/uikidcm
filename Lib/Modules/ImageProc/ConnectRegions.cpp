@@ -29,7 +29,7 @@ void EquivalenceTable::traverseLinks() {
 
 void EquivalenceTable::removeGaps() {
   int next = 0;
-  
+
   for (int i = 0; i < m_table.size(); i++) {
     int b = m_table[i];
     m_table[i] = (i == b) ? next++ : m_table[b];
@@ -79,7 +79,7 @@ int ConnectRegions(std::vector <RegionProps> &props,
 
   for (int j = 0; j < n; j++) {
     for (int i = 0; i < m; i++) {
-      
+
       uint8 pixel = *image++;
       if (!(pixel & mask)) {
         label_array[i][j] = 0;
@@ -102,7 +102,7 @@ int ConnectRegions(std::vector <RegionProps> &props,
       if ((i < n-1) && (j > 0) && (label_array[i+1][j-1])) {
         label_neighbor[n_neighbor++] = label_array[i+1][j-1];
       }
-      
+
       int label;
       if (n_neighbor > 0) {
         label = nlabel;
@@ -180,7 +180,7 @@ int ConnectRegions_obs(std::vector <RegionProps> &props,
 
   for (int j = 0; j < n; j++) {
     for (int i = 0; i < m; i++) {
-      
+
       uint8 pixel = *image++;
       if (!(pixel & mask)) {
         label_array[i][j] = 0;
@@ -203,7 +203,7 @@ int ConnectRegions_obs(std::vector <RegionProps> &props,
       if ((i < n-1) && (j > 0) && (label_array[i+1][j-1])) {
         label_neighbor[n_neighbor++] = label_array[i+1][j-1];
       }
-      
+
       int label;
       if (n_neighbor > 0) {
         label = nlabel;

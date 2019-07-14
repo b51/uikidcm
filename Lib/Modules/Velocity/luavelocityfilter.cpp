@@ -174,4 +174,3 @@ int luaopen_velocityfilter (lua_State *L) {
   #endif
   return 1;
 }
-

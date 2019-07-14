@@ -65,3 +65,7 @@ target_link_libraries(${PROJECT_NAME}
   glog
   -Wl,--no-whole-archive
 )
+
+install(TARGETS ${PROJECT_NAME}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}
+)

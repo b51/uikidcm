@@ -25,7 +25,7 @@ armBias=Config.servo.armBias;
 idMap = Config.servo.idMap;
 nJoint = #idMap;
 scale={};
-for i=1,nJoint do 
+for i=1,nJoint do
   scale[i]=Config.servo.steps[i]/Config.servo.moveRange[i];
 end
 
@@ -95,7 +95,7 @@ function shm_init()
 
   actuatorShm.torqueEnable = vector.zeros(1); --Global torque on.off
   -- Gain 0: normal gain 1: Kick gain (more stiff)
-  actuatorShm.gain=vector.zeros(nJoint); 
+  actuatorShm.gain=vector.zeros(nJoint);
   actuatorShm.gainChanged=vector.ones(1);  --set compliance once
   actuatorShm.velocityChanged=vector.zeros(1);
   actuatorShm.hardnessChanged=vector.zeros(1);
@@ -113,25 +113,25 @@ function shm_init()
 
   --New PID parameters variables
   --Default value is (32,0,0)
-  actuatorShm.p_param=vector.ones(nJoint)*32; 
-  actuatorShm.i_param=vector.ones(nJoint)*0; 
-  actuatorShm.d_param=vector.ones(nJoint)*0; 
+  actuatorShm.p_param=vector.ones(nJoint)*32;
+  actuatorShm.i_param=vector.ones(nJoint)*0;
+  actuatorShm.d_param=vector.ones(nJoint)*0;
 
   --SJ: list of servo IDs to read
   --0: Head only 1: All servos 2: Head+Leg
   --readID: 1 for readable, 0 for non-readable
-  actuatorShm.readType=vector.zeros(1);   
-  actuatorShm.readID=vector.zeros(nJoint); 
+  actuatorShm.readType=vector.zeros(1);
+  actuatorShm.readID=vector.zeros(nJoint);
 
   --SJ: battery testing mode (read voltage from all joints)
-  actuatorShm.battTest=vector.zeros(1);   
+  actuatorShm.battTest=vector.zeros(1);
 end
 
 function entry()
   Dynamixel.open();
   --   Dynamixel.ping_probe();
-  --We have to manually turn on the MC for OP 
---需要修改，至于是在子函数内部修改，还是在此处修改，仍然需要考虑，暂定在子函数内部修改 
+  --We have to manually turn on the MC for OP
+--需要修改，至于是在子函数内部修改，还是在此处修改，仍然需要考虑，暂定在子函数内部修改
 --在该部分需要添加一部分初始化的信息
   Dynamixel.set_torque_enable(200,1);
   --local torqueenable=EnableTorque(true);
@@ -145,7 +145,7 @@ function entry()
   actuator.readType[1]=3;
 
   -- Read initial leg bias from config
-  for i=1,12 do 	
+  for i=1,12 do
     actuator.bias[i+5]=legBias[i];
   end
 --修改部分
@@ -224,7 +224,7 @@ function torque_enable()
   end
   if (n > 0) then
     Dynamixel.sync_write_byte(ids, addr, data);
-  end   
+  end
   print("Torque enable changed")
 end
 
@@ -279,7 +279,7 @@ end
 
 function sync_battery()
     --battery test mode... read from ALL servos
-  if actuator.battTest[1]==1 then 
+  if actuator.battTest[1]==1 then
     chk_servo_no=(chk_servo_no%nJoint)+1;
     sensor.temperature[chk_servo_no]=Dynamixel.get_temperature(idMap[chk_servo_no]);
   else
@@ -344,7 +344,7 @@ function sync_led()
   end
 
   if count%100==25 then --1 fps back led refresh rate
---    packet =  
+--    packet =
 -- actuator.backled[1]+2*actuator.backled[2]+4*actuator.backled[3];
 
     battery_blink = 1-battery_blink;
@@ -364,7 +364,7 @@ function bulk_read()
   --146: bulk read instruction
   --36: Position address
   print("Bulk read test");
-  data=Dynamixel.bulk_read_data(200,{1,2,3},36,2); 
+  data=Dynamixel.bulk_read_data(200,{1,2,3},36,2);
   print("Received data size:",#data);
   print("Received data:",unpack(data));
 --]]
@@ -376,7 +376,7 @@ function nonsync_read()
   --Position reading
   local idToRead={1,2};   --Head only reading
   if actuator.readType[1]==1 then --All servo reading
-    for i=1,#idMap do 
+    for i=1,#idMap do
       idToRead[i]=i;
     end
   elseif actuator.readType[1]==3 then -- Read ankles only
@@ -399,8 +399,8 @@ function nonsync_read()
       raw=Dynamixel.get_position(id);
       if raw then
 	sensor.servoposition[idToRead[i]] = raw;
-        sensor.position[idToRead[i]] = 
-		(raw-posZero[i]-actuator.bias[i])/scale[i] - 
+        sensor.position[idToRead[i]] =
+		(raw-posZero[i]-actuator.bias[i])/scale[i] -
 		 actuator.offset[i];
       end
     end
@@ -417,7 +417,7 @@ function nonsync_read()
       Config.gyro.sensitivity[i]*
       (DynamixelPacket.byte_to_word(data[offset],data[offset+1])-gyrZero[i]);
 
-      sensor.imuAcc[Config.acc.xyz[i]] = 
+      sensor.imuAcc[Config.acc.xyz[i]] =
       Config.acc.sensitivity[i]*
       (DynamixelPacket.byte_to_word(data[offset+6],data[offset+7])-Config.acc.zero[i]);
 
@@ -459,9 +459,9 @@ function update_imu()
   local accMag=sensor.imuAcc[1]^2+sensor.imuAcc[2]^2+sensor.imuAcc[3]^2;
   --print("AccMag:",accMag)
   if accMag>Config.angle.gMin and accMag<Config.angle.gMax then
-    local angR=math.atan2(-sensor.imuAcc[2], 
+    local angR=math.atan2(-sensor.imuAcc[2],
     math.sqrt(sensor.imuAcc[1]^2+sensor.imuAcc[3]^2) );
-    local angP=math.atan2(sensor.imuAcc[1], 
+    local angP=math.atan2(sensor.imuAcc[1],
     math.sqrt(sensor.imuAcc[2]^2+sensor.imuAcc[3]^2) );
     iAngle[1], iAngle[2] =
     (1-Config.angle.accFactor)*iAngle[1]+Config.angle.accFactor*angR,
@@ -483,7 +483,7 @@ function update()
         string.find(ttys[i], "ttyUSB")) then
         ttyname = "/dev/"..ttys[i];
         break;
-      end 
+      end
     end
     if( ttyname ~= Dynamixel.dttyname ) then
       if( Dynamixel.dttyname ~= nil ) then
@@ -541,4 +541,3 @@ end
 function exit()
   Dynamixel.close();
 end
-

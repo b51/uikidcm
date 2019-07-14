@@ -19,7 +19,7 @@ class ShmWrapper():
 
   @staticmethod
   def _format_output(ret):
-    ''' 
+    '''
       formats the return to make it easier to use than just a list
 
       converts lists to numpy ndarray
@@ -49,7 +49,7 @@ class ShmWrapper():
     # at list point assume it is a number
     return [vals];
 
-  
+
 
 
   def __generate_accessors_setters(self):
@@ -72,4 +72,3 @@ class ShmWrapper():
 
       # get next key
       key = pyshm.next(self.handle, key);
-

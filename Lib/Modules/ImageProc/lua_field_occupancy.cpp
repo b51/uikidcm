@@ -20,7 +20,7 @@ static uint8 colorBall = 0x01;
 static uint8 colorField = 0x08;
 static uint8 colorWhite = 0x10;
 
-inline bool isFree(uint8 label) 
+inline bool isFree(uint8 label)
 {
   return (label & colorField) || (label & colorBall) || (label & colorWhite);
 }
@@ -30,7 +30,7 @@ int lua_field_occupancy(lua_State *L) {
   uint8_t *im_ptr = (uint8_t *) lua_touserdata(L, 1);
   if ((im_ptr == NULL) || !lua_islightuserdata(L, 1)) {
     return luaL_error(L, "Input image not light user data");
-  }  
+  }
   int ni = luaL_checkint(L, 2);
   int nj = luaL_checkint(L, 3);
   const int nRegions = ni;
@@ -101,21 +101,21 @@ int lua_field_occupancy(lua_State *L) {
       continue;
     }
   }
-//  std::cout << std::endl; 
+//  std::cout << std::endl;
   // return state
   lua_createtable(L,0,2);
-  
+
   lua_pushstring(L,"range");
   lua_createtable(L,nRegions,0);
 //  std::cout << "counts: ";
   for (int i = 0; i < nRegions; i++){
-//    std::cout << count[i] << ' '; 
+//    std::cout << count[i] << ' ';
     lua_pushinteger(L, count[i]);
     lua_rawseti(L, -2, i+1);
   }
 //  std::cout << std::endl;
   lua_settable(L, -3);
-  
+
   lua_pushstring(L,"flag");
   lua_createtable(L,nRegions,0);
 //  std::cout << "flags: ";
@@ -126,6 +126,6 @@ int lua_field_occupancy(lua_State *L) {
   }
 //  std::cout << std::endl;
   lua_settable(L, -3);
-  
+
   return 1;
 }

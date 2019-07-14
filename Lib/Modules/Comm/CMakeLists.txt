@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.2)
-project(LuaComm)
+project(Comm)
 
 add_definitions(-std=c++11)
 
@@ -7,11 +7,15 @@ add_definitions(-std=c++11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
 
 # Comm main library definition
-add_library(Comm SHARED
+add_library(${PROJECT_NAME} SHARED
   luaComm.cc
 )
 
 # set library prefix to "" otherwise it will create libComm.so
-set_target_properties(Comm PROPERTIES PREFIX "")
+set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 
-target_link_libraries(Comm m)
+target_link_libraries(${PROJECT_NAME} m)
+
+install(TARGETS ${PROJECT_NAME}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}
+)
