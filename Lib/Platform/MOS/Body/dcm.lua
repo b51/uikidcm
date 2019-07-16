@@ -1,18 +1,17 @@
-module(..., package.seeall);
-require("shm");
-require("carray");
+local shm = require("shm");
+local carray = require("carray");
 
-sensorShm = shm.open('dcmSensor');
-actuatorShm = shm.open('dcmActuator');
-stateShm = shm.open('dcmState');--123456
-paraShm = shm.open('dcmParameter');--123456
+local sensorShm = shm.open('dcmSensor');
+local actuatorShm = shm.open('dcmActuator');
+local stateShm = shm.open('dcmState');--123456
+local paraShm = shm.open('dcmParameter');--123456
 
-sensor = {};
-actuator = {};
-state = {};--123456
-para = {};--123456
+local sensor = {};
+local actuator = {};
+local state = {};--123456
+local para = {};--123456
 
-function get_sensor_shm(shmkey, index)
+local get_sensor_shm = function(shmkey, index)
   if (index) then
     return sensor[shmkey][index];
   else
@@ -24,7 +23,7 @@ function get_sensor_shm(shmkey, index)
   end
 end
 
-function set_actuator_shm(shmkey, val, index)
+local set_actuator_shm = function(shmkey, val, index)
   index = index or 1;
   if (type(val) == "number") then
     actuator[shmkey][index] = val;
@@ -35,7 +34,7 @@ function set_actuator_shm(shmkey, val, index)
   end
 end
 
-function get_state_shm(shmkey, index)--123456
+local get_state_shm = function(shmkey, index)--123456
   if (index) then
     return state[shmkey][index];
   else
@@ -47,7 +46,7 @@ function get_state_shm(shmkey, index)--123456
   end
 end--123456
 
-function set_state_shm(shmkey, val, index)--123456
+local set_state_shm = function(shmkey, val, index)--123456
   index = index or 1;
   if (type(val) == "number") then
     state[shmkey][index] = val;
@@ -58,7 +57,7 @@ function set_state_shm(shmkey, val, index)--123456
   end
 end--123456
 
-function get_para_shm(shmkey, index)--123456
+local get_para_shm = function(shmkey, index)--123456
   if (index) then
     return para[shmkey][index];
   else
@@ -70,7 +69,7 @@ function get_para_shm(shmkey, index)--123456
   end
 end--123456
 
-function set_para_shm(shmkey, val, index)--123456
+local set_para_shm = function(shmkey, val, index)--123456
   index = index or 1;
   if (type(val) == "number") then
     para[shmkey][index] = val;
@@ -129,7 +128,7 @@ for k,v in paraShm.next, paraShm do--123456
     end
 end--123456
 --nJoint = #actuator.position;
-nJoint = #sensor.position; --From DLC
+local nJoint = #sensor.position; --From DLC
 
 -- Initialize actuator commands and positions
 for i = 1,nJoint do

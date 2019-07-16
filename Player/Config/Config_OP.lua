@@ -1,55 +1,68 @@
-module(..., package.seeall);
+local vector = require('vector');
+local unix = require('unix');
+-----------------------------------------------------------------
+--                        Config:
+--              {platform, dev, game, km}
+-----------------------------------------------------------------
+local Config = {};
+Config.platform = {};
+Config.dev = {};
+Config.game = {};
+Config.km = {};
 
-require('vector')
-require('unix')
-
-platform = {};
-platform.name = 'OP'
-
-function loadconfig(configName)
-  local localConfig=require(configName);
-  for k,v in pairs(localConfig) do
+-----------------------------------------------------------------
+--          append Config from submodule configs
+--
+--  Config_Robot    : {stance, head, gyro, acc, angle, servo}
+--  Config_Walk     : {walk}
+--  Config_Kick     : {kick}
+--  Config_FSM      : {fsm}
+--  Config_Yolo_Net : {net}
+--  Config_Vision   : {color, vision} TODO(b51): color is useless now
+--  Config_Camera   : {camera}
+--  Config_World    : {world, occ}
+-----------------------------------------------------------------
+local loadconfig = function(configName)
+  local localConfig = require(configName);
+  for k, v in pairs(localConfig) do
     Config[k]=localConfig[k];
   end
 end
 
+loadconfig('Robot/Config_Robot')
+loadconfig('Walk/Config_Walk')
+--loadconfig('Kick/Config_Kick')
+loadconfig('FSM/Config_FSM')
+loadconfig('Net/Config_Yolo_Net')
+loadconfig('Vision/Config_Vision')
+loadconfig('Vision/Config_Camera')
+--loadconfig('World/Config_World')
+
+local platform = Config.platform;
+platform.name = 'MOS';
+
 --Robot CFG should be loaded first to set PID values
 local robotName=unix.gethostname();
-loadconfig('Robot/Config_OP_Robot')
-loadconfig('Walk/Config_OP_Walk')
-loadconfig('World/Config_OP_World')
-loadconfig('Kick/Config_OP_Kick')
-loadconfig('Vision/Config_OP_Vision')
-
---Location Specific Camera Parameters--
-loadconfig('Vision/Config_OP_Camera_Grasp')
-loadconfig('Net/Config_Yolo_Net')
 
 -- Device Interface Libraries
-dev = {};
-dev.body = 'OPBody';
-dev.camera = 'OPCam';
-dev.kinematics = 'OPKinematics';
+local dev = Config.dev;
+dev.body = 'MOSBody';
+dev.camera = 'V4LCam';
+dev.kinematics = 'Kinematics';
 dev.ip_wired = '192.168.2.200';
 --dev.ip_wireless = '255.255.255.255';
 dev.ip_wireless = '192.168.1.255';  --Our Router
 dev.ip_wireless_port = 54321;
-dev.game_control = 'OPGameControl';
+dev.game_control = 'GameControl';
 dev.team = 'TeamBasic';
 dev.walk = 'BasicWalk';
 dev.kick = 'BasicKick'
-dev.gender = 1; -- 1 for Male and 0 for Female
-
-speak = {}
-speak.enable = false;
 
 -- Game Parameters
-game = {};
+local game = Config.game;
 game.teamNumber = 6;
-
 --Default role: 0 for goalie, 1 for attacker, 2 for defender
 game.role = 1;
-
 --Default team: 0 for blue, 1 for red
 game.teamColor = 0; --Blue team, attacking Yellow goal
 --game.teamColor = 1; --Red team, attacking Cyan goal
@@ -60,25 +73,11 @@ game.nPlayers = 5;
 --------------------
 
 --FSM and behavior settings
-fsm = {};
 --SJ: loading FSM config  kills the variable fsm, so should be called first
-loadconfig('FSM/Config_OP_FSM')
-fsm.game = '';
-fsm.head = {''};
-fsm.body = {''};
-
---Behavior flags, should be defined in FSM Configs but can be overrided here
-fsm.kickoff_wait_enable = 0;
-fsm.playMode = 3; --1 for demo, 2 for orbit, 3 for direct approach, 4 for passing ball
-fsm.forcePlayer = 0; --1 for attacker, 2 for defender, 3 for goalie
-fsm.enable_walkkick = 0; --Testing
-fsm.enable_sidekick = 0;
-fsm.daPost_check = 1; --aim to the side when close to the ball
-fsm.daPostmargin = 15*math.pi/180;
-fsm.variable_dapost = 1;
+--??? what "kills the variable fsm" meaning
 
 -- Team Parameters
-team = {};
+local team = {};
 team.msgTimeout = 5.0;
 team.tKickOffWear = 7.0;
 
@@ -104,52 +103,17 @@ team.avoid_own_team = 1;
 team.avoid_other_team = 0;
 
 -- keyframe files
-km = {};
+local km = Config.km;
 km.standup_front = 'km_NSLOP_StandupFromFront.lua';
 km.standup_back = 'km_NSLOP_StandupFromBack.lua';
 
--- Low battery level
--- Need to implement this api better...
-bat_low = 117; -- 11.7V warning
-bat_med = 119; -- Slow down walking if voltage drops below this
-
-bat_led = {118,119,122,123,124,125}; --for back LED indicator
-
-gps_only = 0;
-
 --goalie_dive = 1; --1 for arm only, 2 for actual diving
-goalie_dive = 2;
-goalie_dive_waittime = 3.0; --How long does goalie lie down?
---fsm.goalie_type = 2;--moving/move+stop/stop+dive/stop+dive+move
-fsm.goalie_type = 4;
-fsm.goalie_reposition=0; --No reposition
-
-
-fsm.goalie_use_walkkick = 1; --should goalie use front walkkick?
-
---Goalie diving detection parameters
-fsm.bodyAnticipate.timeout = 3.0;
-fsm.bodyAnticipate.center_dive_threshold_y = 0.05;
-fsm.bodyAnticipate.dive_threshold_y = 1.0;
---fsm.bodyAnticipate.ball_velocity_th = 1.0; --min velocity for diving
---fsm.bodyAnticipate.ball_velocity_thx = -1.0; --min x velocity for diving
---fsm.bodyAnticipate.rCloseDive = 2.0; --ball distance threshold for diving
-fsm.bodyAnticipate.ball_velocity_th = 0.5; --min velocity for diving
-fsm.bodyAnticipate.ball_velocity_thx = -0.5; --min x velocity for diving
-fsm.bodyAnticipate.rCloseDive = 2.0; --ball distance threshold for diving
-
---Speak enable
-speakenable = false;
-
-listen_monitor = 1;
-
+Config.goalie_dive = 2;
+Config.goalie_dive_waittime = 3.0; --How long does goalie lie down?
+Config.listen_monitor = 1;
 --Fall check
-fallAngle = 50*math.pi/180;
-falling_timeout = 5.0;
+Config.fallAngle = 50*math.pi/180;
+Config.falling_timeout = 5.0;
+Config.ball_shift={0,0};
 
-led_on = 0; --turn off eye led
-led_on = 1; --turn on eye led
-ball_shift={0,0};
-
---New multi-blob landmark detection code
-vision.use_multi_landmark = 1;
+return Config;

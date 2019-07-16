@@ -1,12 +1,22 @@
-module(..., package.seeall);
-require('vector')
-
 --FSM parameters
+local fsm={};
 
 --How much should we slow down all SM timings?
-speedFactor = 1.0;
+local speedFactor = 1.0;
 
-fsm={};
+fsm.game = '';
+fsm.head = {''};
+fsm.body = {''};
+
+--Behavior flags, should be defined in FSM Configs but can be overrided here
+fsm.kickoff_wait_enable = 0;
+fsm.playMode = 3; --1 for demo, 2 for orbit, 3 for direct approach, 4 for passing ball
+fsm.forcePlayer = 0; --1 for attacker, 2 for defender, 3 for goalie
+fsm.enable_walkkick = 0; --Testing
+fsm.enable_sidekick = 0;
+fsm.daPost_check = 1; --aim to the side when close to the ball
+fsm.daPostmargin = 15*math.pi/180;
+fsm.variable_dapost = 1;
 
 --Should we consider obstacle?
 fsm.enable_obstacle_detection = 0;
@@ -19,7 +29,9 @@ fsm.enable_walkkick = 0;
 
 fsm.wait_kickoff = 1; --initial wait at opponent's kickoff
 
-fsm.goalie_reposition = 0;
+fsm.goalie_use_walkkick = 1; --should goalie use front walkkick?
+fsm.goalie_type = 4;
+fsm.goalie_reposition=0; --No reposition
 --0 for don't reposition at all,
 --1 for repositon for angle error, 2 for reposition for position error
 
@@ -43,25 +55,21 @@ fsm.bodySearch.timeout = 10.0*speedFactor;
 --------------------------------------------------
 --BodyAnticipate : Sit down and wait for kick (goalie)
 --------------------------------------------------
+--Goalie diving detection parameters
 fsm.bodyAnticipate={};
-
 fsm.bodyAnticipate.tStartDelay = 1.0*speedFactor;
-
 --fsm.bodyAnticipate.rMinDive = 1.0;
 fsm.bodyAnticipate.rMinDive = 0.8;  --tse
 fsm.bodyAnticipate.rCloseDive = 1.5;    --tse
-fsm.bodyAnticipate.center_dive_threshold_y = 0.07;
+fsm.bodyAnticipate.center_dive_threshold_y = 0.05;
 fsm.bodyAnticipate.dive_threshold_y = 1.0;
-
 fsm.bodyAnticipate.ball_velocity_th = 0.5; --min velocity for diving
 fsm.bodyAnticipate.ball_velocity_thx = -0.5; --min x velocity for diving
-
 fsm.bodyAnticipate.rClose = 1.7;
 fsm.bodyAnticipate.rCloseX = 1.0;
 fsm.bodyAnticipate.ball_velocity_th2 = 0.3; --max velocity for start approach
-
 -- How far out of position are we allowed to be?
-fsm.bodyAnticipate.timeout = 20.0*speedFactor;
+fsm.bodyAnticipate.timeout = 3.0*speedFactor;
 fsm.bodyAnticipate.thFar = {0.4,0.1,15*math.pi/180};
 
 fsm.bodyGoaliePosition = {};
@@ -93,7 +101,6 @@ fsm.bodyOrbit.tLost = 3.0*speedFactor;
 --BodyPosition : Advanced chase-orbit
 --------------------------------------------------
 fsm.bodyPosition={};
-
 --Trajectory parameters
 fsm.bodyPosition.rTurn = 0.25;
 fsm.bodyPosition.rDist1 = 0.40;
@@ -101,26 +108,21 @@ fsm.bodyPosition.rDist2 = 0.20;
 fsm.bodyPosition.rTurn2 = 0.08;
 fsm.bodyPosition.rOrbit = 0.60;
 
-
 --New params to reduce sidestepping
 --fsm.bodyPosition.rOrbit = 0.60;
 --fsm.bodyPosition.rDist1 = 0.40;
 --fsm.bodyPosition.rDist2 = 0.25;
 
-
 fsm.bodyPosition.rClose = 0.35;   --tse
 --fsm.bodyPosition.rClose = 0.50;
 fsm.bodyPosition.thClose = {0.15,0.15,10*math.pi/180};   --tse
 --fsm.bodyPosition.thClose = {0.45,0.45,20*math.pi/180};
-
 fsm.bodyPosition.tLost =  5.0*speedFactor;
 fsm.bodyPosition.timeout = 30*speedFactor;
 
 --Velocity generation parameters
-
 --Slow speed
 fsm.bodyPosition.maxStep1 = 0.03;
-
 --Medium speed
 fsm.bodyPosition.maxStep2 = 0.04;
 --fsm.bodyPosition.rVel2 = 0.5;
@@ -147,25 +149,19 @@ fsm.bodyApproach.timeout = 10.0*speedFactor;
 fsm.bodyApproach.rFar = 0.45; --Max ball distance    --tse
 --fsm.bodyApproach.rFar = 0.80; --Max ball distance
 fsm.bodyApproach.tLost = 3.0*speedFactor;--ball detection timeout
-
 fsm.bodyApproach.aThresholdTurn = 7*math.pi/180;
 fsm.bodyApproach.aThresholdTurnGoalie = 30*math.pi/180;
-
 --x and y target position for stationary straight kick
 fsm.bodyApproach.xTarget11={-0.10, 0.09, 0.12}; --min, target, max
 fsm.bodyApproach.yTarget11={0.03, 0.05, 0.10}; --min, target ,max
-
 --x and y target position for stationary kick to left
 fsm.bodyApproach.xTarget12={0, 0.13,0.15}; --min, target, max
 fsm.bodyApproach.yTarget12={-0.005, 0.01, 0.05}; --min, target ,max
-
 --Target position for straight walkkick
 fsm.bodyApproach.xTarget21={0, 0.19,0.21}; --min, target, max
 fsm.bodyApproach.yTarget21={0.020, 0.035, 0.050}; --min, target ,max
-
 --Target position for side walkkick to left
 --fsm.bodyApproach.xTarget22={0, 0.16,0.19}; --min, target, max
-
 --shorter walking sidekick
 fsm.bodyApproach.xTarget22={0, 0.12,0.14}; --min, target, max
 fsm.bodyApproach.yTarget22={0.000, 0.015, 0.030}; --min, target ,max
@@ -177,38 +173,30 @@ fsm.bodyApproach.yTarget22={0.000, 0.015, 0.030}; --min, target ,max
 --BodyKick : Stationary Kick
 --------------------------------------------------
 fsm.bodyKick={};
-
 --initial wait
 fsm.bodyKick.tStartWait = 0.5;
 fsm.bodyKick.tStartWaitMax = 1.0;
 fsm.bodyKick.thGyroMag = 100;
-
 --Longer wait (until we set gyro values correctly)
 fsm.bodyKick.tStartWait = 1.0;
 fsm.bodyKick.tStartWaitMax = 1.5;
-
-
-
 fsm.bodyKick.thGyroMag = 10;
 fsm.bodyKick.tStartWait = 0.2;
 fsm.bodyKick.tStartWaitMax = 1.0;
-
-
-
 --ball position checking params
 fsm.bodyKick.kickTargetFront = {0.09,0.05};
-
 --For kicking to the left
 fsm.bodyKick.kickTargetSide = {0.12,0.03};
 fsm.bodyKick.kickTh = {0.05,0.05};
-
 --delay for camera following the ball
 fsm.bodyKick.tFollowDelay = 2.2;
+
 --------------------------------------------------
 --BodyWalkKick : Dynamic Kick
 --------------------------------------------------
 fsm.bodyWalkKick={};
 fsm.bodyWalkKick.timeout = 2.0*speedFactor;
+
 --------------------------------------------------
 --BodyGotoCenter : Going to center when ball is lost
 --------------------------------------------------
@@ -290,9 +278,12 @@ fsm.headLookGoal.yawSweep = 60*math.pi/180;		--tse
 fsm.headLookGoal.tScan = 1.0*speedFactor;
 fsm.headLookGoal.minDist = 0.35;--If ball is closer than this,don'tsweep
 
-
 --------------------------------------------------
 --HeadSweep: Look around to find the goal
 --------------------------------------------------
 fsm.headSweep={};
 fsm.headSweep.tScan=1.0*speedFactor;
+
+return {
+  fsm = fsm,
+};

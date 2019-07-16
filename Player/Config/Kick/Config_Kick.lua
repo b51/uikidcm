@@ -1,12 +1,9 @@
-module(..., package.seeall);
 require('vector')
-
 --Kick parameters
-
-kick={};
+local kick={};
 
 --Imu feedback parameters, alpha / gain / deadband / max
-gyroFactor=0.273 *math.pi/300/1024;  --For degree per second unit
+local gyroFactor=0.273 *math.pi/300/1024;  --For degree per second unit
 
 --Kick stabilization vallues
 
@@ -81,7 +78,6 @@ kick.def["kickSideRight"]={
  },
 }
 
-
 -------------------------------------------
 --Slow frontkick for test localization
 -------------------------------------------
@@ -116,7 +112,6 @@ kick.kickRight={
 
 -- End slow frontkick
 
-
 --Weaker sidekick (for obstacle)
 
 kick.kickSlowSideLeft={
@@ -135,16 +130,6 @@ kick.kickSlowSideRight={
   {6, 0.6, {0.00, 0.00, 0}},--Stabilize
 }
 
-
-
-
-
-
-
-
-
-
-
 kick.kickBackLeft={
 
   {1, 1.0, {-0.010,0,0} ,0.295, 20*math.pi/180         }, --Stabilize
@@ -160,7 +145,6 @@ kick.kickBackLeft={
   {1, 0.6, {0.010, -0.020, 0},kick.bodyHeight},--Stabilize
 }
 
-
 kick.kickBackRight={
   {1, 0.6, {-0,0,0}          }, --Stabilize
   {1, 0.8, {-0,0.055,0}   ,0.305       }, --COM slide
@@ -174,11 +158,6 @@ kick.kickBackRight={
   {1, 0.6, {0.010, 0.020, 0}},--COM slide
   {1, 0.6, {0.010, 0.020, 0},kick.bodyHeight},--Stabilize
 }
-
-
-
-
-
 
 kick.def["PassForwardLeft"]={
    supportLeg = 1, --Right support
@@ -232,7 +211,6 @@ kick.def["PassForwardRight2"]={
   },
 }
 
-
 kick.def["PassForwardLeft"]={
    supportLeg = 1, --Right support
    def = {
@@ -259,7 +237,6 @@ kick.def["PassForwardRight"]={
   },
 }
 
-
 kick.def["PassForwardLeft2"]={
    supportLeg = 1, --Right support
    def = {
@@ -285,3 +262,7 @@ kick.def["PassForwardRight2"]={
     {6, 0.6, {0.000, 0.01, 0}},--Stabilize
   },
 }
+
+return {
+  kick = kick,
+};

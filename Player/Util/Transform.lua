@@ -1,10 +1,9 @@
-module(..., package.seeall);
+local vector = require('vector');
 
-require('vector');
+local mt = {};
+-- TODO(b51): use cartographer rigid_transform to replace this
 
-mt = {};
-
-function inv(a)
+local inv = function(a)
   local t = {};
   local r = {};
   local p = {};
@@ -19,7 +18,7 @@ function inv(a)
   return setmetatable(t,mt);
 end
 
-function eye()
+local eye = function()
   local t = {};
   t[1] = vector.new({1, 0, 0, 0});
   t[2] = vector.new({0, 1, 0, 0});
@@ -28,7 +27,7 @@ function eye()
   return setmetatable(t, mt);
 end
 
-function rotZ(a)
+local rotZ = function(a)
   local ca = math.cos(a);
   local sa = math.sin(a);
   local t = {};
@@ -39,7 +38,7 @@ function rotZ(a)
   return setmetatable(t, mt);
 end
 
-function rotY(a)
+local rotY = function(a)
   local ca = math.cos(a);
   local sa = math.sin(a);
   local t = {};
@@ -50,7 +49,7 @@ function rotY(a)
   return setmetatable(t, mt);
 end
 
-function rotX(a)
+local rotX = function(a)
   local ca = math.cos(a);
   local sa = math.sin(a);
   local t = {};
@@ -61,7 +60,7 @@ function rotX(a)
   return setmetatable(t, mt);
 end
 
-function trans(dx, dy, dz)
+local trans = function(dx, dy, dz)
   local t = {};
   t[1] = vector.new({1, 0, 0, dx});
   t[2] = vector.new({0, 1, 0, dy});
@@ -94,23 +93,7 @@ mt.__mul = function(t1, t2)
   end
 end
 
--- From NSL
--- I think this is wrong...
---http://www.gregslabaugh.name/publications/euler.pdf
-
---[[
-function getEuler(t)
---returns euler angle (X,Y,Z) from rotation matrix
---Rotation sequence is Roll-Pitch-Yaw (rotY-rotX-rotZ)
-   local e=vector.zeros(3);
-   e[1]=-math.asin(t[3][2]);
-   e[2]=-math.atan2(-t[3][1],t[3][3]);
-   e[3]=-math.atan2(-t[1][2],t[2][2]);
-   return e;
-end
---]]
-
-function getRPY(t)
+local getRYP = function(t)
   -- http://planning.cs.uiuc.edu/node103.html
   -- returns [roll, pitch, yaw] vector
   local e=vector.zeros(3);
@@ -119,3 +102,13 @@ function getRPY(t)
   e[3]=math.atan2(t[2][1],t[1][1]); -- Yaw
   return e;
 end
+
+return{
+  inv = inv,
+  eye = eye,
+  rotX = rotX,
+  rotY = rotY,
+  rotZ = rotZ,
+  trans = trans,
+  getRYP = getRYP,
+};

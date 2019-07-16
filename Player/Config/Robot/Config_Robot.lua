@@ -1,9 +1,8 @@
-module(..., package.seeall);
-require('vector')
-require('unix')
+local vector = require('vector')
+local unix = require('unix')
 
 --Sit/stand stance parameters
-stance={};
+local stance = {};
 
 stance.footXSit = -0.05;
 stance.bodyTiltSit = -5*math.pi/180;
@@ -42,9 +41,8 @@ stance.initangle = vector.new({
   105, -30, -45,
 })*math.pi/180;
 
-
 -- Head Parameters
-head = {};
+local head = {};
 head.camOffsetZ = 0.37;
 head.pitchMin = -55*math.pi/180;
 head.pitchMax = 68*math.pi/180;
@@ -58,12 +56,12 @@ head.neckZ=0.04; --From CoM to neck joint		--tse
 head.neckX=0.001; --From CoM to neck joint	        --tse
 
 --IMU bias/sensitivity parameters
-gyro={};
+local gyro = {};
 gyro.rpy={3,2,1}	--axis remap, rotation in x,y,z
-acc={};
-acc.xyz={2,1,3};	--axis remap
+local acc = {};
+acc.xyz = {2,1,3};	--axis remap
 
-angle={};
+local angle = {};
 angle.gMax = 1.2;
 angle.gMin= 0.8;
 angle.accFactor=0.2;
@@ -78,7 +76,7 @@ acc.sensitivity=vector.new({1,-1,-1})/128; --Spec
 acc.zero=vector.new({512,512,512}); --Spec
 
 --Servo parameters
-servo={}
+local servo = {}
 servo.idMap={
   19,20,		--Head
   2,4,6,		--LArm
@@ -99,7 +97,10 @@ servo.dirReverse={
 ----------------------------------------------
 servo.armBias = {0,0,0,0,0,0}; --in degree
 servo.pid =1;  --Default new firmware
+
 local robotName = unix.gethostname();
+
+--[[
 require('calibration');
 if calibration.cal and calibration.cal[robotName] then
   if calibration.cal[robotName].pid then
@@ -111,8 +112,8 @@ if calibration.cal and calibration.cal[robotName] then
 end
 -----------------------------------------------
 
-nJoint = #servo.idMap;
-if servo.pid ==0 then -- For old firmware with 12-bit precision
+local nJoint = #servo.idMap;
+if servo.pid == 0 then -- For old firmware with 12-bit precision
   print(robotName.." has 12-bit firmware")
   servo.steps=vector.ones(nJoint)*1024;
   servo.moveRange=vector.ones(nJoint)*300*math.pi/180;
@@ -131,6 +132,7 @@ if servo.pid ==0 then -- For old firmware with 12-bit precision
   };
 
 else -- For new, PID firmware with 14-bit precision
+--]]
   print(robotName.." has 14-bit firmware")
   servo.steps=vector.ones(nJoint)*4096;
   servo.posZero={
@@ -151,8 +153,13 @@ else -- For new, PID firmware with 14-bit precision
   };
 
   servo.moveRange=vector.ones(nJoint)*360*math.pi/180;
-  --[[ For aux
-  servo.moveRange[21] = 300;
-  servo.steps[21] = 1024;
-  --]]
-end
+--end
+
+return {
+ stance = stance,
+ head = head,
+ gyro = gyro,
+ acc = acc,
+ angle = angle,
+ servo = servo,
+};

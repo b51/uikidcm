@@ -1,12 +1,9 @@
-module(..., package.seeall);
-
+local cal={}
 ---------------------------------------------
 -- Automatically generated calibration data
 ---------------------------------------------
-cal={}
 
 --Initial values for each robots
-
 cal["betty"]={
   servoBias={0,0,0,0,0,0, 0,0,0,0,0,0},
   footXComp = 0,
@@ -87,26 +84,6 @@ cal["sally"]={
   armBias={0,0,0,0,0,0},
   pid = 1, --NEW FIRMWARE
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 cal["darwin1"]={
   servoBias={0,0,0,0,0,0, 0,0,0,0,0,0},
@@ -208,8 +185,6 @@ cal["darwin10"]={
   pid = 1, --NEW FIRMWARE
 };
 
-
-
 ------------------------------------------------------------
 --Auto-appended calibration settings
 ------------------------------------------------------------
@@ -270,6 +245,6 @@ cal["sally"].servoBias={-33,-22,-6,0,29,-8,0,0,-4,0,0,0,};
 cal["sally"].footXComp=0.005;
 cal["sally"].kickXComp=0.000;
 
--- Updated date: Sun Jan  1 12:40:05 2012
-
--- Updated date: Sun Jan  1 12:47:40 2012
+return {
+  cal = cal,
+};

@@ -25,7 +25,6 @@ require('mcm')
 require('Body')
 require('Vision')
 require('World')
-require('Detection')
 comm_inited = false;
 vcm.set_camera_teambroadcast(1);
 vcm.set_camera_broadcast(0);
@@ -85,11 +84,8 @@ function update()
     World.update_vision();
 
     if (nProcessedImages % 200 == 0) then
-      if not webots then
-        print('fps: '..(200 / (unix.time() - tUpdate)));
-        Detection.print_time();
-        tUpdate = unix.time();
-      end
+      print('fps: '..(200 / (unix.time() - tUpdate)));
+      tUpdate = unix.time();
     end
   end
 

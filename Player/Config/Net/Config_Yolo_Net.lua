@@ -1,12 +1,13 @@
-module(..., package.seeall);
+local unix = require('unix');
+-- Yolo net cfg, weights and parameters
+local net = {};
 
-function get_data_path()
+local get_data_path = function()
   local cwd = unix.getcwd();
   cwd = cwd.."/Data/";
   return cwd;
 end
 
-net = {};
 net.width = 416
 net.height = 416
 net.ratio_fixed = 1
@@ -17,3 +18,7 @@ net.model = get_data_path().."fb_yolo3_tiny_3.2.weights"
 net.object_thresh = 0.2
 net.nms_thresh = 0.4
 net.hier_thresh = 0.5
+
+return {
+  net = net,
+};

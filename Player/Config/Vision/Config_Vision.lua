@@ -1,8 +1,5 @@
-module(..., package.seeall);
-
 -- Vision Parameters
-
-color = {};
+local color = {};
 color.orange = 1;
 color.yellow = 2;
 color.cyan = 4;
@@ -10,7 +7,7 @@ color.field = 8;
 color.white = 16;
 color.goal_and_line = 18;
 
-vision = {};
+local vision = {};
 vision.ballColor = color.orange;
 vision.goal1Color = color.yellow;
 vision.goal2Color = color.cyan;
@@ -51,7 +48,6 @@ vision.enable_lut_for_obstacle = 0;
 -- use this to enable detection print_time
 vision.print_time = 1;
 
-
 ----------------------------
 --OP specific
 ----------------------------
@@ -78,7 +74,6 @@ vision.ball.check_for_ground = 1;
 
 vision.ball.check_for_field = 1;
 vision.ball.field_margin = 2.0;
-
 
 vision.goal={};
 vision.goal.th_min_color_count=100;
@@ -117,8 +112,6 @@ vision.landmark.th_arearatio = 4;
 vision.landmark.th_distratio = 2;
 vision.landmark.th_angle = 45*math.pi/180;
 
-
-
 vision.line={};
 vision.line.max_width = 10;
 vision.line.connect_th = 1.4;
@@ -144,3 +137,8 @@ vision.corner.min_center_dist = 1.5;
 
 vision.ball.th_headAngle = 30*math.pi/180;  --Minimum angle of headAngle[2].
 vision.use_arbitrary_ball = true;
+
+return {
+  color = color,
+  vision = vision,
+};

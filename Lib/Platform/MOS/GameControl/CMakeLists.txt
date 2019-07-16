@@ -18,3 +18,7 @@ set_target_properties(GameControlReceiver PROPERTIES PREFIX "")
 install(TARGETS GameControlReceiver
   LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}
 )
+
+install(FILES GameControl.lua
+  DESTINATION ${CMAKE_INSTALL_PREFIX}
+)

@@ -1,8 +1,7 @@
-module(..., package.seeall); require('vector')
-require 'unix'
+local unix = require('unix')
+local vector = require('vector')
 -- Walk Parameters
-
-walk = {};
+local walk = {};
 
 ----------------------------------------------
 -- Stance and velocity limit values
@@ -61,9 +60,11 @@ walk.spreadComp = 0.015;
 --------------------------------------------------------------
 --Imu feedback parameters, alpha / gain / deadband / max
 --------------------------------------------------------------
-gyroFactor = 0.273*math.pi/180 * 300 / 1024; --dps to rad/s conversion
+local gyroFactor = 0.273*math.pi/180 * 300 / 1024; --dps to rad/s conversion
 
-if Config.servo.pid==1 then
+-- TODO(b51): This walk file not fit MOS, should remove
+--[[
+if Config_Robot.servo.pid==1 then
   walk.ankleImuParamX={0.5,0.3*gyroFactor,
                         1*math.pi/180, 25*math.pi/180};
   walk.kneeImuParamX={0.5,1.2*gyroFactor,
@@ -80,13 +81,14 @@ if Config.servo.pid==1 then
   walk.armImuParamY={0,0*gyroFactor, 20*math.pi/180, 45*math.pi/180};
 
 else
+--]]
   walk.ankleImuParamX={0.9,0.3*gyroFactor, 0, 25*math.pi/180};
   walk.kneeImuParamX={0.9,1.2*gyroFactor, 0, 25*math.pi/180};
   walk.ankleImuParamY={0.9,0.7*gyroFactor, 0, 25*math.pi/180};
   walk.hipImuParamY={0.9,0.3*gyroFactor, 0, 25*math.pi/180};
   walk.armImuParamX={0.3,10*gyroFactor, 20*math.pi/180, 45*math.pi/180};
   walk.armImuParamY={0.3,10*gyroFactor, 20*math.pi/180, 45*math.pi/180};
-end
+--end
 
 --------------------------------------------
 -- Support point modulation values
@@ -149,7 +151,6 @@ walk.walkKickDef["FrontRight2"]={
   {walk.tStep, 1, 1, 0.035 , {0,0}, 0.5, {0.04,0,0} },
 }
 
-
 --[[
 walk.walkKickDef["SideLeft"]={
   {0.30, 1, 1, 0.035 , {0,0}, 0.4, {0.04,0.04,0} },
@@ -174,7 +175,6 @@ walk.walkKickDef["SideRight"]={
   {0.25, 1, 0, 0.035 , {0.01,0},0.5,  {0,0,0} },
 }
 
-
 --With more sweep
 walk.walkKickDef["SideLeft"]={
   {0.30, 1, 1, 0.035 , {0,0}, 0.4, {0.0,0.04,10*math.pi/180} },
@@ -188,11 +188,6 @@ walk.walkKickDef["SideRight"]={
 	{0.06,0.05,20*math.pi/180},{0.09,-0.005,0}},
   {0.25, 1, 0, 0.035 , {0.01,0},0.5,  {0,0,0} },
 }
-
-
-
-
-
 
 walk.walkKickPh=0.5;
 
@@ -215,6 +210,7 @@ local robotName = unix.gethostname();
 local robotID = 0;
 
 --Load robot specific calibration value
+--[[
 require('calibration');
 if calibration.cal and calibration.cal[robotName] then
   walk.servoBias = calibration.cal[robotName].servoBias;
@@ -224,19 +220,7 @@ if calibration.cal and calibration.cal[robotName] then
   walk.headPitchBiasComp = calibration.cal[robotName].headPitchBiasComp;
   print(robotName.." walk parameters loaded")
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
+--]]
 
 ------------------------------------------------
 -- Upper body motion keyframes
@@ -276,7 +260,6 @@ walk.motionDef["point"]={
         {0,20*math.pi/180,0}}
 }
 
-
 --Two arm punching up
 walk.motionDef["hurray2"]={
  {0.5,{40*math.pi/180, 20*math.pi/180, -140*math.pi/180},
@@ -304,7 +287,6 @@ walk.motionDef["hurray2"]={
         {90*math.pi/180, -8*math.pi/180,-40*math.pi/180}}
 }
 
-
 --Two arm side swing
 walk.motionDef["swing"]={
  {0.5,{90*math.pi/180, 90*math.pi/180, -40*math.pi/180},
@@ -323,9 +305,6 @@ walk.motionDef["swing"]={
         {90*math.pi/180, -8*math.pi/180,-40*math.pi/180},
         {0*math.pi/180,20*math.pi/180,0*math.pi/180}}
 }
-
-
-
 
 --One-Two Punching
 walk.motionDef["2punch"]={
@@ -358,3 +337,4 @@ walk.motionDef["2punch"]={
         {90*math.pi/180, -8*math.pi/180,-40*math.pi/180},
         {0*math.pi/180,20*math.pi/180,0*math.pi/180}}
 }
+return { walk = walk, };

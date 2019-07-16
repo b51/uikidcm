@@ -3,14 +3,15 @@ module(..., package.seeall);
 require('Config');	-- For Ball and Goal Size
 require('ImageProc');
 require('HeadTransform');	-- For Projection
-require('Vision');
 require('Body');
 require('vcm');
 require('unix');
 
 -- Dependency
+require('DLDetection');
 require('detectBall');
 require('detectGoal');
+--[[
 require('detectLine');
 require('detectCorner');
 if not string.find(Config.platform.name,'Nao') then
@@ -20,16 +21,10 @@ end
 require('detectSpot');
 require('detectFreespace');
 require('detectBoundary');
---[[
-require('detectObstacles');
-require('detectEyes');
-require('detectStretcher');
---]]
-
 
 --for quick test
 require('detectRobot');
-
+--]]
 
 -- Define Color
 colorOrange = Config.color.orange;
@@ -57,33 +52,29 @@ enable_timeprinting = Config.vision.print_time;
 use_arbitrary_ball = Config.vision.use_arbitrary_ball or false;
 
 tstart = unix.time();
-Tball = 0;
-TgoalYellow = 0;
-TgoalCyan = 0;
-Tline = 0;
-Tcorner = 0;
-TlandmarkCyan = 0;
-TlandmarkYellow = 0;
-Trobot = 0;
-Tfreespace = 0;
-Tboundary = 0;
+Tdetection = 0;
+
+camera = {};
+camera.width = Camera.get_width();
+camera.height = Camera.get_height();
+-- net
+net = {};
+net.width = Config.net.width;
+net.height = Config.net.height;
+net.ratio_fixed = Config.net.ratio_fixed;
+net.prototxt = Config.net.prototxt;
+net.model = Config.net.model;
+net.object_thresh = Config.net.object_thresh
+net.nms_thresh = Config.net.nms_thresh
+net.hier_thresh = Config.net.hier_thresh
 
 function entry()
   -- Initiate Detection
   ball = {};
   ball.detect = 0;
 
-  ballYellow={};
-  ballYellow.detect=0;
-
-  ballCyan={};
-  ballCyan.detect=0;
-
-  goalYellow = {};
-  goalYellow.detect = 0;
-
-  goalCyan = {};
-  goalCyan.detect = 0;
+  goal = {};
+  goal.detect = 0;
 
   landmarkYellow = {};
   landmarkYellow.detect = 0;
@@ -109,53 +100,57 @@ function entry()
   boundary={};
   boundary.detect=0;
 
-
+  DLDetection.detector_yolo_init(net.prototxt,
+                                 net.model,
+                                 net.object_thresh,
+                                 net.nms_thresh,
+                                 net.hier_thresh);
 end
 
 
 
 function update()
-
-  if( Config.gametype == "stretcher" ) then
-    ball = detectEyes.detect(colorOrange);
-    return;
-  end
-
   -- ball detector
   tstart = unix.time();
-	if(use_arbitrary_ball) then
-		ball = detectBall.detect("arbitrary");
-	else
-		ball = detectBall.detect(colorOrange);
-	end
-  Tball = unix.time() - tstart;
-
-  -- goal detector
-  if use_point_goal == 1 then
-    ballYellow = detectBall.detect(colorYellow);
-    ballCyan = detectBall.detect(colorCyan);
-  else
-    goalYellow.detect=0;
-    goalCyan.detect=0;
-    tstart = unix.time();
-	  if(use_arbitrary_ball) then
-      goalYellow = detectGoal.detect(colorGoalAndLine);
-	  else
-      goalYellow = detectGoal.detect(colorWhite);
-    end
-    TgoalYellow = unix.time() - tstart;
-
-    if yellowGoals == 0 then
-      tstart = unix.time();
-	  if(use_arbitrary_ball) then
-      goalCyan = detectGoal.detect(colorGoalAndLine);
-	  else
-      goalCyan = detectGoal.detect(colorWhite);
-    end
-      TgoalCyan = unix.time() - tstart;
+  local show_image = 0;
+  -- bboxes_detect return values includes:
+  --      frame_id,   image frame_id, increase by one
+  --      score,      score of probabilities
+  --      x, y, w, h, bounding box
+  local detection = DLDetection.bboxes_detect(vcm.get_image_rzdrgb(),
+                                              camera.width,
+                                              camera.height,
+                                              net.width,
+                                              net.height,
+                                              show_image);
+  Tdetection = unix.time() - tstart;
+  --[[
+  print("DLDetection time: "..Tdetection);
+  for k, v in pairs(detection) do
+    print(k..":")
+    for m, n in pairs(v) do
+      print("    "..m..":")
+      for o, p in pairs(n) do
+        print("        "..o..": "..p)
+      end
     end
   end
+  --]]
 
+  ball = detectBall.detect(detection.balls);
+  --[[
+  for k, v in pairs(ball) do
+    print(k.." : ", v)
+  end
+  --]]
+  goal = detectGoal.detect(detection.posts);
+  --[[
+  for k, v in pairs(goal) do
+    print(k.." : ", v)
+  end
+  --]]
+
+  --[[
   -- line detection
   if enableLine == 1 then
     tstart = unix.time();
@@ -201,32 +196,31 @@ function update()
     detectRobot.detect();
     Trobot = unix.time() - tstart;
   end
+  --]]
+
   update_shm();
 end
 
 function update_shm()
   vcm.set_ball_detect(ball.detect);
   if (ball.detect == 1) then
-    vcm.set_ball_centroid(ball.propsA.centroid);
-    vcm.set_ball_axisMajor(ball.propsA.axisMajor);
-    vcm.set_ball_axisMinor(ball.propsA.axisMinor);
+    vcm.set_ball_score(ball.score);
+    vcm.set_ball_x(ball.x);
+    vcm.set_ball_y(ball.y);
+    vcm.set_ball_w(ball.w);
+    vcm.set_ball_h(ball.h);
     vcm.set_ball_v(ball.v);
     vcm.set_ball_r(ball.r);
     vcm.set_ball_dr(ball.dr);
     vcm.set_ball_da(ball.da);
   end
 
-  vcm.set_goal_detect(math.max(goalCyan.detect, goalYellow.detect));
-  if (goalCyan.detect == 1) then
+  vcm.set_goal_detect(goal.detect);
+  if (goal.detect == 1) then
     vcm.set_goal_color(colorCyan);
-    vcm.set_goal_type(goalCyan.type);
-    vcm.set_goal_v1(goalCyan.v[1]);
-    vcm.set_goal_v2(goalCyan.v[2]);
-  elseif (goalYellow.detect == 1) then
-    vcm.set_goal_color(colorYellow);
-    vcm.set_goal_type(goalYellow.type);
-    vcm.set_goal_v1(goalYellow.v[1]);
-    vcm.set_goal_v2(goalYellow.v[2]);
+    vcm.set_goal_type(goal.type);
+    vcm.set_goal_v1(goal.v[1]);
+    vcm.set_goal_v2(goal.v[2]);
   end
 
   -- midfield landmark detection
@@ -350,47 +344,7 @@ end
 
 function print_time()
   if (enable_timeprinting == 1) then
-    if (ball.detect == 1) then
-      print ('Ball detected')
-    end
-    print ('ball detecting time:            '..Tball..'\n')
-    if (goalYellow.detect == 1) then
-      print ('Goal detected')
-    end
-    print ('yellow goal detecting time:     '..TgoalYellow..'\n')
-    if (enableLine == 1) then
-      if (line.detect == 1) then
-        print (line.nLines..'lines detected')
-      end
-      print ('line detecting time:            '..Tline..'\n')
-      if (corner.detect == 1) then
-        print ('corner detected')
-      end
-      print ('corner detecting time:          '..Tcorner..'\n')
-    end
-    if (enableMidfieldLandmark == 1) then
-      if (landmarkCyan.detect == 1) then
-        print ('landmarkCyan detected')
-      end
-      print ('cyan landmark detecting time:   '..TlandmarkCyan)
-      if (landmarkYellow.detect == 1) then
-        print ('landmarkYellow detected')
-      end
-      print ('yellow landmark detecting time: '..TlandmarkYellow..'\n')
-    end
-   if (enable_freespace_detection == 1) then
-      if (freespace.detect == 1) then
-        print ('freespace detected')
-      end
-      print ('freespace detecting time:       '..Tfreespace..'\n')
-      if (boundary.detect == 1) then
-        print ('boundary detected')
-      end
-      print ('boundary detecting time:        '..Tboundary..'\n')
-    end
-    if (enalbeRobot == 1) then
-      print ('robot detecting time:           '..Trobot..'\n')
-    end
+    print ('objects detection time:           '..Tdetection..'\n')
   end
 end
 

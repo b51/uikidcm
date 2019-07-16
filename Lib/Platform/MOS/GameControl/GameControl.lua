@@ -4,7 +4,7 @@ require('Config')
 require('util')
 require('gcm')
 require('Speak')
-receiver = require('OPGameControlReceiver')
+receiver = require('GameControlReceiver')
 
 teamNumber = Config.game.teamNumber;
 playerID = gcm.get_team_player_id();

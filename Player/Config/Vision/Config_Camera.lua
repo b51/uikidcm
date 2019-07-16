@@ -1,12 +1,5 @@
-module(..., package.seeall);
-require('vector')
-require('Config')
---require('vcm')
-
 -- Camera Parameters
-use_arbitrary_ball = Config.vision.use_arbitrary_ball or false;
-
-camera = {};
+local camera = {};
 camera.ncamera = 1;
 camera.switchFreq = 0; --unused for OP
 
@@ -42,9 +35,6 @@ camera.param[7] = {key='white balance temperature', val={4600}};
 camera.param[8] = {key='sharpness',     val={3}};
 camera.param[9] = {key='exposure (absolute)',      val={166}};
 
-if use_arbitrary_ball then
-  camera.lut_file = 'gateline0318.raw';
-  camera.lut_ball_file = 'FieldandBall0318.raw';
-else
-  camera.lut_file = 'goal_test.raw';
-end
+return {
+  camera = camera;
+};

@@ -1,31 +1,27 @@
---Darwin OP Commmanager for NSL 2011
-module(..., package.seeall);
-
 --Added for Hardware config file
-local cwd = unix.getcwd();
-package.path = cwd.."/../Config/?.lua;"..package.path;
-require('DspPacket');
-require('unix');
-require('shm');
-require('carray');
-require('vector');
-require('Config');
-require('Transform')
+local cwd = os.getenv('PWD');
 
-dirReverse = Config.servo.dirReverse;
-posZero=Config.servo.posZero;
-gyrZero=Config.gyro.zero;
-legBias=Config.walk.servoBias;
-armBias=Config.servo.armBias;
-idMap = Config.servo.idMap;
-nJoint = #idMap;
-scale={};
-sensortmp={};
+local DspPacket = require('DspPacket');
+local unix = require('unix');
+local shm = require('shm');
+local carray = require('carray');
+local vector = require('vector');
+local Config = require('Config');
+local Transform = require('Transform');
 
-
+local dirReverse = Config.servo.dirReverse;
+local posZero=Config.servo.posZero;
+local gyrZero=Config.gyro.zero;
+local legBias=Config.walk.servoBias;
+local armBias=Config.servo.armBias;
+local idMap = Config.servo.idMap;
+local nJoint = #idMap;
+local scale={};
+local sensortmp={};
+local actuator = {};
 
 -- Setup shared memory
-function shm_init()
+local shm_init = function()
   shm.destroy('dcmSensor');
   sensorShm = shm.new('dcmSensor');
   sensorShm.time = vector.zeros(1);
@@ -49,17 +45,14 @@ function shm_init()
   sensorShm.headpos = vector.zeros(2);--123456头部实际转交
   sensorShm.bodypos = vector.zeros(7);----123456
 
-
-
   sensortmp.odometry=vector.zeros(3);
   sensortmp.velocity=vector.zeros(3);
   sensortmp.headpos=vector.zeros(2);
   sensortmp.bodypos=vector.zeros(7);
   sensortmp.imuAngle = vector.zeros(3);
-
   shm.destroy('dcmActuator');
+
   actuatorShm = shm.new('dcmActuator');
-  print(nJoint)
   actuatorShm.command = vector.zeros(nJoint);
   actuatorShm.velocity = vector.zeros(nJoint);
   actuatorShm.hardness = vector.zeros(nJoint);
@@ -129,19 +122,15 @@ function shm_init()
   paratmpShm.velocity = vector.zeros(3);
   paratmpShm.headpos = vector.zeros(2);
   paratmpShm.gaitID = vector.zeros(2);
-
 end
 
-
-
 -- Setup CArray mappings into shared memory
-function carray_init()
+local carray_init = function()
   sensor = {};
   for k,v in sensorShm.next, sensorShm do
     sensor[k] = carray.cast(sensorShm:pointer(k));
   end
 
-  actuator = {};
   for k,v in actuatorShm.next, actuatorShm do
     actuator[k] = carray.cast(actuatorShm:pointer(k));
   end
@@ -170,7 +159,7 @@ end
   para.headpos[2]=0.03;
 end]]--
 
-function test_data()
+local test_data = function()
   para.velocity[1]=0.00;
   para.velocity[2]=0.00;
   para.velocity[3]=0.00;
@@ -181,23 +170,7 @@ function test_data()
   state.sensorEnable[1]=1;
 end
 
-function pass_data()
---[[
-  para.velocity[1]=para.velocity[1]*1000;
-  para.velocity[2]=para.velocity[2]*1000;
-  para.velocity[3]=para.velocity[3]*512;
-  para.headpos[1]=para.headpos[1]*512;
-  para.headpos[2]=para.headpos[2]*512;
-  ]]--
-  --print('cmd:',para.velocity[1],para.velocity[2],para.velocity[3]);
-  DspPacket.pass_state(state);
-  stateCtrl();
-  paraCtrl();
-  DspPacket.pass_para(paratmp);
-  --DspPacket.pass_para(para);
-end
-function stateCtrl()
-
+local stateCtrl = function()
   if(state.specialValid[1]==1)
      then state.specialGaitPending[1]=1;
   end
@@ -217,7 +190,8 @@ function stateCtrl()
   state.walkkick[1]=0;
   state.walkkick[2]=0;
 end
-function paraCtrl()
+
+local paraCtrl = function()
   paratmp.velocity[1]=para.velocity[1]*1000;
   paratmp.velocity[2]=para.velocity[2]*1000;
   paratmp.velocity[3]=para.velocity[3]*512;
@@ -226,7 +200,24 @@ function paraCtrl()
   paratmp.gaitID[1]=para.gaitID[1];
   paratmp.gaitID[2]=para.gaitID[2];
 end
-function receive_data()
+
+local pass_data = function()
+--[[
+  para.velocity[1]=para.velocity[1]*1000;
+  para.velocity[2]=para.velocity[2]*1000;
+  para.velocity[3]=para.velocity[3]*512;
+  para.headpos[1]=para.headpos[1]*512;
+  para.headpos[2]=para.headpos[2]*512;
+  ]]--
+  --print('cmd:',para.velocity[1],para.velocity[2],para.velocity[3]);
+  DspPacket.pass_state(state);
+  stateCtrl();
+  paraCtrl();
+  DspPacket.pass_para(paratmp);
+  --DspPacket.pass_para(para);
+end
+
+local receive_data = function()
   state.specialGaitPending[1],state.gaitResetPending[1],state.resetOdometerPending[1],state.walkkickPending[1]=DspPacket.get_pendingstate();
 
   --print(DspPacket.get_velocity());
@@ -242,7 +233,8 @@ function receive_data()
 
   sensortrans();
 end
-function sensortrans()
+
+local sensortrans = function()
   sensor.velocity[1]=sensortmp.velocity[1]/1000;
   sensor.velocity[2]=sensortmp.velocity[2]/1000;
   sensor.velocity[3]=sensortmp.velocity[3]/512;
@@ -263,7 +255,7 @@ function sensortrans()
   sensor.imuAngle[3] = sensortmp.imuAngle[3]/512;
 end
 
-function entry()
+local entry = function()
 --  print("Initializ-------------------------------------------------");
   unix.usleep(200000);
   shm_init();
@@ -278,7 +270,7 @@ function entry()
 end
 
 
-function update()
+local update = function()
 -- test_data();
 -- print("pass_data_to_dsp-------------------------------------------");
  pass_data();
@@ -290,6 +282,15 @@ function update()
 -- unix.usleep(300000);
 end
 
-function exit()
+local exit = function()
  DspPacket.dsp_exit();
 end
+
+return {
+  -- functions
+  entry = entry,
+  update = update,
+  exit = exit,
+  -- variables
+  actuator = actuator,
+}

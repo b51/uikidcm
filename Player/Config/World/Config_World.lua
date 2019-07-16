@@ -1,9 +1,6 @@
-module(..., package.seeall);
 require('vector')
-
 --Localization parameters
-
-world={};
+local world={};
 world.n = 250;  --tse
 world.xLineBoundary = 4.5;
 world.yLineBoundary = 3.0;
@@ -139,11 +136,11 @@ world.use_new_goalposts=1;
 world.use_same_colored_goal = 1;
 
 -- Occupancy Map parameters
-occ = {};
+local occ = {};
 occ.mapsize = 50;
 occ.robot_pos = {occ.mapsize / 2, occ.mapsize * 4 / 5};
 
-
-
 --Use line information to fix angle
 world.use_line_angles = 1;
+
+return { world = world, occ = occ, };

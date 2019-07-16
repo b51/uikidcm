@@ -1,27 +1,13 @@
-module(..., package.seeall);
-
-require("shm");
-require("util");
-require("vector");
-require('Config');
--- Enable Webots specific
-if (string.find(Config.platform.name,'Webots')) then
-  webots = true;
-end
+local shm = require("shm");
+local util = require("util");
+local vector = require("vector");
+local Config = require('Config');
 
 -- shared properties
-shared = {};
-shsize = {};
-
-processed_img_width = Config.camera.width;
-processed_img_height = Config.camera.height;
-if( webots ) then
-  processed_img_width = processed_img_width;
-  processed_img_height = processed_img_height;
-else
-  processed_img_width = processed_img_width / 2;
-  processed_img_height = processed_img_height / 2;
-end
+local shared = {};
+local shsize = {};
+local vcm = {};   -- make vcm as a global variable to avoid multi require
+vcm._NAME = "vcm";
 
 shared.camera = {};
 shared.camera.select = vector.zeros(1);
@@ -34,8 +20,6 @@ shared.camera.bodyTilt = vector.zeros(1);
 shared.camera.bodyHeight = vector.zeros(1);
 shared.camera.rollAngle = vector.zeros(1);--how much image is tilted
 
---Used for monitor to auto-switch yuyv mode
-shared.camera.yuyvType = vector.zeros(1);
 --Now we use shm to enable broadcasting from test_vision
 shared.camera.broadcast = vector.zeros(1);
 shared.camera.teambroadcast = vector.zeros(1);
@@ -46,50 +30,34 @@ shared.image.count = vector.zeros(1);
 shared.image.time = vector.zeros(1);
 shared.image.headAngles = vector.zeros(2);
 shared.image.fps = vector.zeros(1);
+-- TODO(b51): check horizon removable or not
 shared.image.horizonA = vector.zeros(1);
 shared.image.horizonB = vector.zeros(1);
 shared.image.horizonDir = vector.zeros(4); -- Angle of horizon line rotation
 
--- 2 bytes per pixel (32 bits describes 2 pixels)
-shared.image.yuyv = 2*Config.camera.width*Config.camera.height;
---Downsampled yuyv
-shared.image.yuyv2 = 2*Config.camera.width*Config.camera.height/2/2;
---Downsampled yuyv 2
-shared.image.yuyv3 = 2*Config.camera.width*Config.camera.height/4/4;
+-- 3 bytes per pixel (24 bits describes 1 pixels)
+shared.image.rgb = 3*Config.camera.width*Config.camera.height;
+shared.image.rzdrgb = 3*Config.net.width*Config.net.height;
+shared.image.save = vector.zeros(1);
 
 shared.image.width = vector.zeros(1);
 shared.image.height = vector.zeros(1);
 shared.image.scaleB = vector.zeros(1);
 
-shared.image.labelA = (processed_img_width)*(processed_img_height);
-shared.image.labelB = ((processed_img_width)/Config.vision.scaleB)*((processed_img_height)/Config.vision.scaleB);
---shared.image.labelA_obs = (processed_img_width)*(processed_img_height);
---shared.image.labelB_obs = ((processed_img_width)/Config.vision.scaleB)*((processed_img_height)/Config.vision.scaleB);
-
 -- calculate image shm size
-shsize.image = (shared.image.yuyv + shared.image.yuyv2+
-	shared.image.yuyv3+shared.image.labelA + shared.image.labelB
---  +shared.image.labelA_obs + shared.image.labelB_obs
-  ) + 2^16;
-
---Image field-of-view information
-shared.image.fovTL=vector.zeros(2);
-shared.image.fovTR=vector.zeros(2);
-shared.image.fovBL=vector.zeros(2);
-shared.image.fovBR=vector.zeros(2);
-shared.image.fovC=vector.zeros(2);
-
-shared.image.learn_lut = vector.zeros(1);
+shsize.image = shared.image.rgb + shared.image.rzdrgb + 2^16;
 
 shared.ball = {};
 shared.ball.detect = vector.zeros(1);
-shared.ball.centroid = vector.zeros(2); --in pixels, (x,y), of camera image
+shared.ball.score = vector.zeros(1);
+shared.ball.x = vector.zeros(1);
+shared.ball.y = vector.zeros(1);
+shared.ball.w = vector.zeros(1);
+shared.ball.h = vector.zeros(1);
 shared.ball.v = vector.zeros(4); --3D position of ball wrt body
 shared.ball.r = vector.zeros(1); --distance to ball (planar)
 shared.ball.dr = vector.zeros(1);
 shared.ball.da = vector.zeros(1);
-shared.ball.axisMajor = vector.zeros(1);
-shared.ball.axisMinor = vector.zeros(1);
 
 shared.goal = {};
 shared.goal.detect = vector.zeros(1);
@@ -99,25 +67,10 @@ shared.goal.v1 = vector.zeros(4);
 shared.goal.v2 = vector.zeros(4);
 shared.goal.postBoundingBox1 = vector.zeros(4);
 shared.goal.postBoundingBox2 = vector.zeros(4);
---added for monitor
-shared.goal.postCentroid1 = vector.zeros(2);
-shared.goal.postAxis1 = vector.zeros(2);
-shared.goal.postOrientation1 = vector.zeros(1);
-shared.goal.postCentroid2 = vector.zeros(2);
-shared.goal.postAxis2 = vector.zeros(2);
-shared.goal.postOrientation2 = vector.zeros(1);
 
---Midfield landmark for non-nao robots
-shared.landmark = {};
-shared.landmark.detect = vector.zeros(1);
-shared.landmark.color = vector.zeros(1);
-shared.landmark.v = vector.zeros(4);
-shared.landmark.centroid1 = vector.zeros(2);
-shared.landmark.centroid2 = vector.zeros(2);
-shared.landmark.centroid3 = vector.zeros(2);
 
 --Multiple line detection
-max_line_num = 12;
+local max_line_num = 12;
 
 shared.line = {};
 shared.line.detect = vector.zeros(1);
@@ -147,7 +100,6 @@ shared.circle.y = vector.zeros(1);
 shared.circle.var = vector.zeros(1);
 shared.circle.angle = vector.zeros(1);
 
-
 --Corner detection
 shared.corner = {};
 shared.corner.detect = vector.zeros(1);
@@ -168,8 +120,7 @@ shared.spot.centroid1 = vector.zeros(2);
 shared.spot.centroid2 = vector.zeros(2);
 shared.spot.centroid3 = vector.zeros(2);
 
-
-enable_robot_detection = Config.vision.enable_robot_detection or 0;
+local enable_robot_detection = Config.vision.enable_robot_detection or 0;
 
 shared.robot={};
 shared.robot.detect=vector.zeros(1);
@@ -177,13 +128,13 @@ shared.robot.detect=vector.zeros(1);
 if enable_robot_detection>0 then
   --SJ: Don't define the arrays if they are not used
   --As they will occupy monitor bandwidth
-  map_div = Config.vision.robot.map_div;
+  local map_div = Config.vision.robot.map_div;
   --Global map
   shared.robot.lowpoint = vector.zeros(Config.camera.width/Config.vision.scaleB);
   shared.robot.map=vector.zeros(6*4*Config.vision.robot.map_div*Config.vision.robot.map_div); --60 by 40 map
 end
 
-enable_freespace_detection = Config.vision.enable_freespace_detection or 0;
+local enable_freespace_detection = Config.vision.enable_freespace_detection or 0;
 
 shared.freespace = {};
 shared.freespace.detect = vector.zeros(1);
@@ -213,12 +164,12 @@ shared.debug.store_ball_detections = vector.zeros(1);
 shared.debug.store_all_images = vector.zeros(1);
 shared.debug.message='';
 
-util.init_shm_segment(getfenv(), _NAME, shared, shsize);
+util.init_shm_segment(vcm, vcm._NAME, shared, shsize);
 
-debug_message='';
+local debug_message='';
 
 --For vision debugging
-function refresh_debug_message()
+vcm.refresh_debug_message = function()
   if string.len(debug_message)==0 then
     --it is not updated for whatever reason
     --just keep the latest message
@@ -228,10 +179,15 @@ function refresh_debug_message()
     debug_message='';
   end
 end
-function add_debug_message(message)
+
+vcm.add_debug_message = function(message)
   if string.len(debug_message)>1000 then
     --something is wrong, just reset it
     debug_message='';
   end
   debug_message=debug_message..message;
 end
+
+print("***************");
+
+return vcm;

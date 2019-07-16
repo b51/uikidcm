@@ -1,13 +1,11 @@
-module(..., package.seeall);
-
 local mt = {};
 
-function new(t)
+local new = function(t)
   t = t or {};
   return setmetatable(t, mt);
 end
 
-function ones(n)
+local ones = function(n)
   n = n or 1;
   local t = {};
   for i = 1, n do
@@ -16,7 +14,7 @@ function ones(n)
   return setmetatable(t, mt);
 end
 
-function zeros(n)
+local zeros = function(n)
   n = n or 1;
   local t = {};
   for i = 1, n do
@@ -25,7 +23,7 @@ function zeros(n)
   return setmetatable(t, mt);
 end
 
-function slice(v1, istart, iend)
+local slice = function(v1, istart, iend)
   local v = {};
   iend = iend or #v1;
   for i = 1,iend-istart+1 do
@@ -34,7 +32,7 @@ function slice(v1, istart, iend)
   return setmetatable(v, mt);
 end
 
-function add(v1, v2)
+local add = function(v1, v2)
   local v = {};
   for i = 1, #v1 do
     v[i] = v1[i] + v2[i];
@@ -42,7 +40,7 @@ function add(v1, v2)
   return setmetatable(v, mt);
 end
 
-function sub(v1, v2)
+local sub = function(v1, v2)
   local v = {};
   for i = 1, #v1 do
     v[i] = v1[i] - v2[i];
@@ -50,7 +48,7 @@ function sub(v1, v2)
   return setmetatable(v, mt);
 end
 
-function mulnum(v1, a)
+local mulnum = function(v1, a)
   local v = {};
   for i = 1, #v1 do
     v[i] = a * v1[i];
@@ -58,7 +56,7 @@ function mulnum(v1, a)
   return setmetatable(v, mt);
 end
 
-function divnum(v1, a)
+local divnum = function(v1, a)
   local v = {};
   for i = 1, #v1 do
     v[i] = v1[i]/a;
@@ -66,7 +64,7 @@ function divnum(v1, a)
   return setmetatable(v, mt);
 end
 
-function mul(v1, v2)
+local mul = function(v1, v2)
   if type(v2) == "number" then
     return mulnum(v1, v2);
   elseif type(v1) == "number" then
@@ -80,11 +78,11 @@ function mul(v1, v2)
   end
 end
 
-function unm(v1)
+local unm = function(v1)
   return mulnum(v1, -1);
 end
 
-function div(v1, v2)
+local div = function(v1, v2)
   if type(v2) == "number" then
     return divnum(v1, v2);
   else
@@ -92,7 +90,7 @@ function div(v1, v2)
   end
 end
 
-function norm(v1)
+local norm = function(v1)
   local s = 0;
   for i = 1, #v1 do
     s = s + v1[i] * v1[i];
@@ -100,7 +98,7 @@ function norm(v1)
   return math.sqrt(s);
 end
 
-function tostring(v1, formatstr)
+local tostring = function(v1, formatstr)
   formatstr = formatstr or "%g";
   local str = "{"..string.format(formatstr, v1[1]);
   for i = 2, #v1 do
@@ -116,3 +114,11 @@ mt.__mul = mul;
 mt.__div = div;
 mt.__unm = unm;
 mt.__tostring = tostring;
+
+return {
+  new = new,
+  ones = ones,
+  zeros = zeros,
+  slice = slice,
+  norm = norm,
+};
