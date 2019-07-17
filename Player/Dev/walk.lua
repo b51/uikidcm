@@ -1,3 +1,5 @@
-require('Config');
+local Config = require('Config');
 
-walk = require(Config.dev.walk)
+local walk = require(Config.dev.walk)
+
+return walk;

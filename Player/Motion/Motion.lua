@@ -1,35 +1,32 @@
-module(..., package.seeall);
+local Body = require('Body')
+local vector = require('vector')
+local mcm = require('mcm')
+local gcm = require('gcm')
+local fsm = require('fsm')
 
-require('Body')
-require('UltraSound')
-require('fsm')
-require('vector')
-require('mcm')
-require('gcm')
-
-require('relax')
-require('stance')
-require('nullstate')
-require('walk')
-require('sit')
-require('standstill') -- This makes torso straight (for webots robostadium)
-
-require('falling')
-require('standup')
-require('kick')
-require('align') -- slow, non-dynamic stepping for fine alignment before kick
-
+-- Motion FSMs
+local relax = require('relax')
+local stance = require('stance')
+local nullstate = require('nullstate')
+local walk = require('walk')
+local sit = require('sit')
+local standstill = require('standstill') -- This makes torso straight (for webots robostadium)
+local falling = require('falling')
+local standup = require('standup')
+local kick = require('kick')
+local align = require('align') -- slow, non-dynamic stepping for fine alignment before kick
 --For diving
-require('divewait')
-require('dive')
-
+local divewait = require('divewait')
+local dive = require('dive')
 -- Aux
-require 'grip'
+local grip = require('grip')
 
-sit_disable = Config.sit_disable or 0;
+local sit_disable = Config.sit_disable or 0;
+local sm;
 
+-- TODO(b51): Motion FSM needs to be recontructed
 if sit_disable==0 then --For smaller robots
-  fallAngle = Config.fallAngle or 30*math.pi/180;
+  local fallAngle = Config.fallAngle or 30*math.pi/180;
 
   sm = fsm.new(relax);
   sm:add_state(stance);
@@ -99,7 +96,6 @@ if sit_disable==0 then --For smaller robots
   sm:set_transition(walk, 'kick', kick);
   sm:set_transition(kick, 'done', walk);
 else --For large robots that cannot sit down or getup
-
   fallAngle = 1E6; --NEVER check falldown
 
   sm = fsm.new(standstill);
@@ -119,7 +115,6 @@ else --For large robots that cannot sit down or getup
   -- kick behaviours
   sm:set_transition(walk, 'kick', kick);
   sm:set_transition(kick, 'done', walk);
-
 end
 
 -- set state debug handle to shared memory settor
@@ -128,57 +123,44 @@ sm:set_state_debug_handle(gcm.set_fsm_motion_state);
 -- TODO: fix kick->fall transition
 --sm:set_transition(kick, 'fall', falling);
 
-bodyTilt = Config.walk.bodyTilt or 0;
-
+local bodyTilt = Config.walk.bodyTilt or 0;
 -- For still time measurement (dodgeball)
-stillTime = 0;
-stillTime0 = 0;
-wasStill = false;
+local stillTime = 0;
+local stillTime0 = 0;
+local wasStill = false;
 
--- Ultra Sound Processor
-UltraSound.entry();
-
-function entry()
+local entry = function()
   Body.set_state_sensorEnable(1);--123456传感器常开
   Body.set_state_torqueEnable(1);--123456舵机使能
   Body.set_state_gaitReset(1);--123456复位
   sm:entry()
   mcm.set_walk_isFallDown(0);
+  -- TODO(b51): Add fall down check switch to config
   mcm.set_motion_fall_check(1); --check fall by default
 end
 
-function update()
-  -- update us
-  UltraSound.update();
-
+local update = function()
   local imuAngle = Body.get_sensor_imuAngle();
   local maxImuAngle = math.max(math.abs(imuAngle[1]), math.abs(imuAngle[2]-bodyTilt));
-  fall = mcm.get_motion_fall_check() --Should we check for fall? 1 = yes
-  --print("imuAngle :",imuAngle[1]*180/math.pi,imuAngle[2]*180/math.pi);
-
-  ----------------------tse------------------------------
-  ----[[            -- for Technical Challenge Throw-in (off fall_down_check)
-  --if (maxImuAngle > fallAngle and fall==1) then
-  -- print('falling event detected',maxImuAngle);
-  --  sm:add_event("fall");
-  --  mcm.set_walk_isFallDown(1); --Notify world to reset heading
-  --else
+  local fall = mcm.get_motion_fall_check() --Should we check for fall? 1 = yes
+  if (maxImuAngle > fallAngle and fall == 1) then
+   print('falling event detected',maxImuAngle);
+    sm:add_event("fall");
+    mcm.set_walk_isFallDown(1); --Notify world to reset heading
+  else
     mcm.set_walk_isFallDown(0);
-  --end
-  --]]
-
+  end
   -- Keep track of how long we've been still for
   -- Update our last still measurement
-  if( walk.still and not wasStill ) then
+  if (walk.still and not wasStill) then
     stillTime0 = Body.get_time();
     stillTime = 0;
-  elseif( walk.still and wasStill) then
+  elseif (walk.still and wasStill) then
     stillTime = Body.get_time() - stillTime0;
   else
     stillTime = 0;
   end
   wasStill = walk.still;
-
 
   if walk.active or align.active then
     mcm.set_walk_isMoving(1);
@@ -192,20 +174,26 @@ function update()
   update_shm();
 end
 
-function exit()
+local exit = function()
   sm:exit();
 end
 
-function event(e)
+local event = function(e)
   sm:add_event(e);
 end
 
-function update_shm()
+local update_shm = function()
   -- Update the shared memory
   mcm.set_walk_bodyOffset(walk.get_body_offset());
   mcm.set_walk_uLeft(walk.uLeft);
   mcm.set_walk_uRight(walk.uRight);
-  mcm.set_us_left(UltraSound.left);
-  mcm.set_us_right(UltraSound.right);
-  mcm.set_walk_stillTime( stillTime );
+  mcm.set_walk_stillTime(stillTime);
 end
+
+return {
+  entry = entry,
+  update = update,
+  exit = exit,
+  event = event,
+  update_shm = update_shm,
+};

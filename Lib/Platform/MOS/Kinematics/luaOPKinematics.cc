@@ -7,7 +7,7 @@
 
 #include <lua.hpp>
 
-#include "Kinematics.h"
+#include "OPKinematics.h"
 
 static void lua_pushvector(lua_State *L, std::vector<double> v) {
   int n = v.size();
@@ -160,7 +160,7 @@ static const struct luaL_Reg kinematics_lib [] = {
 };
 
 extern "C"
-int luaopen_Kinematics (lua_State *L) {
+int luaopen_OPKinematics (lua_State *L) {
   luaL_newlib(L, kinematics_lib);
 
   return 1;

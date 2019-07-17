@@ -21,11 +21,6 @@ bodyTilt = Config.walk.bodyTilt;
 bodyTilt0 = Config.walk.bodyTilt;
 bodyTilt1 = 20*math.pi/180;
 
-
-
-
-
-
 bodyHeight = Config.walk.bodyHeight;
 bodyHeight0 = bodyHeight;
 
@@ -40,9 +35,6 @@ bodyShift3 = 0;
 
 bodyYaw=0;
 bodyYaw1=-30*math.pi/180;
-
-
-
 bodyHeight3 = 0.24;
 bodyShift_windup = -0.015;
 bodyShift_throw = 0;
@@ -68,9 +60,6 @@ qRArm1 = math.pi/180*vector.new({90,-8,-40});
 qLArm2 = math.pi/180*vector.new({55, 5,-40});
 qRArm2 = math.pi/180*vector.new({90, -8,40});
 
-
-
-
 bodyHeight1 = 0.20;
 bodyShift1 = 0.0; --with long hand
 bodyShift2 = -0.01;
@@ -79,8 +68,6 @@ bodyTilt1 = 20*math.pi/180;
 qLArm1 = math.pi/180*vector.new({55, 5,30});
 --grasp
 qLArm2 = math.pi/180*vector.new({55, 5,-40});
-
-
 
 --try 2
 bodyHeight1 = 0.20;
@@ -97,10 +84,8 @@ qLArm2 = math.pi/180*vector.new({45, 15,-40});
 qRArm1 = math.pi/180*vector.new({170, -15,0});
 qRArm2 = math.pi/180*vector.new({170, -15,0});
 
-
 bodyHeight2 = 0.21;
 bodyShift2 = -0.01;
-
 
 --try 3
 
@@ -109,7 +94,6 @@ bodyHeight1 = 0.20;
 bodyRoll1 = -20*math.pi/180;
 bodyTilt1 = 0*math.pi/180;
 bodyYaw1=0*math.pi/180;
-
 
 bodyShift1 = 0.0;
 
@@ -121,17 +105,9 @@ bodyHeight1 = 0.20;
 bodyHeight2 = 0.21;
 bodyShift2 = -0.01;
 
-
 t_grab  = {1.2,2.0,2.5,3.0,3.5};
 
 t_throw = {1.0,2.0,3.0};
-
-
-
-
-
-
-
 
 --Windup
 qLArm3 = math.pi/180*vector.new({-80,5,-40});
@@ -140,9 +116,6 @@ qRArm3 = qRArm0;
 --Throw
 qLArm4 = math.pi/180*vector.new({0,5,35});
 qRArm4 = qRArm0;
-
-
-
 
 --[[
 qLArm4 = math.pi/180*vector.new({20,20,-0});
@@ -231,7 +204,6 @@ function update()
     t0 = Body.get_time();
   end
 
-
   local t=Body.get_time();
   t=t-t0;
   if throw==0 then
@@ -246,7 +218,6 @@ function update()
       bodyYaw=ph*bodyYaw1;
       bodyTilt = ph* bodyTilt1 + (1-ph)*bodyTilt0;
       bodyRoll = ph* bodyRoll1;
-
 
     elseif t<t_pickup[2] then
    --bend front
@@ -293,7 +264,6 @@ function update()
 
      bodyHeight = ph*bodyHeight3 + (1-ph)*bodyHeight0;
 
-
    elseif t<t_pickup[2] then
      --Throw
      ph=(t-t_pickup[1])/(t_pickup[2]-t_pickup[1]);
@@ -335,7 +305,6 @@ pTorso[1],pTorso[2],pTorso[6]=uTorso[1]+bodyShift,uTorso[2],uTorso[3]+bodyYaw;
   Body.set_aux_command(qGrip);
 end
 
-
 function motion_legs()
 
 --Ankle stabilization using gyro feedback
@@ -368,7 +337,6 @@ function motion_legs()
   qLegs[12] = qLegs[12] + ankleShift[2];
   Body.set_lleg_command(qLegs);
 end
-
 
 function exit()
   print("Pickup exit");

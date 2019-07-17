@@ -1,84 +1,69 @@
-module(..., package.seeall);
-controller = require('dcm');
-require('vector');
-require('unix');
+local unix = require('unix');
+local vector = require('vector');
+local dcm = require('dcm');
+local util = require('util');
 
-host = "dcm";
-
--- Time step in sec
-tDelta = 0.010;
+local MOSBody = {};
+local _ENV = {print = print, pairs = pairs, type = type,};
 
 for k,v in pairs(dcm) do
-  getfenv()[k] = v;
+  _ENV[k] = v;
 end
+MOSBody = _ENV;
 
--- I don't think we use these joint names ever
---[[
-jointNames = {"HeadYaw", "HeadPitch",
-              "LShoulderPitch", "LShoulderRoll",
-              "LElbowYaw", "LElbowRoll",
-              "LHipYawPitch", "LHipRoll", "LHipPitch",
-              "LKneePitch", "LAnklePitch", "LAnkleRoll",
-              "RHipYawPitch", "RHipRoll", "RHipPitch",
-              "RKneePitch", "RAnklePitch", "RAnkleRoll",
-              "RShoulderPitch", "RShoulderRoll",
-              "RElbowYaw", "RElbowRoll"};
+local indexHead = 1;			--Head: 1 2
+local nJointHead = 2;
+local indexLArm = 3;			--LArm: 3 4 5
+local nJointLArm = 3;
+local indexLLeg = 6;			--LLeg: 6 7 8 9 10 11
+local nJointLLeg = 6;
+local indexRLeg = 12;			--RLeg: 12 13 14 15 16 17
+local nJointRLeg = 6;
+local indexRArm = 18;			--RArm: 18 19 20
+local nJointRArm = 3;
 
-----]]
-
-nJoint = controller.nJoint; --DLC
-
-indexHead = 1;			--Head: 1 2
-nJointHead = 2;
-indexLArm = 3;			--LArm: 3 4 5
-nJointLArm = 3;
-indexLLeg = 6;			--LLeg: 6 7 8 9 10 11
-nJointLLeg = 6;
-indexRLeg = 12;			--RLeg: 12 13 14 15 16 17
-nJointRLeg = 6;
-indexRArm = 18;			--RArm: 18 19 20
-nJointRArm = 3;
+local nJoint = nJointHead + nJointLArm + nJointLLeg + nJointRLeg + nJointRArm;
 
 --Aux servo (for gripper / etc)
-indexAux= 21;
-nJointAux=nJoint-20;
+local indexAux= 21;
+local nJointAux=nJoint-20;
 
---get_time = function() return dcm.get_sensor_time(1); end
-get_time = unix.time; --DLC specific
+MOSBody.get_time = unix.time;
 
-function update()
+MOSBody.update = function()
 end
 
 -- setup convience functions
-function get_head_position()
+MOSBody.get_head_position = function()
   local q = get_sensor_position();
   return {unpack(q, indexHead, indexHead+nJointHead-1)};
 end
-function get_larm_position()
+
+MOSBody.get_larm_position = function()
   local q = get_sensor_position();
   return {unpack(q, indexLArm, indexLArm+nJointLArm-1)};
 end
-function get_rarm_position()
+
+MOSBody.get_rarm_position = function()
   local q = get_sensor_position();
   return {unpack(q, indexRArm, indexRArm+nJointRArm-1)};
 end
-function get_lleg_position()
+
+MOSBody.get_lleg_position = function()
   local q = get_sensor_position();
   return {unpack(q, indexLLeg, indexLLeg+nJointLLeg-1)};
 end
-function get_rleg_position()
+
+MOSBody.get_rleg_position = function()
   local q = get_sensor_position();
   return {unpack(q, indexRLeg, indexRLeg+nJointRLeg-1)};
 end
 
-
-function set_waist_hardness(val)
-
+MOSBody.set_waist_hardness = function(val)
 end
 
-function set_lleg_pid(val)
+MOSBody.set_lleg_pid = function(val)
   --Usage: {P gain, I gain, D gain}
-
   p_param = val[1]*vector.ones(nJointLLeg);
   i_param = val[2]*vector.ones(nJointLLeg);
   d_param = val[3]*vector.ones(nJointLLeg);
@@ -89,7 +74,7 @@ function set_lleg_pid(val)
   set_actuator_slopeChanged(1,1);
 end
 
-function set_rleg_pid(val)
+MOSBody.set_rleg_pid = function(val)
   --Usage: {P gain, I gain, D gain}
   p_param = val[1]*vector.ones(nJointRLeg);
   i_param = val[2]*vector.ones(nJointRLeg);
@@ -102,45 +87,47 @@ function set_rleg_pid(val)
   set_actuator_slopeChanged(1,1);
 end
 
-function set_body_hardness(val)
+MOSBody.set_body_hardness = function(val)
   if (type(val) == "number") then
     val = val*vector.ones(nJoint);
   end
   set_actuator_hardness(val);
   set_actuator_hardnessChanged(1);
 end
-function set_head_hardness(val)
+
+MOSBody.set_head_hardness = function(val)
   if (type(val) == "number") then
     val = val*vector.ones(nJointHead);
   end
   set_actuator_hardness(val, indexHead);
   set_actuator_hardnessChanged(1);
-
 end
-function set_larm_hardness(val)
+
+MOSBody.set_larm_hardness = function(val)
   if (type(val) == "number") then
     val = val*vector.ones(nJointLArm);
   end
   set_actuator_hardness(val, indexLArm);
   set_actuator_hardnessChanged(1);
-
 end
-function set_rarm_hardness(val)
+
+MOSBody.set_rarm_hardness = function(val)
   if (type(val) == "number") then
     val = val*vector.ones(nJointRArm);
   end
   set_actuator_hardness(val, indexRArm);
   set_actuator_hardnessChanged(1);
 end
-function set_lleg_hardness(val)
+
+MOSBody.set_lleg_hardness = function(val)
   if (type(val) == "number") then
     val = val*vector.ones(nJointLLeg);
   end
   set_actuator_hardness(val, indexLLeg);
   set_actuator_hardnessChanged(1);
-
 end
-function set_rleg_hardness(val)
+
+MOSBody.set_rleg_hardness = function(val)
   if (type(val) == "number") then
     val = val*vector.ones(nJointRLeg);
   end
@@ -148,8 +135,10 @@ function set_rleg_hardness(val)
   set_actuator_hardnessChanged(1);
 end
 
-function set_aux_hardness(val)
-  if nJointAux==0 then return;end
+MOSBody.set_aux_hardness = function(val)
+  if nJointAux==0 then
+    return;
+  end
   if (type(val) == "number") then
     val = val*vector.ones(nJointAux);
   end
@@ -157,41 +146,41 @@ function set_aux_hardness(val)
   set_actuator_hardnessChanged(1);
 end
 
-function set_waist_command(val)
+MOSBody.set_waist_command = function(val)
   --Do nothing
 end
 
-function set_head_command(val)
+MOSBody.set_head_command = function(val)
   set_actuator_command(val, indexHead);
 end
 
-function set_lleg_command(val)
+MOSBody.set_lleg_command = function(val)
   set_actuator_command(val, indexLLeg);
 end
 
-function set_rleg_command(val)
+MOSBody.set_rleg_command = function(val)
   set_actuator_command(val, indexRLeg);
 end
 
-function set_larm_command(val)
+MOSBody.set_larm_command = function(val)
   set_actuator_command(val, indexLArm);
 end
 
-function set_rarm_command(val)
+MOSBody.set_rarm_command = function(val)
   set_actuator_command(val, indexRArm);
 end
 
-function set_aux_command(val)
+MOSBody.set_aux_command = function(val)
   if nJointAux==0 then return;end
   set_actuator_command(val, indexAux);
 end
 
 --Added by SJ
-function set_syncread_enable(val)
+MOSBody.set_syncread_enable = function(val)
   set_actuator_readType(val);
 end
 
-function set_lleg_slope(val)
+MOSBody.set_lleg_slope = function(val)
   if (type(val) == "number") then
     val = val*vector.ones(nJointLLeg);
   end
@@ -199,7 +188,7 @@ function set_lleg_slope(val)
   set_actuator_gainChanged(1,1);
 end
 
-function set_rleg_slope(val)
+MOSBody.set_rleg_slope = function(val)
   --Now val==0 for regular p gain
   --    val==1 for stiff p gain (for kicking
 
@@ -210,38 +199,38 @@ function set_rleg_slope(val)
   set_actuator_gainChanged(1,1);
 end
 
-function set_torque_enable(val)
+MOSBody.set_torque_enable = function(val)
   set_actuator_torqueEnable(val);
   set_actuator_torqueEnableChanged(1);
 end
 
 -- Set API compliance functions
-function get_sensor_imuGyr0()
+MOSBody.get_sensor_imuGyr0 = function()
   return vector.zeros(3)
 end
 
 --Added function for nao
 --returns gyro values in RPY, degree per seconds unit
-function get_sensor_imuGyrRPY()
+MOSBody.get_sensor_imuGyrRPY = function()
   return get_sensor_imuGyr();
 end
 
-function set_indicator_state(color)
+MOSBody.set_indicator_state = function(color)
 end
 
-function set_indicator_team(teamColor)
+MOSBody.set_indicator_team = function(teamColor)
 end
 
-function set_indicator_kickoff(kickoff)
+MOSBody.set_indicator_kickoff = function(kickoff)
 end
 
-function set_indicator_batteryLevel(level)
+MOSBody.set_indicator_batteryLevel = function(level)
 end
 
-function set_indicator_role(role)
+MOSBody.set_indicator_role = function(role)
 end
 
-function set_indicator_ball(color)
+MOSBody.set_indicator_ball = function(color)
   -- color is a 3 element vector
   -- convention is all zero indicates no detection
   --Body.set_actuator_headled({0,0,0});
@@ -251,7 +240,7 @@ function set_indicator_ball(color)
   Body.set_actuator_eyeled( color );
 end
 
-function set_indicator_goal(color)
+MOSBody.set_indicator_goal = function(color)
   -- color is a 3 element vector
   -- convention is all zero indicates no detection
   color[1] = 31*color[1];
@@ -261,55 +250,58 @@ function set_indicator_goal(color)
   --Body.set_actuator_eyeled({0,0,0});
 end
 
-function get_battery_level()
+MOSBody.get_battery_level = function()
   batt=get_sensor_battery();
   return batt[1]/10;
 end
 
-function get_change_state()
+MOSBody.get_change_state = function()
   local b = get_sensor_button();
   return b[1];
 end
 
-function get_change_enable()
+MOSBody.get_change_enable = function()
   return 0;
 end
 
-function get_change_team()
+MOSBody.get_change_team = function()
   return 0;
 end
 
-function get_change_role()
+MOSBody.get_change_role = function()
   local b = get_sensor_button();
   return b[2];
 end
 
-function get_change_kickoff()
+MOSBody.get_change_kickoff = function()
   return 0;
 end
 
 -- OP doe not have the UltraSound device
-function set_actuator_us()
+MOSBody.set_actuator_us = function()
 end
 
-function get_sensor_usLeft()
+MOSBody.get_sensor_usLeft = function()
   return vector.zeros(10);
 end
 
-function get_sensor_usRight()
+MOSBody.get_sensor_usRight = function()
   return vector.zeros(10);
 end
 
-function calibrate( count )
+MOSBody.calibrate = function(count)
   return true
 end
 
-function get_sensor_fsrRight()
-  fsr = {0};
+MOSBody.get_sensor_fsrRight = function()
+  local fsr = {0};
   return fsr
 end
 
-function get_sensor_fsrLeft()
-  fsr = {0};
+MOSBody.get_sensor_fsrLeft = function()
+  local fsr = {0};
   return fsr
 end
+
+--util.ptable(MOSBody);
+return MOSBody;

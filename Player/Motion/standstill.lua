@@ -1,38 +1,40 @@
-module(..., package.seeall);
+local vcm = require('vcm')
+local mcm = require('mcm')
+local vector = require('vector')
+local walk = require('walk')
+local Transform = require('Transform')
+local Body = require('Body')
+local Kinematics = require('Kinematics')
+local Config = require('Config')
 
-require('Config')
-require('Body')
-require('Kinematics')
-require('walk')
-require('vector')
-require('Transform')
-require('vcm')
-require('mcm')
+local t0 = 0;
 
-active = true;
-t0 = 0;
-
-footY = Config.walk.footY;
-supportX = Config.walk.supportX;
-bodyHeight = Config.walk.bodyHeight;
-bodyTilt = Config.stance.bodyTiltStance or 0;
-qLArm = Config.walk.qLArm;
-qRArm = Config.walk.qRArm;
+local footY = Config.walk.footY;
+local supportX = Config.walk.supportX;
+local bodyHeight = Config.walk.bodyHeight;
+local bodyTilt = Config.stance.bodyTiltStance or 0;
+local qLArm = Config.walk.qLArm;
+local qRArm = Config.walk.qRArm;
 
 -- Max change in position6D to reach stance:
-dpLimit = Config.stance.dpLimitStance or vector.new({.04, .03, .07, .4, .4, .4});
+local dpLimit = Config.stance.dpLimitStance or vector.new({.04, .03, .07, .4, .4, .4});
 
-tFinish=0;
-tStartWait=0.2;
-tEndWait=0.1;
-tStart=0;
+local tFinish=0;
+local tStartWait=0.2;
+local tEndWait=0.1;
+local tStart=0;
 
-finished=false;
+local finished=false;
 
-hardnessLeg = Config.stance.hardnessLeg or 1;
+local hardnessLeg = Config.stance.hardnessLeg or 1;
 
-function entry()
-  print("Motion SM:".._NAME.." entry");
+local pTorsoTarget = {};
+local pLLeg = {};
+local pRLeg = {};
+local started = false;
+
+local entry = function()
+  print("Motion SM: standstill entry");
   -- Final stance foot position6D
   pTorsoTarget = vector.new({0, 0, bodyHeight, 0,bodyTilt,0});
   pLLeg = vector.new({-supportX + mcm.get_footX(), footY, 0, 0,0,0});
@@ -62,7 +64,7 @@ function entry()
   walk.active=false;
 end
 
-function update()
+local update = function()
   local t = Body.get_time();
   local dt = t - t0;
   if finished then return; end
@@ -77,16 +79,15 @@ function update()
       local dpLLeg = Kinematics.torso_lleg(qLLeg);
       local dpRLeg = Kinematics.torso_rleg(qRLeg);
 
-      pTorsoL=pLLeg+dpLLeg;
-      pTorsoR=pRLeg+dpRLeg;
-      pTorso=(pTorsoL+pTorsoR)*0.5;
+      local pTorsoL=pLLeg+dpLLeg;
+      local pTorsoR=pRLeg+dpRLeg;
+      local pTorso=(pTorsoL+pTorsoR)*0.5;
 
       Body.set_lleg_command(qLLeg);
       Body.set_rleg_command(qRLeg);
       Body.set_lleg_hardness(hardnessLeg);
       Body.set_rleg_hardness(hardnessLeg);
       t0 = Body.get_time();
-      count=1;
       tStart=t0;
       Body.set_syncread_enable(0);
     else
@@ -99,9 +100,9 @@ function update()
   t0 = t;
   local tol = true;
   local tolLimit = 1e-6;
-  dpDeltaMax = dt*dpLimit;
+  local dpDeltaMax = dt*dpLimit;
 
-  dpTorso = pTorsoTarget - pTorso;
+  local dpTorso = pTorsoTarget - pTorso;
   for i = 1,6 do
     if (math.abs(dpTorso[i]) > tolLimit) then
       tol = false;
@@ -116,26 +117,31 @@ function update()
   pTorso=pTorso+dpTorso;
 
   --[[vcm.set_camera_bodyHeight(pTorso[3]);----------------------------------------123456註釋
-  vcm.set_camera_bodyTilt(pTorso[5]);--]]----------------------------------------123456註釋
---print("BodyHeight/Tilt:",pTorso[3],pTorso[5]*180/math.pi)
+      vcm.set_camera_bodyTilt(pTorso[5]);--]]----------------------------------------123456註釋
+  --print("BodyHeight/Tilt:",pTorso[3],pTorso[5]*180/math.pi)
 
-  q = Kinematics.inverse_legs(pLLeg, pRLeg, pTorso, 0);
+  local q = Kinematics.inverse_legs(pLLeg, pRLeg, pTorso, 0);
   Body.set_lleg_command(q);
 
   if (tol) then
     if tFinish==0 then
       tFinish=t;
     else
-	  vel = Body.get_sensor_velocity();--123456等待站立完成（后于）
+      local vel = Body.get_sensor_velocity();--123456等待站立完成（后于）
       if t-tFinish>tEndWait and vel[1] == 0 and vel[2] == 0 and vel[3] == 0 then
         finished=true;
-	print("Stand done, time elapsed",t-tStart)
+        print("Stand done, time elapsed",t-tStart)
         return "done"
       end
     end
   end
-
 end
 
-function exit()
+local exit = function()
 end
+
+return {
+  entry = entry,
+  update = update,
+  exit = exit,
+};

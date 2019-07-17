@@ -4,10 +4,10 @@ local vector = require("vector");
 local Config = require('Config');
 
 -- shared properties
+-- (TODO)b51: should make vcm as a global variable to avoid multi require?
+local vcm = {};
 local shared = {};
 local shsize = {};
-local vcm = {};   -- make vcm as a global variable to avoid multi require
-vcm._NAME = "vcm";
 
 shared.camera = {};
 shared.camera.select = vector.zeros(1);
@@ -164,10 +164,10 @@ shared.debug.store_ball_detections = vector.zeros(1);
 shared.debug.store_all_images = vector.zeros(1);
 shared.debug.message='';
 
-util.init_shm_segment(vcm, vcm._NAME, shared, shsize);
+local _ENV = {print = print};
+util.init_shm_segment(_ENV, "vcm", shared, shsize);
 
 local debug_message='';
-
 --For vision debugging
 vcm.refresh_debug_message = function()
   if string.len(debug_message)==0 then

@@ -1,19 +1,5 @@
-module(... or '', package.seeall)
-
 -- Get Platform for package path
-cwd = '.';
-local platform = os.getenv('PLATFORM') or '';
-if (string.find(platform,'webots')) then cwd = cwd .. '/Player';
-end
-
--- Get Computer for Lib suffix
-local computer = os.getenv('COMPUTER') or '';
-if (string.find(computer, 'Darwin')) then
-  -- MacOS X uses .dylib:
-  package.cpath = cwd .. '/Lib/?.dylib;' .. package.cpath;
-else
-  package.cpath = cwd .. '/Lib/?.so;' .. package.cpath;
-end
+cwd = os.getenv('PWD');
 
 package.path = cwd .. '/?.lua;' .. package.path;
 package.path = cwd .. '/Util/?.lua;' .. package.path;
@@ -23,28 +9,28 @@ package.path = cwd .. '/Dev/?.lua;' .. package.path;
 package.path = cwd .. '/Motion/?.lua;' .. package.path;
 package.path = cwd .. '/Motion/keyframes/?.lua;' .. package.path;
 package.path = cwd .. '/Motion/Walk/?.lua;' .. package.path;
-package.path = cwd .. '/DLVision/?.lua;' .. package.path;
+package.path = cwd .. '/Vision/?.lua;' .. package.path;
 package.path = cwd .. '/World/?.lua;' .. package.path;
 
-require('unix')
-require('Config')
-require('shm')
-require('vector')
-require('vcm')
-require('gcm')
-require('wcm')
-require('mcm')
-require('Speak')
-require('getch')
-require('Body')
-require('Motion')
+local unix = require('unix');
+local util = require('util');
+local getch = require('getch');
+local shm = require('shm');
+local vcm = require('vcm');
+local gcm = require('gcm');
+local wcm = require('wcm');
+local mcm = require('mcm');
+local vector = require('vector');
+local Body = require('Body');
+local Motion = require('Motion');
+local Config = require('Config');
 
 gcm.say_id();
 
 Motion.entry();
 
-darwin = false;
-webots = false;
+local darwin = false;
+local webots = false;
 
 -- Enable OP specific
 if(Config.platform.name == 'OP') then
@@ -58,12 +44,12 @@ if(Config.platform.name == 'OP') then
   Body.set_rleg_hardness({0.6,0.6,0.6,0,0,0});
 end
 
-init = false;
-calibrating = false;
-ready = true;
-
-smindex = 0;
-initToggle = true;
+local init = false;
+local calibrating = false;
+local ready = true;
+ 
+local smindex = 0;
+local initToggle = true;
 
 --SJ: Now we use a SINGLE state machine for goalie and attacker
 package.path = cwd..'/BodyFSM/'..Config.fsm.body[smindex+1]..'/?.lua;'..package.path;

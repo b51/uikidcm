@@ -3,6 +3,6 @@
 
 #include <lua.hpp>
 
-int luaopen_Kinematics(lua_State *L);
+int luaopen_OPKinematics(lua_State *L);
 
 #endif

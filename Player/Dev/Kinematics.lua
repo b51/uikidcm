@@ -1,3 +1,5 @@
-require('Config');
+local Config = require('Config');
 
-Kinematics = require(Config.dev.kinematics)
+local Kinematics = require(Config.dev.kinematics)
+
+return Kinematics;

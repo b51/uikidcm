@@ -1,14 +1,12 @@
-module(..., package.seeall);
+local shm = require('shm');
+local util = require('util');
+local vector = require('vector');
+local Config = require('Config');
 
-require('shm');
-require('util');
-require('vector');
-require('Config');
-require('Speak');
-
+local gcm = {};
 -- shared properties
-shared = {};
-shsize = {};
+local shared = {};
+local shsize = {};
 
 shared.game = {};
 shared.game.state = vector.zeros(1);
@@ -46,10 +44,12 @@ shared.fsm.head_state = '';
 shared.fsm.motion_state = '';
 shared.fsm.game_state = '';
 
-util.init_shm_segment(getfenv(), _NAME, shared, shsize);
+local _ENV = {print = print};
+util.init_shm_segment(_ENV, "gcm", shared, shsize);
+gcm = _ENV;
 
 -- initialize player id
-set_team_player_id( Config.game.playerID );
+set_team_player_id(Config.game.playerID);
 
 -- initialize team id
 set_team_number(Config.game.teamNumber);
@@ -59,11 +59,13 @@ set_game_state(0);
 set_team_role(Config.game.role);
 
 -- helper functions
-function in_penalty()
+gcm.in_penalty = function()
   return get_game_penalty()[get_team_player_id()] > 0;
 end
 
-function say_id()
-  Speak.talk('Player ID '..Config.game.playerID);
-  Speak.talk('Team Number '..Config.game.teamNumber);
+gcm.say_id = function()
+  print('Player ID '..Config.game.playerID);
+  print('Team Number '..Config.game.teamNumber);
 end
+
+return gcm;

@@ -44,8 +44,7 @@ walk.hardnessArm=.3;
 ---------------------------------------------
 -- Gait parameters
 ---------------------------------------------
---walk.tStep = 0.25;
-walk.tStep = 0.40;	--167
+walk.tStep = 0.40;	-- each step time cost, used in BasicWalk
 walk.tZmp = 0.165;
 walk.stepHeight = 0.035;
 walk.phSingle={0.1,0.9};

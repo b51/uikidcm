@@ -1,3 +1,3 @@
-require('Config');
+local Config = require('Config');
 
-kick = require(Config.dev.kick)
+return require(Config.dev.kick)

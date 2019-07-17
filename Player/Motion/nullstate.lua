@@ -1,10 +1,14 @@
-module(..., package.seeall);
-
-function entry()
+local entry = function()
 end
 
-function update()
+local update = function()
 end
 
-function exit()
+local exit = function()
 end
+
+return {
+  entry = entry,
+  update = update,
+  exit = exit,
+};

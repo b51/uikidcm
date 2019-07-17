@@ -1,42 +1,32 @@
-module(..., package.seeall);
-name = ...;
+local Config = require('Config')
+local vector = require('vector')
+local Kinematics = require('Kinematics')
+local Body = require('Body')
+local walk = require('walk')
+local mcm = require('mcm')
 
-require('Config')
-require('vector')
-require('Kinematics')
-require('Body')
-require('walk')
-require('mcm')
+local started = false;
+local active = true;
+local t0 = 0;
 
-active = true;
-t0 = 0;
+local footY = Config.walk.footY;
+local supportX = Config.walk.supportX;
 
-footX = mcm.get_footX();
-footY = Config.walk.footY;
-supportX = Config.walk.supportX;
-
-footXSit = Config.stance.footXSit or 0;
-bodyHeightSit = Config.stance.bodyHeightSit;
-bodyTiltSit = Config.stance.bodyTiltSit or 0;
+local bodyHeightSit = Config.stance.bodyHeightSit;
+local bodyTiltSit = Config.stance.bodyTiltSit or 0;
 
 -- Final stance foot position6D
-pTorsoTarget = vector.new({-footXSit, 0, bodyHeightSit, 0,bodyTiltSit,0});
-pLLeg = vector.new({-supportX, footY, 0, 0,0,0});
-pRLeg = vector.new({-supportX, -footY, 0, 0,0,0});
+local pLLeg = vector.new({-supportX, footY, 0, 0,0,0});
+local pRLeg = vector.new({-supportX, -footY, 0, 0,0,0});
 
-qLArm = Config.stance.qLArmSit;
-qRArm = Config.stance.qRArmSit;
+local qLArm = Config.stance.qLArmSit;
+local qRArm = Config.stance.qRArmSit;
 
--- Max change in postion6D to reach stance:
-dpLimit=Config.stance.dpLimitSit or vector.new({.1,.01,.03,.1,.3,.1});
+local tStartWait = 0.2;
+local tStart=0;
 
-tStartWait = 0.2;
-tFinish=0;
-tStart=0;
-
-function entry()
-  print("Motion SM:".._NAME.." entry");
-
+local entry = function()
+  print("Motion SM: sit entry");
   walk.stop();
   started=false;
   --This makes the robot look up and see goalposts while sitting down
@@ -51,7 +41,7 @@ function entry()
   Body.set_state_gaitValid(1);------------123456站立 开始（复位？）
 end
 
-function update()
+local update = function()
   local t = Body.get_time();
   if walk.active then
      walk.update();
@@ -68,16 +58,15 @@ function update()
       local dpLLeg = Kinematics.torso_lleg(qLLeg);
       local dpRLeg = Kinematics.torso_rleg(qRLeg);
 
-      pTorsoL=pLLeg+dpLLeg;
-      pTorsoR=pRLeg+dpRLeg;
-      pTorso=(pTorsoL+pTorsoR)*0.5;
+      local pTorsoL=pLLeg+dpLLeg;
+      local pTorsoR=pRLeg+dpRLeg;
+      local pTorso=(pTorsoL+pTorsoR)*0.5;
 
       Body.set_lleg_command(qLLeg);
       Body.set_rleg_command(qRLeg);
       Body.set_lleg_hardness(0.7);
       Body.set_rleg_hardness(0.7);
       t0 = Body.get_time();
-      count=1;
       Body.set_syncread_enable(0);
 
       if qLArm then
@@ -86,8 +75,6 @@ function update()
         Body.set_larm_hardness(0.4);
         Body.set_rarm_hardness(0.4);
       end
-
-
     else
       Body.set_syncread_enable(1);
       return;
@@ -97,45 +84,8 @@ function update()
   local dt = t - t0;
   t0 = t;
 
---[[
-  if not started then
-    started=true;
-    --Now we assume that the robot always start sitting from stance position
-    pTorso = vector.new({-footX,0,vcm.get_camera_bodyHeight(),
-		         0,vcm.get_camera_bodyTilt(),0});
-    pLeft = vector.new({-supportX,footY,0,0,0,0});
-    pRight= vector.new({-supportX,-footY,0,0,0,0});
-    Body.set_lleg_hardness(1);
-    Body.set_rleg_hardness(1);
-    t0 = Body.get_time();
-    tStart=t;
-    count=1;
-  end
---]]
-
   local tol = true;
   local tolLimit = 1e-6;
---[[  dpDeltaMax = dt*dpLimit;-------------------------123456註釋
-
-  dpTorso = pTorsoTarget - pTorso;
-  for i = 1,6 do
-    if (math.abs(dpTorso[i]) > tolLimit) then
-      tol = false;
-      if (dpTorso[i] > dpDeltaMax[i]) then
-        dpTorso[i] = dpDeltaMax[i];
-      elseif (dpTorso[i] < -dpDeltaMax[i]) then
-        dpTorso[i] = -dpDeltaMax[i];
-      end
-    end
-  end
-
-  pTorso=pTorso+dpTorso;
-
-  vcm.set_camera_bodyHeight(pTorso[3]);
-  vcm.set_camera_bodyTilt(pTorso[5]);
-  q = Kinematics.inverse_legs(pLLeg, pRLeg, pTorso, 0);
-  Body.set_lleg_command(q);--]]----------------------------------123456註釋
-
   tol = false;--123456等待站立完成（后于）
   vel = Body.get_sensor_velocity();--123456等待站立完成（后于）
   if (vel[1] == 0 and vel[2] == 0 and vel[3] == 0) then
@@ -145,8 +95,13 @@ function update()
     print("Sit done, time elapsed",t-tStart)
     return "done"
   end
-
 end
 
-function exit()
+local exit = function()
 end
+
+return {
+  entry = entry,
+  update = update,
+  exit = exit,
+};

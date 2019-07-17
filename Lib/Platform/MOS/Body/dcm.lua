@@ -1,3 +1,4 @@
+-- This file used for run_main.lua to get dcm variable values
 local shm = require("shm");
 local carray = require("carray");
 
@@ -6,6 +7,7 @@ local actuatorShm = shm.open('dcmActuator');
 local stateShm = shm.open('dcmState');--123456
 local paraShm = shm.open('dcmParameter');--123456
 
+local dcm = {};
 local sensor = {};
 local actuator = {};
 local state = {};--123456
@@ -80,9 +82,11 @@ local set_para_shm = function(shmkey, val, index)--123456
   end
 end--123456
 
+local _ENV = {print = print,};
+
 for k,v in sensorShm.next, sensorShm do
   sensor[k] = carray.cast(sensorShm:pointer(k));
-  getfenv()["get_sensor_"..k] =
+  _ENV["get_sensor_"..k] =
     function(index)
       return get_sensor_shm(k, index);
     end
@@ -90,7 +94,7 @@ end
 
 for k,v in actuatorShm.next, actuatorShm do
   actuator[k] = carray.cast(actuatorShm:pointer(k));
-  getfenv()["set_actuator_"..k] =
+  _ENV["set_actuator_"..k] =
     function(val, index)
       return set_actuator_shm(k, val, index);
     end
@@ -98,7 +102,7 @@ end
 
 for k,v in stateShm.next, stateShm do--123456
   state[k] = carray.cast(stateShm:pointer(k));
-  getfenv()["get_state_"..k] =
+  _ENV["get_state_"..k] =
     function(index)
       return get_state_shm(k, index);
     end
@@ -106,7 +110,7 @@ end--123456
 
 for k,v in stateShm.next, stateShm do--123456
   state[k] = carray.cast(stateShm:pointer(k));
-  getfenv()["set_state_"..k] =
+  _ENV["set_state_"..k] =
     function(val, index)
       return set_state_shm(k, val, index);
     end
@@ -114,7 +118,7 @@ end--123456
 
 for k,v in paraShm.next, paraShm do--123456
   para[k] = carray.cast(paraShm:pointer(k));
-  getfenv()["get_para_"..k] =
+  _ENV["get_para_"..k] =
     function(index)
       return get_para_shm(k, index);
     end
@@ -122,12 +126,14 @@ end--123456
 
 for k,v in paraShm.next, paraShm do--123456
   para[k] = carray.cast(paraShm:pointer(k));
-  getfenv()["set_para_"..k] =
+  _ENV["set_para_"..k] =
     function(val, index)
       return set_para_shm(k, val, index);
     end
 end--123456
---nJoint = #actuator.position;
+
+dcm = _ENV;
+
 local nJoint = #sensor.position; --From DLC
 
 -- Initialize actuator commands and positions
@@ -135,3 +141,5 @@ for i = 1,nJoint do
   actuator.command[i] = sensor.position[i];
 --  actuator.position[i] = sensor.position[i];
 end
+
+return dcm;

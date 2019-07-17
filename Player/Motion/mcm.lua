@@ -1,14 +1,13 @@
-module(..., package.seeall);
+local shm = require('shm');
+local util = require('util');
+local vector = require('vector');
+local Body = require('Body')--123456
+local Config = require('Config');
 
-require('shm');
-require('util');
-require('vector');
-require('Config');
-require('Body')--123456
-
+local mcm = {};
 -- shared properties
-shared = {};
-shsize = {};
+local shared = {};
+local shsize = {};
 
 shared.walk = {};
 shared.walk.bodyOffset = vector.zeros(3);
@@ -43,26 +42,15 @@ shared.walk.isFallDown = vector.zeros(1);
 --Is the robot spinning in bodySearch?
 shared.walk.isSearching = vector.zeros(1);
 
-shared.us = {};
-shared.us.left = vector.zeros(10);
-shared.us.right = vector.zeros(10);
-shared.us.obstacles = vector.zeros(2);
-shared.us.free = vector.zeros(2);
-shared.us.dSum = vector.zeros(2);
-shared.us.distance = vector.zeros(2);
-
-
 shared.motion = {};
 --Should we perform fall check
 shared.motion.fall_check = vector.zeros(1);
 
-
-util.init_shm_segment(getfenv(), _NAME, shared, shsize);
-
+local _ENV = {print = print};
+util.init_shm_segment(_ENV, "mcm", shared, shsize);
 
 -- helper functions
-
-function get_odometry(u0)
+mcm.get_odometry = function(u0)
 --[[  if (not u0) then--123456路程计改变
     u0 = vector.new({0, 0, 0});
   end
@@ -76,25 +64,27 @@ function get_odometry(u0)
 end
 
 --Now those parameters are dynamically adjustable
-footX = Config.walk.footX or 0;
-kickX = Config.walk.kickX or 0;
-footXComp = Config.walk.footXComp or 0;
-kickXComp = Config.walk.kickXComp or 0;
-headPitchBias= Config.walk.headPitchBias or 0;
-headPitchBiasComp= Config.walk.headPitchBiasComp or 0;
+local footX = Config.walk.footX or 0;
+local kickX = Config.walk.kickX or 0;
+local footXComp = Config.walk.footXComp or 0;
+local kickXComp = Config.walk.kickXComp or 0;
+local headPitchBias= Config.walk.headPitchBias or 0;
+local headPitchBiasComp= Config.walk.headPitchBiasComp or 0;
 
 set_walk_footXComp(footXComp);
 set_walk_kickXComp(kickXComp);
 set_walk_headPitchBiasComp(headPitchBiasComp);
 
-function get_footX()
+mcm.get_footX = function()
   return get_walk_footXComp() + footX;
 end
 
-function get_kickX()
+mcm.get_kickX = function()
   return get_walk_kickXComp();
 end
 
-function get_headPitchBias()
+mcm.get_headPitchBias = function()
   return get_walk_headPitchBiasComp()+headPitchBias;
 end
+
+return mcm;

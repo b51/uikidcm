@@ -1,7 +1,3 @@
-module(..., package.seeall);
-
-require('util');
-
 --[[-------
   Lua finite state machine implementation
   Usage:
@@ -27,45 +23,10 @@ require('util');
   sm:set_state(state_string); -- sets the state by the string name
 --]]-------
 
-mt = getfenv();
+mt = _ENV;
 mt.__index = mt;
 
-function new(state1, ...)
-  if (type(state1) ~= "table") then
-    error("no initial state");
-  end
-
-  local o = {};
-  o.states = {state1, ...};
-  o.reverseStates = {};
-  o.statesNames = {};
-  o.statesHash = {};
-  o.transitions = {};
-  o.actions = {};
-  for i = 1,#o.states do
-    -- Reverse indexes of states
-    o.reverseStates[o.states[i]] = i;
-
-    o.statesNames[i] = o.states[i]._NAME;
-    o.statesHash[o.statesNames[i]] = i;
-
-    -- Transition and action tables
-    o.transitions[o.states[i]] = {};
-    o.actions[o.states[i]] = {};
-  end
-  o.events = {};
-  o.initialState = o.states[1];
-  o.currentState = o.initialState;
-  o.previousState = nil;
-  o.nextState = nil;
-  o.nextAction = nil;
-
-  setmetatable(o, mt);
-
-  return o;
-end
-
-function set_transition(self, fromState, event, toState, action)
+local set_transition = function(self, fromState, event, toState, action)
   assert(self.reverseStates[fromState], "Unknown from state");
   assert(type(event) == "string", "Unknown event");
   assert(self.reverseStates[toState], "Unknown to state");
@@ -84,7 +45,7 @@ function set_transition(self, fromState, event, toState, action)
   self.actions[fromState][event] = action;
 end
 
-function add_state(self, newState)
+local add_state = function(self, newState)
   local n = #self.states;
   self.states[n+1] = newState;
   self.reverseStates[newState] = n+1;
@@ -93,29 +54,32 @@ function add_state(self, newState)
   self.transitions[newState] = {};
   self.actions[newState] = {};
 end
-function add_event(self, event)
+
+local add_event = function(self, event)
   self.events[#self.events+1] = event;
 end
-function set_state(self, nextState)
+
+local set_state = function(self, nextState)
   if self.statesHash[nextState] == nil then
     error('unkown state '..nextState);
   end
   self.nextState = self.states[self.statesHash[nextState]];
 end
 
-function get_current_state(self)
+local get_current_state = function(self)
   return self.currentState;
 end
-function get_previous_state(self)
+
+local get_previous_state = function(self)
   return self.previousState;
 end
 
-function entry(self)
+local entry = function(self)
   local state = self.currentState;
   return state.entry();
 end
 
-function update(self)
+local update = function(self)
   local ret;
   local state = self.currentState;
 
@@ -162,12 +126,48 @@ function update(self)
   return ret;
 end
 
-function set_state_debug_handle(self, h)
+local set_state_debug_handle = function(self, h)
   self.state_debug_handle = h;
 end
 
-function exit(self)
+local exit = function(self)
   local state = self.currentState;
   state.exit();
   self.currentState = self.initialState;
 end
+
+local new = function(state1, ...)
+  if (type(state1) ~= "table") then
+    error("no initial state");
+  end
+
+  local o = {};
+  o.states = {state1, ...};
+  o.reverseStates = {};
+  o.statesNames = {};
+  o.statesHash = {};
+  o.transitions = {};
+  o.actions = {};
+  for i = 1,#o.states do
+    -- Reverse indexes of states
+    o.reverseStates[o.states[i]] = i;
+
+    o.statesNames[i] = o.states[i]._NAME;
+    o.statesHash[o.statesNames[i]] = i;
+
+    -- Transition and action tables
+    o.transitions[o.states[i]] = {};
+    o.actions[o.states[i]] = {};
+  end
+  o.events = {};
+  o.initialState = o.states[1];
+  o.currentState = o.initialState;
+  o.previousState = nil;
+  o.nextState = nil;
+  o.nextAction = nil;
+
+  setmetatable(o, mt);
+  return o;
+end
+
+return {new = new,};

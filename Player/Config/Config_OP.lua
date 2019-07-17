@@ -36,7 +36,7 @@ loadconfig('FSM/Config_FSM')
 loadconfig('Net/Config_Yolo_Net')
 loadconfig('Vision/Config_Vision')
 loadconfig('Vision/Config_Camera')
---loadconfig('World/Config_World')
+loadconfig('World/Config_World')
 
 local platform = Config.platform;
 platform.name = 'MOS';
@@ -48,7 +48,7 @@ local robotName=unix.gethostname();
 local dev = Config.dev;
 dev.body = 'MOSBody';
 dev.camera = 'V4LCam';
-dev.kinematics = 'Kinematics';
+dev.kinematics = 'OPKinematics';
 dev.ip_wired = '192.168.2.200';
 --dev.ip_wireless = '255.255.255.255';
 dev.ip_wireless = '192.168.1.255';  --Our Router

@@ -217,7 +217,7 @@ local pass_data = function()
   --DspPacket.pass_para(para);
 end
 
-local receive_data = function()
+local receive_data= function()
   state.specialGaitPending[1],state.gaitResetPending[1],state.resetOdometerPending[1],state.walkkickPending[1]=DspPacket.get_pendingstate();
 
   --print(DspPacket.get_velocity());

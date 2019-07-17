@@ -1,5 +1,5 @@
-#ifndef Kinematics_h_DEFINED
-#define Kinematics_h_DEFINED
+#ifndef OPKinematics_h_DEFINED
+#define OPKinematics_h_DEFINED
 
 #include <math.h>
 #include <vector>

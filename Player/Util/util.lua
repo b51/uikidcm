@@ -134,7 +134,7 @@ local shm_key_exists = function(shmHandle, k, nvals)
   -- returns true if the key exists and is of the correct length nvals (if provided)
 
   for sk,sv in shmHandle.next, shmHandle do
-    cpsv = carray.cast(shmHandle:pointer(sk));
+    local cpsv = carray.cast(shmHandle:pointer(sk));
     if (k == sk) then
       -- key exists, check length
       if (nvals and nvals ~= #cpsv) then

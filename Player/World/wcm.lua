@@ -1,13 +1,12 @@
-module(..., package.seeall);
+local shm = require('shm');
+local util = require('util');
+local vector = require('vector');
+local Config = require('Config');
 
-require('shm');
-require('util');
-require('vector');
-require('Config');
-
+local wcm = {};
 -- shared properties
-shared = {};
-shsize = {};
+local shared = {};
+local shsize = {};
 
 shared.robot = {};
 shared.robot.pose = vector.zeros(3);
@@ -95,7 +94,7 @@ shared.sound = {};
 shared.sound.odomPose = vector.zeros(3);
 -- TODO: sound histogram filter size should be set in the config
 --shared.sound.histogram = vector.zeros(Config.sound.??);
-radPerBin = 30*math.pi/180;
+local radPerBin = 30*math.pi/180;
 shared.sound.detFilter = vector.zeros(math.floor(2*math.pi/radPerBin));
 shared.sound.detCount = vector.zeros(1);
 shared.sound.detTime = vector.zeros(1);
@@ -106,7 +105,7 @@ shared.sound.detRIndex = vector.zeros(1);
 -- This shm is used for wireless team monitoring only
 -- Indexed by player ID + teamOffset
 -----------------------------------------------
-listen_monitor = Config.listen_monitor or 0;
+local listen_monitor = Config.listen_monitor or 0;
 
 if listen_monitor>0 then
   shared.teamdata={};
@@ -159,12 +158,12 @@ if listen_monitor>0 then
 
 --Team LabelB monitoring
 
-  processed_img_width = Config.camera.width;
-  processed_img_height = Config.camera.height;
-  processed_img_width = processed_img_width / 2;
-  processed_img_height = processed_img_height / 2;
+  local processed_img_width = Config.camera.width;
+  local processed_img_height = Config.camera.height;
+  local processed_img_width = processed_img_width / 2;
+  local processed_img_height = processed_img_height / 2;
 
-  labelB_size =  ((processed_img_width/Config.vision.scaleB)*
+  local labelB_size =  ((processed_img_width/Config.vision.scaleB)*
      (processed_img_height/Config.vision.scaleB));
 
   shared.labelB = {};
@@ -191,44 +190,46 @@ if listen_monitor>0 then
   shared.robotNames.n8 = '';
   shared.robotNames.n9 = '';
   shared.robotNames.n10 = '';
-
 end
 
-util.init_shm_segment(getfenv(), _NAME, shared, shsize);
-
+local _ENV = {print = print};
+util.init_shm_segment(_ENV, "wcm", shared, shsize);
+wcm = _ENV;
 
 -- helper functions for access the data in the same manner as World
 
-function get_ball()
+wcm.get_ball = function()
   return {x=get_ball_x(), y=get_ball_y(),
-	vx=get_ball_velx(), vy=get_ball_vely(),
-	t=get_ball_t(),	p=get_ball_p()};
+          vx=get_ball_velx(), vy=get_ball_vely(),
+          t=get_ball_t(),	p=get_ball_p()};
 end
 
-function get_pose()
+wcm.get_pose = function()
   pose = get_robot_pose();
   return {x=pose[1], y=pose[2], a=pose[3]};
 end
 
-function get_tGoal()
+wcm.get_tGoal = function()
   return get_goal_t();
 end
 
-function get_attack_bearing()
+wcm.get_attack_bearing = function()
   return get_goal_attack_bearing();
 end
 
-function get_attack_angle()
+wcm.get_attack_angle = function()
   return get_goal_attack_angle();
 end
 
-function get_defend_angle()
+wcm.get_defend_angle = function()
   return get_goal_defend_angle();
 end
 
-function get_sound_detection()
+wcm.get_sound_detection = function()
    return {count = get_sound_detCount(),
            time = get_sound_detTime(),
            lIndex = get_sound_detLIndex(),
            rIndex = get_sound_detRIndex()};
 end
+
+return wcm;
