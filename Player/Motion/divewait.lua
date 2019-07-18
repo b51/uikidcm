@@ -1,36 +1,35 @@
-module(..., package.seeall);
-name = ...;
+local vector = require('vector')
+local mcm = require('mcm')
+local Body = require('Body')
+local Config = require('Config')
+local Kinematics = require('Kinematics')
+local walk = require('walk')
 
-require('Config')
-require('vector')
-require('Kinematics')
-require('Body')
-require('walk')
-require('mcm')
+local active = true;
+local t0 = 0;
 
-active = true;
-t0 = 0;
-
-footY = Config.walk.footY;
-supportX = Config.walk.supportX;
-bodyHeight = Config.stance.bodyHeightDive or 0.25;
-bodyTilt = Config.stance.bodyTiltDive or 0;
-
+local supportX = Config.walk.supportX;
+local bodyHeight = Config.stance.bodyHeightDive or 0.25;
+local bodyTilt = Config.stance.bodyTiltDive or 0;
 
 -- Max change in postion6D to reach stance:
-dpLimit=Config.stance.dpLimitDive or
-vector.new({.1,.01,.03,.1,.3,.1});
+local dpLimit=Config.stance.dpLimitDive or 
+                vector.new({.1,.01,.03,.1,.3,.1});
 
-tFinish=0;
-tStartWait=0.2;
-tEndWait=0.1;
-tStart=0;
-finished=false;
+local tFinish=0;
+local tStartWait=0.2;
+local tEndWait=0.1;
+local tStart=0;
+local finished=false;
+local started = false;
+local pLLeg = {};
+local pRLeg = {};
 
-function entry()
-  print("Motion SM:".._NAME.." entry");
+local entry = function()
+  print("Motion: divewait entry");
 
-  footX = mcm.get_footX();
+  local footX = mcm.get_footX();
+  local footY = Config.walk.footY;
   -- Final stance foot position6D
   pTorsoTarget = vector.new({0, 0, bodyHeight, 0,bodyTilt,0});
   pLLeg = vector.new({-supportX + footX, footY, 0, 0,0,0});
@@ -47,7 +46,7 @@ function entry()
 
 end
 
-function update()
+local update = function()
   local t = Body.get_time();
   if walk.active then
     -- walk.update();   --tse
@@ -69,9 +68,9 @@ function update()
       local dpLLeg = Kinematics.torso_lleg(qLLeg);
       local dpRLeg = Kinematics.torso_rleg(qRLeg);
 
-      pTorsoL=pLLeg+dpLLeg;
-      pTorsoR=pRLeg+dpRLeg;
-      pTorso=(pTorsoL+pTorsoR)*0.5;
+      local pTorsoL=pLLeg+dpLLeg;
+      local pTorsoR=pRLeg+dpRLeg;
+      local pTorso=(pTorsoL+pTorsoR)*0.5;
 
       Body.set_lleg_command(qLLeg);
       Body.set_rleg_command(qRLeg);
@@ -79,7 +78,6 @@ function update()
       Body.set_rleg_hardness(1);
       t0 = Body.get_time();
       tStart=t;
-      count=1;
       Body.set_syncread_enable(0);
     else
       Body.set_syncread_enable(1);
@@ -91,9 +89,9 @@ function update()
   t0 = t;
   local tol = true;
   local tolLimit = 1e-6;
-  dpDeltaMax = dt*dpLimit;
+  local dpDeltaMax = dt*dpLimit;
 
-  dpTorso = pTorsoTarget - pTorso;
+  local dpTorso = pTorsoTarget - pTorso;
   for i = 1,6 do
     if (math.abs(dpTorso[i]) > tolLimit) then
       tol = false;
@@ -107,11 +105,11 @@ function update()
 
   pTorso=pTorso+dpTorso;
 
-    --[[vcm.set_camera_bodyHeight(pTorso[3]);----------------------------------------123456Ô]áŒ
-  vcm.set_camera_bodyTilt(pTorso[5]);--]]----------------------------------------123456Ô]áŒ
---  print("BodyHeight/Tilt:",pTorso[3],pTorso[5]*180/math.pi)
+  --[[vcm.set_camera_bodyHeight(pTorso[3]);------------123456Ô]áŒ
+      vcm.set_camera_bodyTilt(pTorso[5]);--]]----------123456Ô]áŒ
+  -- print("BodyHeight/Tilt:",pTorso[3],pTorso[5]*180/math.pi)
 
-  q = Kinematics.inverse_legs(pLLeg, pRLeg, pTorso, 0);
+  local q = Kinematics.inverse_legs(pLLeg, pRLeg, pTorso, 0);
   Body.set_lleg_command(q);
 
   if (tol) then
@@ -119,14 +117,20 @@ function update()
       tFinish=t;
     else
       if t-tFinish>tEndWait then
-	finished=true;
-	print("Sit done, time elapsed",t-tStart)
+        finished=true;
+        print("Sit done, time elapsed",t-tStart)
       end
     end
   end
-
 end
 
-function exit()
+local exit = function()
   Body.set_syncread_enable(1);
 end
+
+return {
+  _NAME = "divewait",
+  entry = entry,
+  update = update,
+  exit = exit,
+};

@@ -43,8 +43,6 @@ require('ocm')
 
 gcm.say_id()
 
-smindex = 0;
-
 Motion.entry();
 darwin = false;
 webots = false;
@@ -340,8 +338,8 @@ function update()
       end
     elseif (ready) then
       -- initialize state machines
-      package.path = cwd..'/BodyFSM/'..Config.fsm.body[smindex+1]..'/?.lua;'..package.path;
-      package.path = cwd..'/HeadFSM/'..Config.fsm.head[smindex+1]..'/?.lua;'..package.path;
+      package.path = cwd..'/BodyFSM/?.lua;'..package.path;
+      package.path = cwd..'/HeadFSM/?.lua;'..package.path;
       require('BodyFSM')
       require('HeadFSM')
 

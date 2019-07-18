@@ -29,35 +29,19 @@ gcm.say_id();
 
 Motion.entry();
 
-local darwin = false;
-local webots = false;
-
--- Enable OP specific
-if(Config.platform.name == 'OP') then
-  darwin = true;
-  --SJ: OP specific initialization posing (to prevent twisting)
-  Body.set_body_hardness(0.3);
-  Body.set_actuator_command(Config.stance.initangle)
-  unix.usleep(1E6*0.5);
-  Body.set_body_hardness(0);
-  Body.set_lleg_hardness({0.6,0.6,0.6,0,0,0});
-  Body.set_rleg_hardness({0.6,0.6,0.6,0,0,0});
-end
-
 local init = false;
 local calibrating = false;
 local ready = true;
  
-local smindex = 0;
 local initToggle = true;
 
 --SJ: Now we use a SINGLE state machine for goalie and attacker
-package.path = cwd..'/BodyFSM/'..Config.fsm.body[smindex+1]..'/?.lua;'..package.path;
-package.path = cwd..'/HeadFSM/'..Config.fsm.head[smindex+1]..'/?.lua;'..package.path;
-package.path = cwd..'/GameFSM/'..Config.fsm.game..'/?.lua;'..package.path;
-require('BodyFSM')
-require('HeadFSM')
-require('GameFSM')
+package.path = cwd..'/BodyFSM/?.lua;'..package.path;
+package.path = cwd..'/HeadFSM/?.lua;'..package.path;
+package.path = cwd..'/GameFSM/?.lua;'..package.path;
+local BodyFSM = require('BodyFSM')
+local HeadFSM = require('HeadFSM')
+local GameFSM = require('GameFSM')
 
 BodyFSM.entry();
 HeadFSM.entry();

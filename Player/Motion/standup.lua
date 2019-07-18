@@ -76,6 +76,7 @@ local exit = function()
 end
 
 return {
+  _NAME = "standup",
   entry = entry,
   update = update,
   exit = exit,

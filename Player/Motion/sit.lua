@@ -26,7 +26,7 @@ local tStartWait = 0.2;
 local tStart=0;
 
 local entry = function()
-  print("Motion SM: sit entry");
+  print("Motion: sit entry");
   walk.stop();
   started=false;
   --This makes the robot look up and see goalposts while sitting down
@@ -101,6 +101,7 @@ local exit = function()
 end
 
 return {
+  _NAME = "sit",
   entry = entry,
   update = update,
   exit = exit,

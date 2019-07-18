@@ -1,3 +1,4 @@
+local vector = require('vector')
 local mot={};
 
 mot.servos={

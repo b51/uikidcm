@@ -31,7 +31,7 @@ end
 
 loadconfig('Robot/Config_Robot')
 loadconfig('Walk/Config_Walk')
---loadconfig('Kick/Config_Kick')
+loadconfig('Kick/Config_Kick')
 loadconfig('FSM/Config_FSM')
 loadconfig('Net/Config_Yolo_Net')
 loadconfig('Vision/Config_Vision')

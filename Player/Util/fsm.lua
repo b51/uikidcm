@@ -23,9 +23,6 @@
   sm:set_state(state_string); -- sets the state by the string name
 --]]-------
 
-mt = _ENV;
-mt.__index = mt;
-
 local set_transition = function(self, fromState, event, toState, action)
   assert(self.reverseStates[fromState], "Unknown from state");
   assert(type(event) == "string", "Unknown event");
@@ -136,6 +133,19 @@ local exit = function(self)
   self.currentState = self.initialState;
 end
 
+local mt = {
+  set_transition = set_transition,
+  add_state = add_state,
+  add_event = add_event,
+  set_state = set_state,
+  get_current_state = get_current_state,
+  get_previous_state = get_previous_state,
+  entry = entry,
+  update = update,
+  exit = exit,
+  set_state_debug_handle = set_state_debug_handle,
+};
+
 local new = function(state1, ...)
   if (type(state1) ~= "table") then
     error("no initial state");
@@ -166,7 +176,7 @@ local new = function(state1, ...)
   o.nextState = nil;
   o.nextAction = nil;
 
-  setmetatable(o, mt);
+  setmetatable(o, {__index = mt});
   return o;
 end
 

@@ -1,4 +1,4 @@
-require('vector')
+local vector = require('vector')
 --Kick parameters
 local kick={};
 

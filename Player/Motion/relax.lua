@@ -64,6 +64,7 @@ local exit = function()
 end
 
 return {
+  _NAME = "relax",
   entry = entry,
   update = update,
   exit = exit,

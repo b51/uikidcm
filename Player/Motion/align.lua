@@ -5,7 +5,7 @@ local Body = require('Body')
 local keyframe = require('keyframe')
 local walk = require('walk')
 
-local cwd = unix.getcwd();
+local cwd = os.getenv('PWD');
 cwd = cwd.."/Motion"
 
 local bodyHeight = Config.walk.bodyHeight;
@@ -268,6 +268,7 @@ local exit = function()
 end
 
 return {
+  _NAME = "align",
   entry = entry,
   update = update,
   exit = exit,

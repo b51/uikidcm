@@ -777,6 +777,7 @@ end
 entry();
 
 return {
+  _NAME = "walk",
   entry = entry,
   update = update,
   exit = exit,

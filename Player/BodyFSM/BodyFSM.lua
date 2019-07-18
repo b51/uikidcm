@@ -1,4 +1,5 @@
-require('gcm')
+local gcm = require('gcm')
+local Config = require('Config')
 
 --if Config.game.role==0 then
 if Config.fsm.playMode==1 then

@@ -4,10 +4,6 @@ local fsm={};
 --How much should we slow down all SM timings?
 local speedFactor = 1.0;
 
-fsm.game = '';
-fsm.head = {''};
-fsm.body = {''};
-
 --Behavior flags, should be defined in FSM Configs but can be overrided here
 fsm.kickoff_wait_enable = 0;
 fsm.playMode = 3; --1 for demo, 2 for orbit, 3 for direct approach, 4 for passing ball
@@ -38,7 +34,7 @@ fsm.goalie_reposition=0; --No reposition
 fsm.th_front_kick = 10*math.pi/180;
 
 --------------------------------------------------
---BodyReady : make robot move to initial position
+--bodyReady : make robot move to initial position
 --------------------------------------------------
 fsm.bodyReady={};
 fsm.bodyReady.maxStep = 0.06;
@@ -46,14 +42,14 @@ fsm.bodyReady.thClose = {0.30,15*math.pi/180} --r and theta
 fsm.bodyReady.tStart = 3.0;  --initial localization time
 
 --------------------------------------------------
---BodySearch : make robot turn to search the ball
+--bodySearch : make robot turn to search the ball
 --------------------------------------------------
 fsm.bodySearch={};
 fsm.bodySearch.vSpin = 0.3; --Turn velocity
 fsm.bodySearch.timeout = 10.0*speedFactor;
 
 --------------------------------------------------
---BodyAnticipate : Sit down and wait for kick (goalie)
+--bodyAnticipate : Sit down and wait for kick (goalie)
 --------------------------------------------------
 --Goalie diving detection parameters
 fsm.bodyAnticipate={};
@@ -76,7 +72,7 @@ fsm.bodyGoaliePosition = {};
 fsm.bodyGoaliePosition.thClose = {.2, .1, 10*math.pi/180}
 
 --------------------------------------------------
---BodyChase : move the robot directly towards the ball (for goalie)
+--bodyChase : move the robot directly towards the ball (for goalie)
 --------------------------------------------------
 fsm.bodyChase={};
 fsm.bodyChase.maxStep = 0.08;
@@ -87,7 +83,7 @@ fsm.bodyChase.rFar = 2.1;
 fsm.bodyChase.rFarX = 1.5;
 
 --------------------------------------------------
---BodyOrbit : make the robot orbit around the ball
+--bodyOrbit : make the robot orbit around the ball
 --------------------------------------------------
 fsm.bodyOrbit={};
 fsm.bodyOrbit.maxStep = 0.03;
@@ -98,7 +94,7 @@ fsm.bodyOrbit.timeout = 30.0 * speedFactor;
 fsm.bodyOrbit.tLost = 3.0*speedFactor;
 
 --------------------------------------------------
---BodyPosition : Advanced chase-orbit
+--bodyPosition : Advanced chase-orbit
 --------------------------------------------------
 fsm.bodyPosition={};
 --Trajectory parameters
@@ -141,7 +137,7 @@ fsm.bodyPosition.maxA3 = 0.0;
 fsm.bodyPosition.maxY3 = 0.0;
 
 --------------------------------------------------
---BodyApproach :  Align the robot for kick
+--bodyApproach :  Align the robot for kick
 --------------------------------------------------
 fsm.bodyApproach={};
 fsm.bodyApproach.maxStep = 0.04; --Max walk velocity
@@ -167,10 +163,10 @@ fsm.bodyApproach.xTarget22={0, 0.12,0.14}; --min, target, max
 fsm.bodyApproach.yTarget22={0.000, 0.015, 0.030}; --min, target ,max
 
 --------------------------------------------------
---BodyAlign : Align robot before kick
+--bodyAlign : Align robot before kick
 --------------------------------------------------
 -------------------------------------------------
---BodyKick : Stationary Kick
+--bodyKick : Stationary Kick
 --------------------------------------------------
 fsm.bodyKick={};
 --initial wait
@@ -192,13 +188,13 @@ fsm.bodyKick.kickTh = {0.05,0.05};
 fsm.bodyKick.tFollowDelay = 2.2;
 
 --------------------------------------------------
---BodyWalkKick : Dynamic Kick
+--bodyWalkKick : Dynamic Kick
 --------------------------------------------------
 fsm.bodyWalkKick={};
 fsm.bodyWalkKick.timeout = 2.0*speedFactor;
 
 --------------------------------------------------
---BodyGotoCenter : Going to center when ball is lost
+--bodyGotoCenter : Going to center when ball is lost
 --------------------------------------------------
 fsm.bodyGotoCenter={};
 fsm.bodyGotoCenter.maxStep=0.06;
@@ -206,7 +202,7 @@ fsm.bodyGotoCenter.rClose=0.30;
 fsm.bodyGotoCenter.timeout=6.0*speedFactor;
 
 --------------------------------------------------
---HeadTrack : Track the ball
+--headTrack : Track the ball
 --------------------------------------------------
 fsm.headTrack = {};
 fsm.headTrack.timeout = 3.0 * speedFactor;
@@ -218,7 +214,7 @@ fsm.headTrack.minDist = 0.15;--If ball is closer than this, don't look up  --tse
 fsm.headTrack.fixTh={0.20,0.08}; --Fix yaw axis if ball is within this box	--tse
 
 --------------------------------------------------
---HeadReady : Track the horizonal line for localization
+--headReady : Track the horizonal line for localization
 --------------------------------------------------
 fsm.headReady={}
 fsm.headReady.dist = 3.0;
@@ -227,13 +223,13 @@ fsm.headReady.height = 0.460;	--tse
 fsm.headReady.tScan= 3.0*speedFactor;
 
 --------------------------------------------------
---HeadReadyLookGoal : Look Goal during bodyReady
+--headReadyLookGoal : Look Goal during bodyReady
 --------------------------------------------------
 fsm.headReadyLookGoal={}
 fsm.headReadyLookGoal.timeout = 2.5 * speedFactor;
 
 --------------------------------------------------
---HeadScan: Scan around for ball
+--headScan: Scan around for ball
 --------------------------------------------------
 fsm.headScan={};
 --fsm.headScan.pitch0 = 25*math.pi/180;
@@ -251,7 +247,7 @@ fsm.headScan.tScan = 4.5*speedFactor;
 fsm.headScan.timeout = 10.0*speedFactor; --to headLookGoal
 
 --------------------------------------------------
---HeadKick: Fix headangle for approaching
+--headKick: Fix headangle for approaching
 --------------------------------------------------
 fsm.headKick={};
 fsm.headKick.pitch0=58*math.pi/180;
@@ -261,7 +257,7 @@ fsm.headKick.tLost = 3.0*speedFactor;
 fsm.headKick.timeout = 3.0*speedFactor;
 
 --------------------------------------------------
---HeadKickFollow: Follow ball after kick
+--headKickFollow: Follow ball after kick
 --------------------------------------------------
 fsm.headKickFollow={};
 fsm.headKickFollow.pitch={50*math.pi/180, 0*math.pi/180};
@@ -270,7 +266,7 @@ fsm.headKickFollow.yawMagSide = 90*math.pi/180;
 fsm.headKickFollow.tFollow = 1.0*speedFactor;
 
 --------------------------------------------------
---HeadLookGoal: Look up to see the goal
+--headLookGoal: Look up to see the goal
 --------------------------------------------------
 fsm.headLookGoal={};
 --fsm.headLookGoal.yawSweep = 50*math.pi/180;
@@ -279,7 +275,7 @@ fsm.headLookGoal.tScan = 1.0*speedFactor;
 fsm.headLookGoal.minDist = 0.35;--If ball is closer than this,don'tsweep
 
 --------------------------------------------------
---HeadSweep: Look around to find the goal
+--headSweep: Look around to find the goal
 --------------------------------------------------
 fsm.headSweep={};
 fsm.headSweep.tScan=1.0*speedFactor;

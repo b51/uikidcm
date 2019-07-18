@@ -27,7 +27,7 @@ local pLLeg, pRLeg;
 local started;
 
 local entry = function()
-  print("Motion SM:".._NAME.." entry");
+  print("Motion: stance entry");
 
   -- Final stance foot position6D
   pTorsoTarget = vector.new({-mcm.get_footX(), 0, bodyHeight,
@@ -131,6 +131,7 @@ local exit = function()
 end
 
 return {
+  _NAME = "stance",
   entry = entry,
   update = update,
   exit = exit,

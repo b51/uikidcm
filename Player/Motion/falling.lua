@@ -67,6 +67,7 @@ function exit()
 end
 
 return {
+  _NAME = "falling",
   entry = entry,
   update = update,
   exit = exit,

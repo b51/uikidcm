@@ -166,6 +166,7 @@ shared.debug.message='';
 
 local _ENV = {print = print};
 util.init_shm_segment(_ENV, "vcm", shared, shsize);
+vcm = _ENV;
 
 local debug_message='';
 --For vision debugging

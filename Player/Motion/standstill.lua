@@ -34,7 +34,7 @@ local pRLeg = {};
 local started = false;
 
 local entry = function()
-  print("Motion SM: standstill entry");
+  print("Motion: standstill entry");
   -- Final stance foot position6D
   pTorsoTarget = vector.new({0, 0, bodyHeight, 0,bodyTilt,0});
   pLLeg = vector.new({-supportX + mcm.get_footX(), footY, 0, 0,0,0});
@@ -141,6 +141,7 @@ local exit = function()
 end
 
 return {
+  _NAME = "standstill",
   entry = entry,
   update = update,
   exit = exit,

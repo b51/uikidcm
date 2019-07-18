@@ -1,8 +1,9 @@
-local Body = require('Body')
-local vector = require('vector')
+local fsm = require('fsm')
 local mcm = require('mcm')
 local gcm = require('gcm')
-local fsm = require('fsm')
+local vector = require('vector')
+local Body = require('Body')
+local Config = require('Config')
 
 -- Motion FSMs
 local relax = require('relax')
@@ -21,101 +22,80 @@ local dive = require('dive')
 -- Aux
 local grip = require('grip')
 
-local sit_disable = Config.sit_disable or 0;
-local sm;
+local sm = {};
 
--- TODO(b51): Motion FSM needs to be recontructed
-if sit_disable==0 then --For smaller robots
-  local fallAngle = Config.fallAngle or 30*math.pi/180;
+-- TODO(b51): Motion FSM needs to be recontructed.
+--            Some variable I change to local may cause the Motion
+--            fsm this variable belongs to cannot exit loop
 
-  sm = fsm.new(relax);
-  sm:add_state(stance);
-  sm:add_state(nullstate);
-  sm:add_state(walk);
-  sm:add_state(sit);
-  sm:add_state(standup);
-  sm:add_state(falling);
-  sm:add_state(kick);
-  sm:add_state(standstill);
-  sm:add_state(grip);
-  sm:add_state(divewait);
-  sm:add_state(dive);
-  sm:add_state(align);--初始化各状态机名称
+local fallAngle = Config.fallAngle or 30*math.pi/180;
+sm = fsm.new(relax);
+sm:add_state(stance);
+sm:add_state(nullstate);
+sm:add_state(walk);
+sm:add_state(sit);
+sm:add_state(standup);
+sm:add_state(falling);
+sm:add_state(kick);
+sm:add_state(standstill);
+sm:add_state(grip);
+sm:add_state(divewait);
+sm:add_state(dive);
+sm:add_state(align);--初始化各状态机名称
 
-  sm:set_transition(sit, 'done', relax);
-  sm:set_transition(sit, 'standup', stance);
-  sm:set_transition(relax, 'standup', stance);
-  sm:set_transition(relax, 'diveready', divewait);
+sm:set_transition(sit, 'done', relax);
+sm:set_transition(sit, 'standup', stance);
+sm:set_transition(relax, 'standup', stance);
+sm:set_transition(relax, 'diveready', divewait);
 
-  sm:set_transition(stance, 'done', walk);
-  sm:set_transition(stance, 'sit', sit);
-  sm:set_transition(stance, 'diveready', divewait);
+sm:set_transition(stance, 'done', walk);
+sm:set_transition(stance, 'sit', sit);
+sm:set_transition(stance, 'diveready', divewait);
 
-  sm:set_transition(walk, 'sit', sit);
-  sm:set_transition(walk, 'stance', stance);
-  sm:set_transition(walk, 'standstill', standstill);
-  sm:set_transition(walk, 'pickup', grip);
-  sm:set_transition(walk, 'throw', grip);
-  sm:set_transition(walk, 'align', align);--猜测，transition状态转换，当满足中间字符串信息传入时，由前一状态跳转至后一状态。
+sm:set_transition(walk, 'sit', sit);
+sm:set_transition(walk, 'stance', stance);
+sm:set_transition(walk, 'standstill', standstill);
+sm:set_transition(walk, 'pickup', grip);
+sm:set_transition(walk, 'throw', grip);
+sm:set_transition(walk, 'align', align);--猜测，transition状态转换，当满足中间字符串信息传入时，由前一状态跳转至后一状态。
 
-  --align transitions
-  sm:set_transition(align, 'done', walk);
+--align transitions
+sm:set_transition(align, 'done', walk);
 
-  --dive transitions
-  sm:set_transition(walk, 'diveready', divewait);
-  sm:set_transition(walk, 'dive', dive);
+--dive transitions
+sm:set_transition(walk, 'diveready', divewait);
+sm:set_transition(walk, 'dive', dive);
 
-  sm:set_transition(divewait, 'dive', dive);
-  sm:set_transition(divewait, 'walk', stance);
-  sm:set_transition(divewait, 'standup', stance);
-  sm:set_transition(divewait, 'sit', sit);
+sm:set_transition(divewait, 'dive', dive);
+sm:set_transition(divewait, 'walk', stance);
+sm:set_transition(divewait, 'standup', stance);
+sm:set_transition(divewait, 'sit', sit);
 
-  sm:set_transition(dive, 'done', stance);
-  sm:set_transition(dive, 'divedone', falling);
+sm:set_transition(dive, 'done', stance);
+sm:set_transition(dive, 'divedone', falling);
 
-  --standstill makes the robot stand still with 0 bodytilt (for webots)
-  sm:set_transition(standstill, 'stance', stance);
-  sm:set_transition(standstill, 'walk', stance);
-  sm:set_transition(standstill, 'sit', sit);
-  sm:set_transition(standstill, 'diveready', divewait);
+--standstill makes the robot stand still with 0 bodytilt (for webots)
+sm:set_transition(standstill, 'stance', stance);
+sm:set_transition(standstill, 'walk', stance);
+sm:set_transition(standstill, 'sit', sit);
+sm:set_transition(standstill, 'diveready', divewait);
 
-  -- Grip
-  sm:set_transition(grip, 'timeout', grip);
-  sm:set_transition(grip, 'done', stance);
+-- Grip
+sm:set_transition(grip, 'timeout', grip);
+sm:set_transition(grip, 'done', stance);
 
-  -- falling behaviours
+-- falling behaviours
 
-  sm:set_transition(walk, 'fall', falling);
-  sm:set_transition(align, 'fall', falling);
-  sm:set_transition(divewait, 'fall', falling);
-  sm:set_transition(falling, 'done', standup);
-  sm:set_transition(standup, 'done', stance);
-  sm:set_transition(standup, 'fail', standup);
+sm:set_transition(walk, 'fall', falling);
+sm:set_transition(align, 'fall', falling);
+sm:set_transition(divewait, 'fall', falling);
+sm:set_transition(falling, 'done', standup);
+sm:set_transition(standup, 'done', stance);
+sm:set_transition(standup, 'fail', standup);
 
-  -- kick behaviours
-  sm:set_transition(walk, 'kick', kick);
-  sm:set_transition(kick, 'done', walk);
-else --For large robots that cannot sit down or getup
-  fallAngle = 1E6; --NEVER check falldown
-
-  sm = fsm.new(standstill);
-  sm:add_state(stance);
-  sm:add_state(walk);
-  sm:add_state(kick);
-
-  sm:set_transition(stance, 'done', walk);
-
-  sm:set_transition(walk, 'stance', stance);
-  sm:set_transition(walk, 'standstill', standstill);
-
-  --standstill makes the robot stand still with 0 bodytilt (for webots)
-  sm:set_transition(standstill, 'stance', stance);
-  sm:set_transition(standstill, 'walk', stance);
-
-  -- kick behaviours
-  sm:set_transition(walk, 'kick', kick);
-  sm:set_transition(kick, 'done', walk);
-end
+-- kick behaviours
+sm:set_transition(walk, 'kick', kick);
+sm:set_transition(kick, 'done', walk);
 
 -- set state debug handle to shared memory settor
 sm:set_state_debug_handle(gcm.set_fsm_motion_state);
@@ -144,7 +124,7 @@ local update = function()
   local maxImuAngle = math.max(math.abs(imuAngle[1]), math.abs(imuAngle[2]-bodyTilt));
   local fall = mcm.get_motion_fall_check() --Should we check for fall? 1 = yes
   if (maxImuAngle > fallAngle and fall == 1) then
-   print('falling event detected',maxImuAngle);
+    print('falling event detected',maxImuAngle);
     sm:add_event("fall");
     mcm.set_walk_isFallDown(1); --Notify world to reset heading
   else
@@ -169,7 +149,6 @@ local update = function()
   end
 
   sm:update();
-
   -- update shm
   update_shm();
 end

@@ -1,37 +1,31 @@
-module(..., package.seeall);
+local fsm = require('fsm')
+local gcm = require('gcm')
+local Config = require('Config')
+local Body = require('Body')
 
-require('Body')
-require('fsm')
-require('gcm')
-require('Config')
+local bodyIdle = require('bodyIdle')
+local bodyStart = require('bodyStart')
+local bodyStop = require('bodyStop')
+local bodyReady = require('bodyReady')
+local bodySearch = require('bodySearch')
+local bodyApproach = require('bodyApproach')
+local bodyDribble = require('bodyDribble')
+local bodyKick = require('bodyKick')
+local bodyWalkKick = require('bodyWalkKick')
+local bodyOrbit = require('bodyOrbit')
+local bodyGotoCenter = require('bodyGotoCenter')
+local bodyPosition = require('bodyPosition')
+local bodyObstacle = require('bodyObstacle')
+local bodyObstacleAvoid = require('bodyObstacleAvoid')
+local bodyDribble = require('bodyDribble')
 
-require('bodyIdle')
-require('bodyStart')
-require('bodyStop')
-require('bodyReady')
-require('bodySearch')
-require('bodyApproach')
-require('bodyDribble')
-require('bodyKick')
-require('bodyWalkKick')
-require('bodyOrbit')
-require('bodyGotoCenter')
-require('bodyPosition')
-require('bodyObstacle')
-require('bodyObstacleAvoid')
-require('bodyDribble')
+local bodyPositionGoalie = require('bodyPositionGoalie')
+local bodyAnticipate = require('bodyAnticipate')
+local bodyChase = require('bodyChase')
+local bodyDive = require('bodyDive')
+local bodyReadyMove = require('bodyReadyMove')
 
-require('bodyPositionGoalie')
-require('bodyAnticipate')
-require('bodyChase')
-require('bodyDive')
-
-
-
-require('bodyReadyMove')
-
-
-
+local sm = {};
 sm = fsm.new(bodyIdle);
 sm:add_state(bodyStart);
 sm:add_state(bodyStop);
@@ -54,8 +48,6 @@ sm:add_state(bodyDive);
 sm:add_state(bodyChase);
 
 sm:add_state(bodyReadyMove);
-
-
 
 ------------------------------------------------------
 -- Advanced FSM (bodyPosition)
@@ -117,7 +109,6 @@ sm:set_transition(bodyDribble, 'fall', bodyPosition);
 sm:set_transition(bodyApproach, 'fall', bodyPosition);
 sm:set_transition(bodyKick, 'fall', bodyPosition);
 
-
 --Escape transitions for goalie
 sm:set_transition(bodyStart, 'goalie', bodyAnticipate);
 sm:set_transition(bodyPosition, 'goalie', bodyPositionGoalie);
@@ -168,20 +159,23 @@ sm:set_transition(bodyKick, 'fall', bodyPositionGoalie);
 -- Chase the ball after a fall, since this could have been caused by a dive
 sm:set_transition(bodyDive, 'fall', bodyChase);
 
-
-
 -- set state debug handle to shared memory settor
 sm:set_state_debug_handle(gcm.set_fsm_body_state);
 
-
-function entry()
+local entry = function()
   sm:entry()
 end
 
-function update()
+local update = function()
   sm:update();
 end
 
-function exit()
+local exit = function()
   sm:exit();
 end
+
+return {
+  entry = entry,
+  update = update,
+  exit = exit,
+}

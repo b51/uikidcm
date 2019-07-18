@@ -1,4 +1,6 @@
+local unix = require('unix')
 local util = require('util')
+local mcm = require('mcm')
 local vector = require('vector')
 local Body = require('Body')
 local Config = require('Config')
@@ -327,6 +329,7 @@ local set_kick = function(newKick)
 end
 
 return {
+  _NAME = "kick",
   entry = entry,
   update = update,
   exit = exit,

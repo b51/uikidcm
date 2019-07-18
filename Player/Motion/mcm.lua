@@ -48,6 +48,7 @@ shared.motion.fall_check = vector.zeros(1);
 
 local _ENV = {print = print};
 util.init_shm_segment(_ENV, "mcm", shared, shsize);
+mcm = _ENV;
 
 -- helper functions
 mcm.get_odometry = function(u0)

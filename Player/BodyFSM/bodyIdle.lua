@@ -1,24 +1,26 @@
-module(..., package.seeall);
+local Body = require('Body')
+local Motion = require('Motion')
 
-require('Body')
-require('Motion')
+local t0 = 0;
 
-t0 = 0;
-
-function entry()
-  print(_NAME..' entry');
+local entry = function()
+  print("BodyFSM: bodyIdle entry");
   t0 = Body.get_time();
-
   Motion.event("sit");
---  Motion.sm:set_state('resit');
---  Motion.sm:set_state('standstill');
 end
 
-function update()
+local update = function()
   Motion.event("sit");
   t = Body.get_time();
 end
 
-function exit()
+local exit = function()
   Motion.sm:set_state('stance');
 end
+
+return {
+  _NAME = "bodyIdle",
+  entry = entry,
+  update = update,
+  exit = exit,
+}
