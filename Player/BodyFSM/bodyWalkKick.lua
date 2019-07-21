@@ -1,52 +1,43 @@
 -- Test SM for walk kick
 -- Not for distribute
+local _NAME = "bodyWalkKick";
+local Body = require('Body')
+local wcm = require('wcm')
+local vector = require('vector')
+local Config = require('Config')
+local HeadFSM = require('HeadFSM')
+local Motion = require('Motion');
+local kick = require('kick');
+local walk = require('walk');
 
+local t0 = 0;
+local timeout = Config.fsm.bodyWalkKick.timeout;
 
-module(..., package.seeall);
+local walkkick_th = 0.14; --Threshold for step-back walkkick for OP
+local follow = false;
 
-require('Body')
-require('vector')
-require('Motion');
-require('kick');
-require('HeadFSM')
-require('Config')
-require('wcm')
-
-require('walk');
-
-t0 = 0;
-timeout = Config.fsm.bodyWalkKick.timeout;
-
-walkkick_th = 0.14; --Threshold for step-back walkkick for OP
-
-
-function entry()
-  print(_NAME.." entry");
-
+local entry = function()
+  print("BodyFSM: ".._NAME.." entry");
   t0 = Body.get_time();
   follow=false;
-  kick_dir=wcm.get_kick_dir();
+  local kick_dir=wcm.get_kick_dir();
 
-
-print("KICK DIR:",kick_dir)
-
---  if kick_dir==1 then --straight walkkick
-    -- set kick depending on ball position
-    ball = wcm.get_ball();
-print("WalkKick: Ball pos:",ball.x,ball.y);
-    if (ball.y > 0) then
-      if (ball.x>walkkick_th) or Config.fsm.enable_walkkick<2 then
-        walk.doWalkKickLeft();
-      else
-        walk.doWalkKickLeft2();
-      end
+  -- if kick_dir==1 then --straight walkkick
+  -- set kick depending on ball position
+  local ball = wcm.get_ball();
+  if (ball.y > 0) then
+    if (ball.x>walkkick_th) or Config.fsm.enable_walkkick<2 then
+      walk.doWalkKickLeft();
     else
-      if (ball.x>walkkick_th) or Config.fsm.enable_walkkick<2 then
-        walk.doWalkKickRight();
-      else
-        walk.doWalkKickRight2();
-      end
+      walk.doWalkKickLeft2();
     end
+  else
+    if (ball.x>walkkick_th) or Config.fsm.enable_walkkick<2 then
+      walk.doWalkKickRight();
+    else
+      walk.doWalkKickRight2();
+    end
+  end
 --  elseif kick_dir==2 then --sidekick to left
 --    walk.doSideKickLeft();
 --  else
@@ -56,7 +47,7 @@ print("WalkKick: Ball pos:",ball.x,ball.y);
 --  HeadFSM.sm:set_state('headIdle');
 end
 
-function update()
+local update = function()
   local t = Body.get_time();
 
   if (t - t0 > timeout) then
@@ -71,6 +62,13 @@ function update()
 
 end
 
-function exit()
+local exit = function()
  -- HeadFSM.sm:set_state('headTrack');
 end
+
+return {
+  _NAME = _NAME,
+  entry = entry,
+  update = update,
+  exit = exit,
+}

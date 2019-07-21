@@ -1,36 +1,30 @@
-module(..., package.seeall);
+local _NAME = "gameInitial";
 
-require('Config')
-require('Body');
-require('walk')
-require('BodyFSM')
-require('HeadFSM')
-require('Speak')
-require('vector')
-require('unix')
-require('gcm')
-require('BodyFSM')
-require('HeadFSM')
+local Config = require('Config')
+local Body = require('Body');
+local walk = require('walk')
+local BodyFSM = require('BodyFSM')
+local HeadFSM = require('HeadFSM')
+local vector = require('vector')
+local unix = require('unix')
+local gcm = require('gcm')
 
+local t0_ = 0;
+local timeout_ = 1.0;
 
-t0 = 0;
-timeout = 1.0;
-
-function entry()
-  print(_NAME..' entry');
-  t0 = Body.get_time();
+local entry = function()
+  print('GameFSM: '.._NAME..' entry');
+  t0_ = Body.get_time();
   walk.stop();
 
   HeadFSM.sm:set_state('headIdle');
   BodyFSM.sm:set_state('bodyIdle');
 
-  Speak.talk('Initial');
-
   -- set indicator
   --Body.set_indicator_state({1,1,1});
 end
 
-function update()
+local update = function()
   local state = gcm.get_game_state();
 
   if (state == 1) then
@@ -54,6 +48,13 @@ function update()
   end
 end
 
-function exit()
+local exit = function()
   walk.start();
 end
+
+return {
+  _NAME = _NAME,
+  entry = entry,
+  update = update,
+  exit = exit,
+};

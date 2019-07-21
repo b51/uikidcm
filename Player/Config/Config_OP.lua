@@ -8,6 +8,7 @@ local Config = {};
 Config.platform = {};
 Config.dev = {};
 Config.game = {};
+Config.team = {};
 Config.km = {};
 
 -----------------------------------------------------------------
@@ -44,7 +45,9 @@ platform.name = 'MOS';
 --Robot CFG should be loaded first to set PID values
 local robotName=unix.gethostname();
 
--- Device Interface Libraries
+-----------------------------------------------------------------
+--        Config.dev: Device Interface Libraries
+-----------------------------------------------------------------
 local dev = Config.dev;
 dev.body = 'MOSBody';
 dev.camera = 'V4LCam';
@@ -58,7 +61,9 @@ dev.team = 'TeamBasic';
 dev.walk = 'BasicWalk';
 dev.kick = 'BasicKick'
 
--- Game Parameters
+-----------------------------------------------------------------
+--        Config.game: Game Parameters
+-----------------------------------------------------------------
 local game = Config.game;
 game.teamNumber = 6;
 --Default role: 0 for goalie, 1 for attacker, 2 for defender
@@ -76,8 +81,10 @@ game.nPlayers = 5;
 --SJ: loading FSM config  kills the variable fsm, so should be called first
 --??? what "kills the variable fsm" meaning
 
--- Team Parameters
-local team = {};
+-----------------------------------------------------------------
+--        Config.team: Team Parameters
+-----------------------------------------------------------------
+local team = Config.team;
 team.msgTimeout = 5.0;
 team.tKickOffWear = 7.0;
 

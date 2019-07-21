@@ -1,31 +1,26 @@
-module(..., package.seeall);
+local _NAME = "bodyObstacle";
+local Body = require('Body')
+local wcm = require('wcm')
+local gcm = require('gcm')
+local vector = require('vector')
+local walk = require('walk')
 
-require('Body')
-require('walk')
-require('vector')
+local t0 = 0;
+local timeout = 3.0;
 
-require('wcm')
-require('gcm')
-
-t0 = 0;
-timeout = 3.0;
-
-function entry()
-  print(_NAME.." entry");
-
+local entry = function()
+  print("BodyFSM: ".._NAME.." entry");
   t0 = Body.get_time();
   walk.set_velocity(0,0,0);
   walk.stop();
-  Speak.talk('Obstacle');
 end
 
-function update()
+local update = function()
   local t = Body.get_time();
   walk.stop();
-
   --us = UltraSound.checkObstacle();
-  us = UltraSound.check_obstacle();
-  if ((t - t0 > 1.0) and (us[1] < 7 and us[2] < 7)) then
+  -- if ((t - t0 > 1.0) and (us[1] < 7 and us[2] < 7)) then
+  if (t - t0 > 1.0) then
     print('Exiting Obstacle: clear');
     return 'clear';
   end
@@ -36,6 +31,13 @@ function update()
   end
 end
 
-function exit()
+local exit = function()
   walk.start();
 end
+
+return {
+  _NAME = _NAME,
+  entry = entry,
+  update = update,
+  exit = exit,
+};

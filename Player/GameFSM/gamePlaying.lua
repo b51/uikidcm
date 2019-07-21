@@ -1,32 +1,27 @@
-module(..., package.seeall);
+local _NAME = "gamePlaying";
 
-require('Body')
-require('walk')
-require('BodyFSM')
-require('HeadFSM')
-require('Speak')
-require('vector')
-require('gcm')
-require('BodyFSM')
-require('HeadFSM')
+local Body = require('Body')
+local walk = require('walk')
+local BodyFSM = require('BodyFSM')
+local HeadFSM = require('HeadFSM')
+local vector = require('vector')
+local gcm = require('gcm')
 
-t0 = 0;
+local t0_ = 0;
 
-function entry()
-  print(_NAME..' entry');
+local entry = function()
+  print('GameFSM: '.._NAME..' entry');
 
-  t0 = Body.get_time();
+  t0_ = Body.get_time();
 
   BodyFSM.sm:set_state('bodyStart');
   HeadFSM.sm:set_state('headStart');
-
-  Speak.talk('Playing');
 
   -- set indicator
   Body.set_indicator_state({0,1,0});
 end
 
-function update()
+local update = function()
   local state = gcm.get_game_state();
 
   if (state == 0) then
@@ -45,5 +40,12 @@ function update()
   end
 end
 
-function exit()
+local exit = function()
 end
+
+return {
+  _NAME = _NAME,
+  entry = entry,
+  update = update,
+  exit = exit,
+};

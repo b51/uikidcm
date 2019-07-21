@@ -1,21 +1,21 @@
-module(..., package.seeall);
-require('Body')
-require('fsm')
-require('gcm')
+local Body = require('Body')
+local fsm = require('fsm')
+local gcm = require('gcm')
 
-require('headIdle')
-require('headStart')
-require('headReady')
-require('headReadyLookGoal')
-require('headScan')
-require('headTrack')
-require('headTrackGoalie')
-require('headKickFollow')
-require('headLookGoal')
-require('headSweep')
-require('headKick')
-require('headLog')
+local headIdle = require('headIdle')
+local headStart = require('headStart')
+local headReady = require('headReady')
+local headReadyLookGoal = require('headReadyLookGoal')
+local headScan = require('headScan')
+local headTrack = require('headTrack')
+local headTrackGoalie = require('headTrackGoalie')
+local headKickFollow = require('headKickFollow')
+local headLookGoal = require('headLookGoal')
+local headSweep = require('headSweep')
+local headKick = require('headKick')
+local headLog = require('headLog')
 
+local sm = {};
 sm = fsm.new(headIdle);
 sm:add_state(headStart);
 sm:add_state(headReady);
@@ -29,12 +29,9 @@ sm:add_state(headSweep);
 sm:add_state(headKick);
 sm:add_state(headLog);
 
-
-
 ---------------------------------------------
 --Game FSM with looking at the goal
 ---------------------------------------------
-
 sm:set_transition(headStart, 'done', headTrack);
 
 sm:set_transition(headReady, 'done', headReadyLookGoal);
@@ -68,19 +65,24 @@ sm:set_transition(headScan, 'timeout', headScan);
 sm:set_transition(headTrack, 'goalie', headTrackGoalie);
 sm:set_transition(headTrackGoalie, 'player', headTrack);
 
-
-
 -- set state debug handle to shared memory settor
 sm:set_state_debug_handle(gcm.set_fsm_head_state);
 
-function entry()
+local entry = function()
   sm:entry()
 end
 
-function update()
+local update = function()
   sm:update();
 end
 
-function exit()
+local exit = function()
   sm:exit();
 end
+
+return {
+  entry = entry,
+  update = update,
+  exit = exit,
+  sm = sm,
+};

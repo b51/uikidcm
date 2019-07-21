@@ -1,5 +1,3 @@
-module(..., package.seeall);
-
 require('PoseFilter');
 require('Filter2D');
 require('Body');

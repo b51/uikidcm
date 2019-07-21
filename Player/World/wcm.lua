@@ -33,9 +33,7 @@ shared.ball.dodge = vector.zeros(1);
 shared.ball.locked_on = vector.zeros(1);
 shared.ball.p = vector.zeros(1);
 
-
 shared.ball.v_inf = vector.zeros(2);
-
 
 shared.team = {};
 
@@ -49,8 +47,6 @@ shared.team.defender_pose = vector.zeros(3);
 shared.team.supporter_pose = vector.zeros(3);
 shared.team.goalie_pose = vector.zeros(3);
 
-
-
 shared.goal = {};
 shared.goal.t = vector.zeros(1);
 shared.goal.attack = vector.zeros(3);
@@ -61,10 +57,8 @@ shared.goal.defend_angle = vector.zeros(1);
 shared.goal.attack_post1 = vector.zeros(2);
 shared.goal.attack_post2 = vector.zeros(2);
 
-
 shared.goal.attack_angle2 = vector.zeros(1);
 shared.goal.daPost2 = vector.zeros(1);
-
 
 --Added for side approach/sidekick/kickoff handling
 shared.kick = {};

@@ -1,3 +1,5 @@
+local _NAME = "walk";
+
 local unix = require('unix')
 local util = require('util')
 local vector = require('vector')
@@ -354,7 +356,7 @@ local get_velocity = function()
 end
 
 local entry = function()
-  print ("Motion: Walk entry")
+  print ("Motion: ".._NAME.." entry")
   walkKickRequest = 0;
 end
 
@@ -777,7 +779,7 @@ end
 entry();
 
 return {
-  _NAME = "walk",
+  _NAME = _NAME,
   entry = entry,
   update = update,
   exit = exit,
@@ -793,4 +795,7 @@ return {
   get_body_offset = get_body_offset,
   active = active, -- TODO(b51): used in standstill, is this truly need?
   still = still,   -- TODO(b51): used in still, need check
+
+  uLeft = uLeft,
+  uRight = uRight,
 };

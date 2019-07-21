@@ -1,19 +1,20 @@
-module(..., package.seeall);
+local _NAME = "bodySearch";
+local Body = require('Body')
+local wcm = require('wcm')
+local mcm = require('mcm')
+local vector = require('vector')
+local Config = require('Config')
+local walk = require('walk')
 
-require('Body')
-require('walk')
-require('vector')
-require('Config')
-require('wcm')
-require('mcm')
+local t0 = 0;
+local direction = 1;
+local vSpin = Config.fsm.bodySearch.vSpin or 0.3;
+local ball = {};
+local role = 0;
+local timeout = Config.fsm.bodySearch.timeout or 3.5 * Config.speedFactor;
 
-t0 = 0;
-direction = 1;
-
-vSpin = Config.fsm.bodySearch.vSpin or 0.3;
-
-function entry()
-  print(_NAME.." entry");
+local entry = function()
+  print("BodyFSM: ".._NAME.." entry");
 
   t0 = Body.get_time();
 
@@ -27,21 +28,19 @@ function entry()
     mcm.set_walk_isSearching(-1);
   end
 
-
   role = gcm.get_team_role();
   --Force attacker for demo code
-  if Config.fsm.playMode==1 then role=1; end
-  if role==0 then
-    timeout = Config.fsm.bodySearch.timeout or 3.5*Config.speedFactor;
-  else
+  if Config.fsm.playMode==1 then
+    role=1;
+  end
+  if role==1 then
     timeout = Config.fsm.bodySearch.timeout or 10.0*Config.speedFactor;
   end
 end
 
-function update()
+local update = function()
   local t = Body.get_time();
   ball = wcm.get_ball();
-
 
   -- search/spin until the ball is found
   walk.set_velocity(0, 0, direction*vSpin);
@@ -63,6 +62,13 @@ function update()
   end
 end
 
-function exit()
+local exit = function()
   mcm.set_walk_isSearching(0);
 end
+
+return {
+  _NAME = _NAME,
+  entry = entry,
+  update = update,
+  exit = exit,
+};

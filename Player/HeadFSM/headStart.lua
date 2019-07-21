@@ -1,15 +1,21 @@
-module(..., package.seeall);
+local _NAME = "headStart"
 
-require('Body')
+local Body = require('Body')
 
-function entry()
-  print(_NAME.." entry");
-
+local entry = function()
+  print("HeadFSM: ".._NAME.." entry");
 end
 
-function update()
+local update = function()
   return 'done';
 end
 
-function exit()
+local exit = function()
 end
+
+return {
+  _NAME = _NAME,
+  entry = entry,
+  update = update,
+  exit = exit,
+};

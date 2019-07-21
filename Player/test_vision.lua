@@ -217,7 +217,7 @@ function process_keyinput()
       headangle[2]=headangle[2]+headPitchBias;
 	--this is substracted below
       print("Head Angles for looking directly at the ball:",
-	unpack(headangle*180/math.pi));
+	    table.unpack(headangle*180/math.pi));
 
     elseif byte==string.byte("f") then
       behavior.cycle_behavior();
@@ -314,7 +314,7 @@ ocm.set_occ_reset(1);
       --Body.set_head_command({headangle[1],headangle[2]-headPitchBias});
       Body.set_para_headpos({headangle[1], headangle[2]-headPitchBias});
       Body.set_state_headValid(1);
-      print("\nHead Yaw Pitch:", unpack(headangle*180/math.pi))
+      print("\nHead Yaw Pitch:", table.unpack(headangle*180/math.pi))
 
 
     end
@@ -405,7 +405,7 @@ function update()
 --]]
 
 --    walk.set_velocity(vx,vy,va);
---    walk.set_velocity(unpack(targetvel));	--cancel for bodyfsm test
+--    walk.set_velocity(table.unpack(targetvel));	--cancel for bodyfsm test
 
 
     Motion.update();

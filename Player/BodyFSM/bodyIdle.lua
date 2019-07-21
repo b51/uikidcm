@@ -1,17 +1,19 @@
+local _NAME = "bodyIdle";
+
 local Body = require('Body')
 local Motion = require('Motion')
 
 local t0 = 0;
 
 local entry = function()
-  print("BodyFSM: bodyIdle entry");
+  print("BodyFSM: ".._NAME.." entry");
   t0 = Body.get_time();
   Motion.event("sit");
 end
 
 local update = function()
   Motion.event("sit");
-  t = Body.get_time();
+  local t = Body.get_time();
 end
 
 local exit = function()
@@ -19,8 +21,8 @@ local exit = function()
 end
 
 return {
-  _NAME = "bodyIdle",
+  _NAME = _NAME,
   entry = entry,
   update = update,
   exit = exit,
-}
+};

@@ -1,35 +1,33 @@
-module(..., package.seeall);
+local _NAME = "bodyGotoCenter";
+local Body  = require('Body')
+local wcm = require('wcm')
+local gcm = require('gcm')
+local vector = require('vector')
+local Config = require('Config')
+local walk = require('walk')
 
-require('Body')
-require('walk')
-require('vector')
-require('Config')
-require('wcm')
-require('gcm')
+local t0 = 0;
 
-t0 = 0;
-
-maxStep = Config.fsm.bodyGotoCenter.maxStep;
-rClose = Config.fsm.bodyGotoCenter.rClose;
-timeout = Config.fsm.bodyGotoCenter.timeout;
+local maxStep = Config.fsm.bodyGotoCenter.maxStep;
+local rClose = Config.fsm.bodyGotoCenter.rClose;
+local timeout = Config.fsm.bodyGotoCenter.timeout;
 --TODO: Goalie handling, velocity limit
 
-function entry()
-  print(_NAME.." entry");
-
+local entry = function()
+  print("BodyFSM: ".._NAME.." entry");
   t0 = Body.get_time();
 end
 
-function update()
+local update = function()
   local t = Body.get_time();
 
-  ball = wcm.get_ball();
-  pose = wcm.get_pose();
-  ballGlobal = util.pose_global({ball.x, ball.y, 0}, {pose.x, pose.y, pose.a});
-  tBall = Body.get_time() - ball.t;
+  local ball = wcm.get_ball();
+  local pose = wcm.get_pose();
+  local tBall = Body.get_time() - ball.t;
 
-  id = gcm.get_team_player_id();
-  role = gcm.get_team_role();
+  local id = gcm.get_team_player_id();
+  local role = gcm.get_team_role();
+  local centerPosition;
   if id == 1 then
     -- goalie
     centerPosition = vector.new(wcm.get_goal_defend());
@@ -38,7 +36,6 @@ function update()
     centerPosition[3] = math.atan2(centerPosition[2], 0 - centerPosition[1]);
 
     -- use stricter thresholds
-    thAlign = 10*math.pi/180;
     rClose = .1;
   else
     if (role == 2) then
@@ -53,11 +50,14 @@ function update()
     end
   end
 
-  centerRelative = util.pose_relative(centerPosition, {pose.x, pose.y, pose.a});
-  rCenterRelative = math.sqrt(centerRelative[1]^2 + centerRelative[2]^2);
+  local centerRelative = util.pose_relative(centerPosition,
+                                            {pose.x, pose.y, pose.a});
+  local rCenterRelative = math.sqrt(centerRelative[1]^2 +
+                                    centerRelative[2]^2);
 
-  vx = maxStep * centerRelative[1]/rCenterRelative;
-  vy = maxStep * centerRelative[2]/rCenterRelative;
+  local vx = maxStep * centerRelative[1]/rCenterRelative;
+  local vy = maxStep * centerRelative[2]/rCenterRelative;
+  local va;
   if id == 1 then
     va = .2 * centerRelative[3];
   else
@@ -65,7 +65,6 @@ function update()
   end
   walk.set_velocity(vx, vy, va);
 
-  ballR = math.sqrt(ball.x^2 + ball.y^2);
   if (tBall < 1.0) then
     return 'ballFound';
   end
@@ -77,5 +76,12 @@ function update()
   end
 end
 
-function exit()
+local exit = function()
 end
+
+return {
+  _NAME = _NAME,
+  entry = entry,
+  update = update,
+  exit = exit,
+}

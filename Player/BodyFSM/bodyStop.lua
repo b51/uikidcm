@@ -1,17 +1,17 @@
-module(..., package.seeall);
+local _NAME = "bodyStop";
+local Body = require('Body')
+local Motion = require('Motion')
 
-require('Body')
-require('Motion')
+local started = false;
 
-function entry()
-  print(_NAME..' entry');
-
+local entry = function()
+  print('BodyFSM: '.._NAME..' entry');
   walk.set_velocity(0,0,0);
   walk.stop();
   started = false;
 end
 
-function update()
+local update = function()
   --for webots : we have to stop with 0 bodytilt
   if not started then
     if not walk.active then
@@ -22,6 +22,13 @@ function update()
 
 end
 
-function exit()
+local exit = function()
   Motion.sm:add_event('walk');
 end
+
+return {
+  _NAME = _NAME,
+  entry = entry,
+  update = update,
+  exit = exit,
+};

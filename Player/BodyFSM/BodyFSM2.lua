@@ -1,7 +1,7 @@
+local Body = require('Body')
 local fsm = require('fsm')
 local gcm = require('gcm')
 local Config = require('Config')
-local Body = require('Body')
 
 local bodyIdle = require('bodyIdle')
 local bodyStart = require('bodyStart')
@@ -17,7 +17,6 @@ local bodyGotoCenter = require('bodyGotoCenter')
 local bodyPosition = require('bodyPosition')
 local bodyObstacle = require('bodyObstacle')
 local bodyObstacleAvoid = require('bodyObstacleAvoid')
-local bodyDribble = require('bodyDribble')
 
 local bodyPositionGoalie = require('bodyPositionGoalie')
 local bodyAnticipate = require('bodyAnticipate')
@@ -178,4 +177,5 @@ return {
   entry = entry,
   update = update,
   exit = exit,
-}
+  sm = sm,
+};

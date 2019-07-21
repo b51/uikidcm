@@ -1,62 +1,58 @@
-module(..., package.seeall);
+local _NAME = "bodyOrbit";
+local Body = require('Body')
+local wcm = require('wcm')
+local walk = require('walk')
+local vector = require('vector')
+local Config = require('Config')
+local behavior = require('behavior')
 
-require('Body')
-require('walk')
-require('vector')
-require('Config')
-require('wcm')
-require('behavior')
+local t0 = 0;
+local timeout = Config.fsm.bodyOrbit.timeout;
+local maxStep = Config.fsm.bodyOrbit.maxStep;
+local rOrbit = Config.fsm.bodyOrbit.rOrbit;
+local rFar = Config.fsm.bodyOrbit.rFar;
+local thAlign = Config.fsm.bodyOrbit.thAlign;
+local tLost = Config.fsm.bodyOrbit.tLost;
+local direction = 1;
+local kickAngle = 0;
 
-t0 = 0;
-timeout = Config.fsm.bodyOrbit.timeout;
-maxStep = Config.fsm.bodyOrbit.maxStep;
-rOrbit = Config.fsm.bodyOrbit.rOrbit;
-rFar = Config.fsm.bodyOrbit.rFar;
-thAlign = Config.fsm.bodyOrbit.thAlign;
-tLost = Config.fsm.bodyOrbit.tLost;
-direction = 1;
-dribbleThres = 0.75;
+local get_orbit_direction = function()
+  local attackBearing = wcm.get_attack_bearing();
+  local angle = util.mod_angle(attackBearing-kickAngle);
 
-kickAngle = 0;
+  if angle>0 then
+    dir = 1;
+  else
+    dir = -1;
+  end
+  return dir, angle;
+end
 
-function entry()
-  print(_NAME.." entry");
+local entry = function()
+  print("BodyFSM: ".._NAME.." entry");
   t0 = Body.get_time();
   behavior.update();
   kickAngle=  wcm.get_kick_angle();
   direction,angle=get_orbit_direction();
 end
 
-function get_orbit_direction()
-  attackBearing = wcm.get_attack_bearing();
-  angle = util.mod_angle(attackBearing-kickAngle);
-
-  if angle>0 then dir = 1;
-  else dir = -1;
-  end
-  return dir,angle;
-end
-
-function update()
+local update = function()
   local t = Body.get_time();
 
-  --print('attackBearing: '..attackBearing);
-  --print('daPost: '..daPost);
-  --print('attackBearing', attackBearing)
-  ball = wcm.get_ball();
+  local ball = wcm.get_ball();
 
-  ballR = math.sqrt(ball.x^2 + ball.y^2);
-  ballA = math.atan2(ball.y, ball.x+0.10);
-  dr = ballR - rOrbit;
-  aStep = ballA - direction*(90*math.pi/180 - dr/0.40);
-  vx = maxStep*math.cos(aStep);
+  local ballR = math.sqrt(ball.x^2 + ball.y^2);
+  local ballA = math.atan2(ball.y, ball.x+0.10);
+  local dr = ballR - rOrbit;
+  local aStep = ballA - direction*(90*math.pi/180 - dr/0.40);
+  local vx = maxStep*math.cos(aStep);
 
   --Does setting vx to 0 improve performance of orbit?--
 
   vx = 0;
 
-  vy = maxStep*math.sin(aStep);
-  va = 0.75*ballA;
+  local vy = maxStep*math.sin(aStep);
+  local va = 0.75*ballA;
 
   walk.set_velocity(vx, vy, va);
 
@@ -69,9 +65,8 @@ function update()
   if (ballR > rFar) then
     return 'ballFar';
   end
---  print(attackBearing*180/math.pi)
 
-  dir,angle = get_orbit_direction();
+  local dir, angle = get_orbit_direction();
 
   if (math.abs(angle) < thAlign) then
     return 'done';
@@ -84,5 +79,12 @@ function update()
 
 end
 
-function exit()
+local exit = function()
 end
+
+return {
+  _NAME = _NAME,
+  entry = entry,
+  update = update,
+  exit = exit,
+};

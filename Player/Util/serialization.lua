@@ -1,8 +1,6 @@
-module(..., package.seeall);
+local cutil = require('cutil')
 
-require('cutil')
-
-function serialize_orig(o)
+local serialize_orig = function(o)
   local str = "";
   if type(o) == "number" then
     str = tostring(o);
@@ -23,7 +21,7 @@ end
 --New serialization code omiting integer indexes for tables
 --Only do recursive call if v is a table
 -- Pack size 2.3X smaller, Serilization time 3.4X faster on OP
-function serialize(o)
+local serialize = function(o)
   local str = "";
   if type(o) == "number" then
     if o%1==0 then --quickest check for integer
@@ -39,30 +37,29 @@ function serialize(o)
     for k,v in pairs(o) do
       if type(k)=="string" then
         if type(v) == "number" then
-	  if v%1==0 then --quickest check for integer
+          if v%1==0 then --quickest check for integer
             str = str..string.format("[%q]=%d,",k,v);
-	  else
-	    str = str..string.format("[%q]=%.2f,",k,v);
-	  end
-	elseif type(v)=="string" then
+          else
+            str = str..string.format("[%q]=%.2f,",k,v);
+          end
+        elseif type(v)=="string" then
           str = str..string.format("[%q]=%q,",k,v);
-	elseif type(v)=="table" then
+        elseif type(v)=="table" then
           str = str..string.format("[%q]=%s,",k,serialize(v));
-	end
+        end
       else
         if type(v) == "number" then
-	  if v%1==0 then --quickest check for integer
+          if v%1==0 then --quickest check for integer
             str = str..string.format("%d,",v);
-	  else
-	    str = str..string.format("%.2f,",v);
-	  end
-	elseif type(v)=="string" then
+          else
+            str = str..string.format("%.2f,",v);
+          end
+        elseif type(v)=="string" then
           str = str..string.format("%q,",v);
-	elseif type(v)=="table" then
+        elseif type(v)=="table" then
           str = str..string.format("%s,",serialize(v));
-	end
+        end
       end
-
     end
     str = str.."}";
   else
@@ -71,7 +68,7 @@ function serialize(o)
   return str;
 end
 
-function serialize_array(ud, width, height, dtype, arrName, arrID)
+local serialize_array = function(ud, width, height, dtype, arrName, arrID)
   -- function to serialize an userdata array
   -- returns an array of lua arr tables
   -- Max size of a UDP packet
@@ -102,8 +99,7 @@ end
 --For sending yuyv image
 --We don't care even rows in yuyv
 --So just skip every other line and save 1/2 bandwidth
-
-function serialize_array2(ud, width, height, dtype, arrName, arrID)
+local serialize_array2 = function(ud, width, height, dtype, arrName, arrID)
   -- function to serialize an userdata array
   -- returns an array of lua arr tables
   -- Max size of a UDP packet
@@ -133,7 +129,7 @@ end
 
 --Label-only serialization code
 --Exploiting label data range (0-31) to pack each label to a single byte
-function serialize_label(ud, width, height, dtype, arrName, arrID)
+local serialize_label = function(ud, width, height, dtype, arrName, arrID)
   local dsize = cutil.sizeof(dtype);
   local arrSize = width*height*dsize;
   local ret = {};
@@ -144,7 +140,7 @@ function serialize_label(ud, width, height, dtype, arrName, arrID)
 end
 
 --Double-packing
-function serialize_label_double(ud, width, height, dtype, arrName, arrID)
+local serialize_label_double = function(ud, width, height, dtype, arrName, arrID)
   local dsize = cutil.sizeof(dtype);
   local arrSize = width*height*dsize;
   local ret = {};
@@ -155,7 +151,7 @@ function serialize_label_double(ud, width, height, dtype, arrName, arrID)
 end
 
 --Run-length enclding
-function serialize_label_rle(ud, width, height, dtype, arrName, arrID)
+local serialize_label_rle = function(ud, width, height, dtype, arrName, arrID)
   local dsize = cutil.sizeof(dtype);
   local arrSize = width*height*dsize;
   local ret = {};
@@ -165,7 +161,7 @@ function serialize_label_rle(ud, width, height, dtype, arrName, arrID)
   return ret;
 end
 
-function deserialize(s)
+local deserialize = function(s)
   --local x = assert(loadstring("return "..s))();
   if not s then
     return '';
@@ -180,3 +176,14 @@ function deserialize(s)
     return ret;
   end
 end
+
+return {
+  serialize_orig = serialize_orig,
+  serialize = serialize,
+  serialize_array = serialize_array,
+  serialize_array2 = serialize_array2,
+  serialize_label = serialize_label,
+  serialize_label_double = serialize_label_double,
+  serialize_label_rle = serialize_label_rle,
+  deserialize = deserialize,
+};

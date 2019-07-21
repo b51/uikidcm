@@ -26,7 +26,6 @@ local Motion = require('Motion');
 local Config = require('Config');
 
 gcm.say_id();
-
 Motion.entry();
 
 local init = false;
@@ -48,30 +47,32 @@ HeadFSM.entry();
 GameFSM.entry();
 
 -- main loop
-count = 0;
-lcount = 0;
-tUpdate = unix.time();
+local count_ = 0;
+local lcount_ = 0;
+local tUpdate_ = unix.time();
 
 --Start with PAUSED state
 gcm.set_team_forced_role(0); --Don't force role
 gcm.set_game_paused(1);
-waiting = 0;
+local waiting_ = 0;
+local cur_role_;
 if Config.game.role==1 then
-  cur_role = 1; --Attacker
+  cur_role_ = 1; --Attacker
 else
-  cur_role = 0; --Default goalie
+  cur_role_ = 0; --Default goalie
 end
 
-function update()
-  count = count + 1;
-  t = Body.get_time();
+local update = function()
+  count_ = count_ + 1;
+  local t = Body.get_time();
   --Update battery info
-  wcm.set_robot_battery_level(Body.get_battery_level());
+  Body.get_battery_level();
+  --wcm.set_robot_battery_level(Body.get_battery_level());
   vcm.set_camera_teambroadcast(1); --Turn on wireless team broadcast
 
-  if waiting>0 then --Waiting mode, check role change
+  if waiting_ > 0 then --Waiting mode, check role change
     gcm.set_game_paused(1);
-    if cur_role==0 then
+    if cur_role_ == 0 then
       gcm.set_team_role(5); --Reserve goalie
       Body.set_indicator_ball({0,0,1});
 
@@ -104,19 +105,13 @@ function update()
     Body.update();
   end
 
-  local dcount = 50;
-  if (count % 50 == 0) then
---    print('fps: '..(50 / (unix.time() - tUpdate)));
-    tUpdate = unix.time();
+  if (count_ % 50 == 0) then
+--    print('fps: '..(50 / (unix.time() - tUpdate_)));
+    tUpdate_ = unix.time();
     Body.set_indicator_batteryLevel(Body.get_battery_level());
   end
-
 end
 
-if( darwin ) then
-  local tDelay = 0.005 * 1E6; -- Loop every 5ms
-  while 1 do
-    update();
-    unix.usleep(tDelay);
-  end
-end
+return {
+  update = update,
+};

@@ -1,137 +1,67 @@
-module(..., package.seeall);
-require('Config');
--- Enable Webots specific
-if (string.find(Config.platform.name,'Webots')) then
-  webots = true;
-end
+local Config = require('Config');
+local Transform = require('Transform');
+local vector = require('vector');
+local vcm = require('vcm');
+local mcm = require('mcm');
 
-require('Transform');
-require('vector');
-require('vcm');
-require('mcm');
+-- TODO(b51): horizonA, horizonB, labelA, labelB, focalA is deprecated,
+--            should use origin image size to do transform
+-- TODO(b51): Draw transform details of every function
 
-tHead = Transform.eye();
-tNeck = Transform.eye();
-camPosition = 0;
+local tHead_ = Transform.eye();
+local tNeck_ = Transform.eye();
+local camPosition_ = 0;
 
-camOffsetZ = Config.head.camOffsetZ;
-pitchMin = Config.head.pitchMin;
-pitchMax = Config.head.pitchMax;
-yawMin = Config.head.yawMin;
-yawMax = Config.head.yawMax;
+local camOffsetZ_ = Config.head.camOffsetZ;
+local pitchMin_ = Config.head.pitchMin;
+local pitchMax_ = Config.head.pitchMax;
+local yawMin_ = Config.head.yawMin;
+local yawMax_ = Config.head.yawMax;
 
-cameraPos = Config.head.cameraPos;
-cameraAngle = Config.head.cameraAngle;
+local cameraPos_ = Config.head.cameraPos;
+local cameraAngle_ = Config.head.cameraAngle;
 
-horizonA = 1;
-horizonB = 1;
-horizonDir = 0;
+local horizonA_ = 1;
+local horizonB_ = 1;
+local horizonDir_ = 0;
 
-labelA = {};
-labelA.m = Config.camera.width/2;
-labelA.n = Config.camera.height/2;
+local labelA_ = {};
+labelA_.m = Config.camera.width/2;
+labelA_.n = Config.camera.height/2;
 
-u0 = Config.camera.x_center;
-v0 = Config.camera.y_center;
-focalU = Config.camera.focal_length;
-focalV = Config.camera.focal_base;
+local u0_ = Config.camera.x_center;
+local v0_ = Config.camera.y_center;
+local focalU_ = Config.camera.focal_length;
+local focalV_ = Config.camera.focal_base;
 
-nxA = labelA.m;
-x0A = 0.5 * (nxA-1);
-nyA = labelA.n;
-y0A = 0.5 * (nyA-1);
-focalA = Config.camera.focal_length/(Config.camera.focal_base/nxA);
+local nxA_ = labelA_.m;
+local x0A_ = 0.5 * (nxA_-1);
+local nyA_ = labelA_.n;
+local y0A_ = 0.5 * (nyA_-1);
+local focalA_ = Config.camera.focal_length/(Config.camera.focal_base/nxA_);
 
-scaleB = Config.vision.scaleB;
-labelB = {};
-labelB.m = labelA.m/scaleB;
-labelB.n = labelA.n/scaleB;
-nxB = nxA/scaleB;
-x0B = 0.5 * (nxB-1);
-nyB = nyA/scaleB;
-y0B = 0.5 * (nyB-1);
-focalB = focalA/scaleB;
+local scaleB_ = Config.vision.scaleB;
+local labelB_ = {};
+labelB_.m = labelA_.m/scaleB_;
+labelB_.n = labelA_.n/scaleB_;
+local nxB_ = nxA_/scaleB_;
+local x0B_ = 0.5 * (nxB_-1);
+local nyB_ = nyA_/scaleB_;
+local y0B_ = 0.5 * (nyB_-1);
+local focalB_ = focalA_/scaleB_;
 
-print('HeadTransform LabelB size: ('..labelB.m..', '..labelB.n..')');
-print('HeadTransform LabelA size: ('..labelA.m..', '..labelA.n..')');
+local neckX_ = Config.head.neckX;
+local neckZ_ = Config.head.neckZ;
+local footX_ = Config.walk.footX;
 
-neckX    = Config.head.neckX;
-neckZ    = Config.head.neckZ;
-footX    = Config.walk.footX;
-
-function entry()
-end
-
-
---function update(sel,headAngles,compY)
-function update(sel,headAngles)
-  --Now bodyHeight, Tilt, camera pitch angle bias are read from vcm
---  compY = compY or 0;
-  bodyHeight=vcm.get_camera_bodyHeight();
-  bodyTilt=vcm.get_camera_bodyTilt();
-  pitch0 =  mcm.get_headPitchBias();
---[[
-  vcm.add_debug_message(string.format(
-  "HeadTrasnform update:\n bodyHeight %.2f bodyTilt %d pitch0 %d headangle %d %d\n",
-	 bodyHeight, bodyTilt*180/math.pi, pitch0*180/math.pi,
-	 headAngles[1]*180/math.pi,
-	(headAngles[2]+pitch0)*180/math.pi));
-]]--
-
-  -- cameras are 0 indexed so add one for use here
-  sel = sel + 1;
-	--print("sel :"..sel);
-  tNeck = Transform.trans(-footX,0,bodyHeight);
---  tNeck = Transform.trans(-footX,compY,bodyHeight);	--b51:for compensate robot Y
-  tNeck = tNeck*Transform.rotY(bodyTilt);
-  tNeck = tNeck*Transform.trans(neckX,0,neckZ);
-	--print("-footX, bodyTilt, neckX, neckZ :"..-footX, bodyTilt, neckX, neckZ);
-  --pitch0 is Robot specific head angle bias (for OP)
-  tNeck = tNeck*Transform.rotZ(headAngles[1])*Transform.rotY(headAngles[2]+pitch0);
-	--print("headAngles[1], headAngles[2], pitch0 :"..headAngles[1], headAngles[2], pitch0);
-    --print("cameraPos[sel][1], cameraPos[sel][2], cameraPos[sel][3] :"..cameraPos[sel][1], cameraPos[sel][2], cameraPos[sel][3]);
-  tHead = tNeck*Transform.trans(cameraPos[sel][1], cameraPos[sel][2], cameraPos[sel][3]);
-  tHead = tHead*Transform.rotY(cameraAngle[sel][2]);
-
-  --update camera position
-  local vHead=vector.new({0,0,0,1});
-  vHead=tHead*vHead;
-  vHead=vHead/vHead[4];
-  vcm.set_camera_height(vHead[3]);
-
-  -- update horizon
-  pa = headAngles[2] + cameraAngle[sel][2]; --+ bodyTilt;
-  horizonA = (labelA.n/2.0) - focalA*math.tan(pa) - 2;
-  horizonA = math.min(labelA.n, math.max(math.floor(horizonA), 0));
-  horizonB = (labelB.n/2.0) - focalB*math.tan(pa) - 1;
-  horizonB = math.min(labelB.n, math.max(math.floor(horizonB), 0));
-  --print('horizon-- pitch: '..pa..'  A: '..horizonA..'  B: '..horizonB);
-  -- horizon direction
-  local ref = vector.new({0,1,0,1});
-  local p0 = vector.new({0,0,0,1});
-  local ref1 = vector.new({0,-1,0,1});
-  p0 = tHead*p0;
-  ref = tHead*ref;
-  ref1 = tHead*ref1;
-  ref = ref - p0;
-  ref1 = ref1 - p0;
-  -- print(ref,' ',ref1);
-  local v = {};
-  v[1] = -math.abs(ref1[1]) * focalA / 4 + x0A;
-  v[2] = ref1[3] * focalA / 4 + y0A;
-  v[3] = math.abs(ref[1]) * focalA / 4 + x0A;
-  v[4] = ref[3] * focalA / 4 + y0A;
-  horizonDir = math.atan2(ref1[3],math.sqrt(ref1[1]^2+ref1[2]^2));
-  --print('horizion angle: '..horizonDir*180/math.pi);
-end
-
-function rayIntersectA(c)
+local rayIntersectA = function(c)
   local p0 = vector.new({0,0,0,1.0});
-  local p1 = vector.new({focalA,-(c[1]-x0A),-(c[2]-y0A),1.0});
+  local p1 = vector.new({focalA_,-(c[1]-x0A_),-(c[2]-y0A_),1.0});
 
-  p1 = tHead * p1;
-  local p0 = tNeck * p0;
+  p1 = tHead_ * p1;
+  local p0 = tNeck_ * p0;
   local v = p1 - p0;
+  local t = -p0[3]/v[3];
   -- if t < 0, the x value will be projected behind robot, simply reverse it
   -- since it is always very far away
   if (t < 0) then
@@ -150,13 +80,12 @@ function rayIntersectA(c)
   return p;
 end
 
-
-function rayIntersectB(c)
+local rayIntersectB = function(c)
   local p0 = vector.new({0,0,0,1.0});
-  local p1 = vector.new({focalB,-(c[1]-x0B),-(c[2]-y0B),1.0});
+  local p1 = vector.new({focalB_,-(c[1]-x0B_),-(c[2]-y0B_),1.0});
 
-  p1 = tHead * p1;
-  local p0 = tNeck * p0;
+  p1 = tHead_ * p1;
+  local p0 = tNeck_ * p0;
   local v = p1 - p0;
   local t = -p0[3]/v[3];
   -- if t < 0, the x value will be projected behind robot, simply reverse it
@@ -171,82 +100,103 @@ function rayIntersectB(c)
   return p;
 end
 
-function exit()
+local get_horizonA = function()
+  return horizonA_;
 end
 
-function get_horizonA()
-  return horizonA;
+local get_horizonB = function()
+  return horizonB_;
 end
 
-function get_horizonB()
-  return horizonB;
+local get_horizonDir = function()
+  return horizonDir_;
 end
 
-function get_horizonDir()
-  return horizonDir;
-end
-
-function coordinatesA(c, scale)
+local coordinatesA = function(c, scale)
   --[[
   scale = scale or 1;
-  local v = vector.new({focalA,
-                       -(c[1] - x0A),
-                       -(c[2] - y0A),
+  local v = vector.new({focalA_,
+                       -(c[1] - x0A_),
+                       -(c[2] - y0A_),
                        scale});
   --]]
-  scale = scale or 1;
-  local v = vector.new({focalU,
-                       -(c[1] - u0),
-                       -(c[2] - v0),
-                       scale});
-  v = tHead*v;
+  local _scale = scale or 1;
+  local v = vector.new({focalU_,
+                       -(c[1] - u0_),
+                       -(c[2] - v0_),
+                       _scale});
+  v = tHead_*v;
   v = v/v[4];
   return v;
 end
 
-function coordinatesB(c, scale)
-  scale = scale or 1;
-  local v = vector.new({focalB,
-                        -(c[1] - x0B),
-                        -(c[2] - y0B),
-                        scale});
-  v = tHead*v;
+local coordinatesB = function(c, scale)
+  local _scale = scale or 1;
+  local v = vector.new({focalB_,
+                        -(c[1] - x0B_),
+                        -(c[2] - y0B_),
+                        _scale});
+  v = tHead_*v;
   v = v/v[4];
   return v;
 end
 
-function ikineCam(x, y, z, select)
-  yaw,pitch=ikineCam0(x,y,z,select);
-  yaw = math.min(math.max(yaw, yawMin), yawMax);
-  pitch = math.min(math.max(pitch, pitchMin), pitchMax);
-  return yaw,pitch;
+local getNeckOffset = function()
+  local bodyHeight=vcm.get_camera_bodyHeight();
+  local bodyTilt=vcm.get_camera_bodyTilt();
+
+  --SJ: calculate tNeck here
+  --So that we can use this w/o run update
+  --(for test_vision)
+  local tNeck0 = Transform.trans(-footX_,0,bodyHeight);
+  tNeck0 = tNeck0*Transform.rotY(bodyTilt);
+  tNeck0 = tNeck0*Transform.trans(neckX_,0,neckZ_);
+  local v=vector.new({0,0,0,1});
+  v=tNeck0*v;
+  v=v/v[4];
+  return v;
+end
+
+local getCameraRoll = function()
+  --Use camera IK to calculate how much the image is tilted
+  --headAngles = Body.get_head_position();
+  local headAngles = {Body.get_sensor_headpos()[2],Body.get_sensor_headpos()[1]};	--b51
+  local r = 3.0;
+  local z0 = 0;
+  local z1 = 0.7;
+  local x0=r*math.cos(headAngles[1]);
+  local y0=r*math.sin(headAngles[1]);
+  local yaw1, pitch1=ikineCam0(x0,y0,z0,bottom);
+  local yaw2, pitch2=ikineCam0(x0,y0,z1,bottom);
+  local tiltAngle = math.atan((yaw2-yaw1)/(pitch1-pitch2));
+  return tiltAngle;
 end
 
 --Camera IK without headangle limit
-function ikineCam0(x,y,z,select)
-  bodyHeight=vcm.get_camera_bodyHeight();
-  bodyTilt=vcm.get_camera_bodyTilt();
-  pitch0 =  mcm.get_headPitchBias();
+local ikineCam0 = function(x,y,z,select)
+  local bodyHeight = vcm.get_camera_bodyHeight();
+  local bodyTilt = vcm.get_camera_bodyTilt();
+  local pitch0 = mcm.get_headPitchBias();
 
   --Bottom camera by default (cameras are 0 indexed so add 1)
-  select = (select or 0) + 1;
+  local _select = (select or 0) + 1;
 
   --Look at ground by default
-  z = z or 0;
+  local _z = z or 0;
 
   --Cancel out the neck X and Z offset
-  v = getNeckOffset();
+  local v = getNeckOffset();
   x = x-v[1];
-  z = z-v[3];
+  _z = _z-v[3];
 
   --Cancel out body tilt angle
-  v = Transform.rotY(-bodyTilt)*vector.new({x,y,z,1});
+  v = Transform.rotY(-bodyTilt)*vector.new({x,y,_z,1});
   v=v/v[4];
 
-  x,y,z=v[1],v[2],v[3];
+  x,y,_z=v[1],v[2],v[3];
   local yaw = math.atan2(y, x);
 
-  local norm = math.sqrt(x^2 + y^2 + z^2);
+  local norm = math.sqrt(x^2 + y^2 + _z^2);
 --  local pitch = math.asin(-z/(norm + 1E-10));
 
   --new IKcam that takes camera offset into account
@@ -255,65 +205,33 @@ function ikineCam0(x,y,z,select)
   -- pitch = atan2(x,z) - acos(b/r),  r= sqrt(x^2+z^2)
   -- r*sin(pitch) = z *cos(pitch) + c,
   -------------------------------------------------------------
-  local c=cameraPos[select][3];
+  local c=cameraPos_[_select][3];
   local r = math.sqrt(x^2+y^2);
-  local d = math.sqrt(r^2+z^2);
-  local p0 = math.atan2(r,z) - math.acos(c/(d + 1E-10));
+  local d = math.sqrt(r^2+_z^2);
+  local p0 = math.atan2(r,_z) - math.acos(c/(d + 1E-10));
 
-  pitch=p0;
-  pitch = pitch - cameraAngle[select][2]- pitch0;
+  local pitch=p0;
+  pitch = pitch - cameraAngle_[_select][2]- pitch0;
   return yaw, pitch;
 end
 
-function getCameraRoll()
-  --Use camera IK to calculate how much the image is tilted
-  --headAngles = Body.get_head_position();
-  headAngles = {Body.get_sensor_headpos()[2],Body.get_sensor_headpos()[1]};	--b51
-  r=3.0;z0=0;z1=0.7;
-  x0=r*math.cos(headAngles[1]);
-  y0=r*math.sin(headAngles[1]);
-  yaw1, pitch1=ikineCam0(x0,y0,z0,bottom);
-  yaw2, pitch2=ikineCam0(x0,y0,z1,bottom);
-  tiltAngle = math.atan( (yaw2-yaw1)/(pitch1-pitch2) );
-  return tiltAngle;
-end
-
-function getCameraOffset()
-    local v=vector.new({0,0,0,1});
-    v=tHead*v;
-    v=v/v[4];
-    return v;
-end
-
-function getNeckOffset()
-  bodyHeight=vcm.get_camera_bodyHeight();
-  bodyTilt=vcm.get_camera_bodyTilt();
-
-  --SJ: calculate tNeck here
-  --So that we can use this w/o run update
-  --(for test_vision)
-  local tNeck0 = Transform.trans(-footX,0,bodyHeight);
-  tNeck0 = tNeck0*Transform.rotY(bodyTilt);
-  tNeck0 = tNeck0*Transform.trans(neckX,0,neckZ);
-  local v=vector.new({0,0,0,1});
-  v=tNeck0*v;
-  v=v/v[4];
-  return v;
+local ikineCam = function(x, y, z, select)
+  local yaw,pitch=ikineCam0(x,y,z,select);
+  yaw = math.min(math.max(yaw, yawMin_), yawMax_);
+  pitch = math.min(math.max(pitch, pitchMin_), pitchMax_);
+  return yaw,pitch;
 end
 
 --Project 3d point to level plane with some height
-function projectGround(v,targetheight)
-
+local projectGround = function(v,targetheight)
   targetheight=targetheight or 0;
   local cameraOffset=getCameraOffset();
   local vout=vector.new(v);
 
   --Project to plane
   if v[3]<targetheight then
-    vout= cameraOffset+
-      (v-cameraOffset)*(
-         (cameraOffset[3]-targetheight) / (cameraOffset[3] - v[3] )
-      );
+    vout = cameraOffset + (v-cameraOffset) *
+        ((cameraOffset[3]-targetheight) / (cameraOffset[3] - v[3]));
   end
 
   --Discount body offset
@@ -322,3 +240,95 @@ function projectGround(v,targetheight)
   vout[2] = vout[2];-- + uBodyOffset[2];
   return vout;
 end
+
+local getCameraOffset = function()
+  local v=vector.new({0,0,0,1});
+  v=tHead_*v;
+  v=v/v[4];
+  return v;
+end
+
+local entry = function()
+end
+
+-- TODO(b51): bodyHeight, bodyTilt can make as local variable outside function
+--function update(sel,headAngles,compY)
+local update = function(sel,headAngles)
+  -- Now bodyHeight, Tilt, camera pitch angle bias are read from vcm
+  -- compY = compY or 0;
+  local bodyHeight = vcm.get_camera_bodyHeight();
+  local bodyTilt = vcm.get_camera_bodyTilt();
+  local pitch0 = mcm.get_headPitchBias();
+--[[
+  vcm.add_debug_message(string.format(
+  "HeadTrasnform update:\n bodyHeight %.2f bodyTilt %d pitch0 %d headangle %d %d\n",
+	 bodyHeight, bodyTilt*180/math.pi, pitch0*180/math.pi,
+	 headAngles[1]*180/math.pi,
+	(headAngles[2]+pitch0)*180/math.pi));
+]]--
+
+  -- cameras are 0 indexed so add one for use here
+  sel = sel + 1;
+  tNeck_ = Transform.trans(-footX_,0,bodyHeight);
+--  tNeck_ = Transform.trans(-footX_,compY,bodyHeight);	--b51:for compensate robot Y
+  tNeck_ = tNeck_*Transform.rotY(bodyTilt);
+  tNeck_ = tNeck_*Transform.trans(neckX_,0,neckZ_);
+  --pitch0 is Robot specific head angle bias (for OP)
+  tNeck_ = tNeck_*Transform.rotZ(headAngles[1])*Transform.rotY(headAngles[2]+pitch0);
+	--print("headAngles[1], headAngles[2], pitch0 :"..headAngles[1], headAngles[2], pitch0);
+    --print("cameraPos_[sel][1], cameraPos_[sel][2], cameraPos_[sel][3] :"..cameraPos_[sel][1], cameraPos_[sel][2], cameraPos_[sel][3]);
+  tHead_ = tNeck_*Transform.trans(cameraPos_[sel][1], cameraPos_[sel][2], cameraPos_[sel][3]);
+  tHead_ = tHead_*Transform.rotY(cameraAngle_[sel][2]);
+
+  --update camera position
+  local vHead=vector.new({0,0,0,1});
+  vHead = tHead_*vHead;
+  vHead = vHead/vHead[4];
+  vcm.set_camera_height(vHead[3]);
+
+  -- update horizon
+  local pa = headAngles[2] + cameraAngle_[sel][2]; --+ bodyTilt;
+  horizonA_ = (labelA_.n/2.0) - focalA_*math.tan(pa) - 2;
+  horizonA_ = math.min(labelA_.n, math.max(math.floor(horizonA_), 0));
+  horizonB_ = (labelB_.n/2.0) - focalB_*math.tan(pa) - 1;
+  horizonB_ = math.min(labelB_.n, math.max(math.floor(horizonB_), 0));
+  --print('horizon-- pitch: '..pa..'  A: '..horizonA_..'  B: '..horizonB_);
+  -- horizon direction
+  local ref = vector.new({0,1,0,1});
+  local p0 = vector.new({0,0,0,1});
+  local ref1 = vector.new({0,-1,0,1});
+  p0 = tHead_*p0;
+  ref = tHead_*ref;
+  ref1 = tHead_*ref1;
+  ref = ref - p0;
+  ref1 = ref1 - p0;
+  -- print(ref,' ',ref1);
+  local v = {};
+  v[1] = -math.abs(ref1[1]) * focalA_ / 4 + x0A_;
+  v[2] = ref1[3] * focalA_ / 4 + y0A_;
+  v[3] = math.abs(ref[1]) * focalA_ / 4 + x0A_;
+  v[4] = ref[3] * focalA_ / 4 + y0A_;
+  horizonDir_ = math.atan2(ref1[3],math.sqrt(ref1[1]^2+ref1[2]^2));
+end
+
+local exit = function()
+end
+
+return {
+  entry = entry,
+  update = update,
+  exit = exit,
+  rayIntersectA = rayIntersectA,
+  rayIntersectB = rayIntersectB,
+  get_horizonA = get_horizonA,
+  get_horizonB = get_horizonB,
+  get_horizonDir = get_horizonDir,
+  coordinatesA = coordinatesA,
+  coordinatesB = coordinatesB,
+  getNeckOffset = getNeckOffset,
+  getCameraRoll = getCameraRoll,
+  ikineCam0 = ikineCam0,
+  ikineCam = ikineCam,
+  projectGround = projectGround,
+  getCameraOffset = getCameraOffset,
+};

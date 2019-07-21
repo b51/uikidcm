@@ -1,33 +1,30 @@
-module(..., package.seeall);
+local _NAME = "gameReady";
 
-require('Body')
-require('walk')
-require('Speak')
-require('vector')
-require('gcm')
-require('BodyFSM')
-require('HeadFSM')
+local Body = require('Body')
+local walk = require('walk')
+local vector = require('vector')
+local gcm = require('gcm')
+local BodyFSM = require('BodyFSM')
+local HeadFSM = require('HeadFSM')
 
-t0 = 0;
-timeout = 2.0;
+local t0_ = 0;
+local timeout_ = 2.0;
 
-function entry()
-  print(_NAME..' entry');
+local entry = function()
+  print('GameFSM: '.._NAME..' entry');
 
-  t0 = Body.get_time();
+  t0_ = Body.get_time();
   walk.start();
 
   -- body ready state
   BodyFSM.sm:set_state('bodyReady');
   HeadFSM.sm:set_state('headReady');
 
-  Speak.talk('Ready');
-
   -- set indicator
   Body.set_indicator_state({0,0,1});
 end
 
-function update()
+local update = function()
   local state = gcm.get_game_state();
 
   if (state == 0) then
@@ -46,5 +43,12 @@ function update()
   end
 end
 
-function exit()
+local exit = function()
 end
+
+return {
+  _NAME = _NAME,
+  entry = entry,
+  update = update,
+  exit = exit,
+};

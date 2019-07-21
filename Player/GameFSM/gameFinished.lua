@@ -1,26 +1,21 @@
-module(..., package.seeall);
+local _NAME = "gameFinished";
 
-require('BodyFSM')
-require('HeadFSM')
-require('Speak')
-require('vector')
-require('gcm')
-require('BodyFSM')
-require('HeadFSM')
+local BodyFSM = require('BodyFSM')
+local HeadFSM = require('HeadFSM')
+local vector = require('vector')
+local gcm = require('gcm')
 
-function entry()
-  print(_NAME..' entry');
+local entry = function()
+  print('GameFSM: '.._NAME..' entry');
 
   HeadFSM.sm:set_state('headIdle');
   BodyFSM.sm:set_state('bodyIdle');
-
-  Speak.talk('Finished');
 
   -- set indicator
   Body.set_indicator_state({0,0,0});
 end
 
-function update()
+local update = function()
   local state = gcm.get_game_state();
 
   if (state == 0) then
@@ -34,5 +29,12 @@ function update()
   end
 end
 
-function exit()
+local exit = function()
 end
+
+return {
+  _NAME = _NAME,
+  entry = entry,
+  update = update,
+  exit = exit,
+};

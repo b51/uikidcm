@@ -1,28 +1,39 @@
-module(..., package.seeall);
+local _NAME = "bodyDribble";
+local Body = require('Body')
+local wcm = require('wcm')
+local vector = require('vector')
+local Config = require('Config')
+local walk = require('walk')
 
-require('Body')
-require('wcm')
-require('walk')
-require('vector')
+local t0 = 0;
 
-t0 = 0;
-
---Todo
-timeout = 10.0;
-maxStep = 0.06;
-rFar = 0.50;
-tLost = 3.0;
+local timeout = 10.0;
+local maxStep = 0.06;
+local rFar = 0.50;
+local tLost = 3.0;
 
 -- default kick threshold
-xTarget = Config.fsm.bodyApproach.xTarget11;
-yTarget = Config.fsm.bodyApproach.yTarget11;
+local xTarget = Config.fsm.bodyApproach.xTarget11;
+local yTarget = Config.fsm.bodyApproach.yTarget11;
+local ball;
+local kick_angle = 0;
 
-function check_approach_type()
+local sign = function(x)
+  if (x > 0) then
+    return 1;
+  elseif (x < 0) then
+    return -1;
+  else
+    return 0;
+  end
+end
+
+local check_approach_type = function()
   ball = wcm.get_ball();
 
-  y_inv=0;
+  local y_inv=0;
   xTarget = Config.fsm.bodyApproach.xTarget11;
-  yTarget0 = Config.fsm.bodyApproach.yTarget11;
+  local yTarget0 = Config.fsm.bodyApproach.yTarget11;
   if sign(ball.y)<0 then y_inv=1;end
   if y_inv>0 then
     yTarget[1],yTarget[2],yTarget[3]=
@@ -34,40 +45,29 @@ function check_approach_type()
   print("Dribble, target: ",xTarget[2],yTarget[2]);
 end
 
-
-
-function entry()
-  print("Body FSM:".._NAME.." entry");
+local entry = function()
+  print("Body FSM: ".._NAME.." entry");
   t0 = Body.get_time();
   ball = wcm.get_ball();
   check_approach_type();
   kick_angle = 0;
-
 end
 
-function update()
+local update = function()
   local t = Body.get_time();
   -- get ball position
   ball = wcm.get_ball();
-  ballR = math.sqrt(ball.x^2 + ball.y^2);
-
---[[
-  if t-ball.t<0.2 and ball_tracking==false then
-    HeadFSM.sm:set_state('headTrack');
-    ball_tracking=true;
-    HeadFSM.sm:set_state('headKick');
-  end
---]]
+  local ballR = math.sqrt(ball.x^2 + ball.y^2);
 
   -- calculate walk velocity based on ball position
-  vStep = vector.new({0,0,0});
+  local vStep = vector.new({0,0,0});
   vStep[1] = .6*(ball.x - xTarget[2]);
   vStep[2] = .75*(ball.y - yTarget[2]);
-  scale = math.min(maxStep/math.sqrt(vStep[1]^2+vStep[2]^2), 1);
+  local scale = math.min(maxStep/math.sqrt(vStep[1]^2+vStep[2]^2), 1);
   vStep = scale*vStep;
 
-  attackBearing, daPost = wcm.get_attack_bearing();
-  angle = util.mod_angle(attackBearing-kick_angle);
+  local attackBearing, daPost = wcm.get_attack_bearing();
+  local angle = util.mod_angle(attackBearing-kick_angle);
   if angle > 10*math.pi/180 then
     vStep[3]=0.2;
   elseif angle < -10*math.pi/180 then
@@ -111,16 +111,15 @@ function update()
     print("ballfar, ",ballR,rFar)
     return "ballFar";
   end
-
 end
 
-function exit()
+local exit = function()
   HeadFSM.sm:set_state('headTrack');
 end
 
-function sign(x)
-  if (x > 0) then return 1;
-  elseif (x < 0) then return -1;
-  else return 0;
-  end
-end
+return {
+  _NAME = _NAME,
+  entry = entry,
+  update = udpate,
+  exit = exit,
+};

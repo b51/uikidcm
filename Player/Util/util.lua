@@ -190,7 +190,7 @@ local init_shm_segment = function(fenv, name, shared, shsize)
     fenv[shmPointerName] = {};
     local shmPointer = fenv[shmPointerName];
 
-    for k,v in pairs(shared[shtable]) do
+    for k, v in pairs(shared[shtable]) do
       shmPointer[k] = carray.cast(shmHandle:pointer(k));
       if (type(v) == 'string') then
         -- setup accessors for a string
@@ -206,12 +206,11 @@ local init_shm_segment = function(fenv, name, shared, shsize)
                   return;
                 end
               end
-              return string.char(unpack(bytes));
+              return string.char(table.unpack(bytes));
             end
           end
         fenv['set_'..shtable..'_'..k] =
           function(val)
-            print("set "..k.." "..val)
             return shmHandle:set(k, {string.byte(val, 1, string.len(val))});
           end
       elseif (type(v) == 'number') then

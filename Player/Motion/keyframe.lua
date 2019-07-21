@@ -37,7 +37,7 @@ function print_motion_file(fname,mot)
     local ang=vector.new(mot.keyframes[i].angles);
     print(string.format(
 	"%d,%d,\n%d,%d,%d,\n%d,%d,%d,%d,%d,%d,\n%d,%d,%d,%d,%d,%d,\n%d,%d,%d",
-      unpack(ang*180/math.pi) ));
+      table.unpack(ang*180/math.pi) ));
     print"})*math.pi/180,"
     print(string.format("duration = %.1f;\n},",mot.keyframes[i].duration));
   end

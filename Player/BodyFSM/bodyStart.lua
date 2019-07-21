@@ -1,8 +1,9 @@
+local _NAME = "bodyStart";
+local Body = require('Body')
 local walk = require('walk')
 local gcm = require('gcm')
 local wcm = require('wcm')
 local Config = require('Config')
-local Body = require('Body')
 
 local t0=0;
 local tLastCount=0;
@@ -23,7 +24,7 @@ if Config.fsm.playMode == 1 then
 end
 
 local entry = function()
-  print('BodyFSM: bodyStart entry');
+  print("BodyFSM: ".._NAME.." entry");
   --Kickoff handling (only for attacker)
   --TODO: This flag is set when player returns from penalization too
   if gcm.get_team_role()<4 and wait_kickoff>0 then
@@ -87,7 +88,7 @@ local exit = function()
 end
 
 return {
-  _NAME = "bodyStart",
+  _NAME = _NAME,
   entry = entry,
   update = update,
   exit = exit,

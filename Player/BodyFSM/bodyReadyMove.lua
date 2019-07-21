@@ -1,74 +1,59 @@
-module(..., package.seeall);
+local _NAME = "bodyReadyMove";
+local Body = require('Body')
+local wcm = require('wcm')
+local gcm = require('gcm')
+local util = require('util')
+local vector = require('vector')
+local Config = require('Config')
+local Team = require('Team')
+local walk = require('walk')
 
-require('Body')
-require('walk')
-require('util')
-require('vector')
-require('Config')
-require('wcm')
-require('gcm')
-require('Team')
+local t0 = 0;
 
-t0 = 0;
-
-maxStep = Config.fsm.bodyReady.maxStep;
-rClose = Config.fsm.bodyReady.thClose[1];
-thClose = Config.fsm.bodyReady.thClose[2];
+local maxStep = Config.fsm.bodyReady.maxStep;
+local rClose = Config.fsm.bodyReady.thClose[1];
+local thClose = Config.fsm.bodyReady.thClose[2];
 
 --Init position for our kickoff
-initPosition1 = Config.world.initPosition1;
+local initPosition1 = Config.world.initPosition1;
 --Init position for opponents' kickoff
-initPosition2 = Config.world.initPosition2;
+local initPosition2 = Config.world.initPosition2;
 
 -- don't start moving right away
-tstart = Config.fsm.bodyReady.tStart or 5.0;
+local tstart = Config.fsm.bodyReady.tStart or 5.0;
 
-phase=0; --0 for wait, 1 for approach, 2 for turn, 3 for end
+local phase=0; --0 for wait, 1 for approach, 2 for turn, 3 for end
 
-side_y = 0;
+local side_y = 0;
 
-function entry()
-  print(_NAME.." entry");
-  phase=0;
-
-  t0 = Body.get_time();
-  Motion.event('standup')
-
-  pose = wcm.get_pose();
-  if pose.y > 0 then
-    side_y = 1;
-  else
-    side_y = -1;
-  end
-
-end
-
-function getHomePose()
-  role=gcm.get_team_role();
+local getHomePose = function()
+  local role=gcm.get_team_role();
   --Now role-based positioning
-  goal_defend=wcm.get_goal_defend();
+  local goal_defend=wcm.get_goal_defend();
   --role starts with 0
 
+  local home;
   if gcm.get_game_kickoff() == 1 then
-    home=vector.new({
-	initPosition1[role+1][1],
-	initPosition1[role+1][2],
-	initPosition1[role+1][3]});
+    home=vector.new({initPosition1[role+1][1],
+                     initPosition1[role+1][2],
+                     initPosition1[role+1][3]});
   else
-    home=vector.new({
-	initPosition2[role+1][1],
-	initPosition2[role+1][2],
-	initPosition2[role+1][3]});
+    home=vector.new({initPosition2[role+1][1],
+                     initPosition2[role+1][2],
+                     initPosition2[role+1][3]});
   end
 
   --If we are on the other half and we are attacker,
   -- go around to avoid other players
-  pose = wcm.get_pose();
-  if pose.y > 0.5 then side_y = 1;
-  elseif pose.y<-0.5 then side_y = -1;
+  local pose = wcm.get_pose();
+  if pose.y > 0.5 then
+    side_y = 1;
+  elseif pose.y<-0.5 then
+    side_y = -1;
   end
+
   if math.abs(pose.x - goal_defend[1]) > 3.5
-    and math.abs(home[2]) < 0.5 then
+      and math.abs(home[2]) < 0.5 then
     home[2] = home[2] + side_y * 0.8;
   end
 
@@ -82,15 +67,30 @@ function getHomePose()
   return home;
 end
 
-function update()
+local entry = function()
+  print("BodyFSM: ".._NAME.." entry");
+  phase=0;
+
+  t0 = Body.get_time();
+  Motion.event('standup')
+
+  local pose = wcm.get_pose();
+  if pose.y > 0 then
+    side_y = 1;
+  else
+    side_y = -1;
+  end
+
+end
+
+local update = function()
   local t = Body.get_time();
-  pose = wcm.get_pose();
-  print("robot pose :",pose.x, pose.y)
-  home =getHomePose();
-  homeRelative = util.pose_relative(home, {pose.x, pose.y, pose.a});
-  rhome = math.sqrt(homeRelative[1]^2 + homeRelative[2]^2);
-  attackBearing = wcm.get_attack_bearing();
-  vx,vy,va=0,0,0;
+  local pose = wcm.get_pose();
+  local home =getHomePose();
+  local homeRelative = util.pose_relative(home, {pose.x, pose.y, pose.a});
+  local rhome = math.sqrt(homeRelative[1]^2 + homeRelative[2]^2);
+  local attackBearing = wcm.get_attack_bearing();
+  local vx,vy,va=0,0,0;
 
   if phase==0 then
     if t - t0 < tstart then
@@ -111,10 +111,10 @@ function update()
   end
 
   --Check the nearby obstacle
-  obstacle_num = wcm.get_obstacle_num();
-  obstacle_x = wcm.get_obstacle_x();
-  obstacle_y = wcm.get_obstacle_y();
-  obstacle_dist = wcm.get_obstacle_dist();
+  local obstacle_num = wcm.get_obstacle_num();
+  local obstacle_x = wcm.get_obstacle_x();
+  local obstacle_y = wcm.get_obstacle_y();
+  local obstacle_dist = wcm.get_obstacle_dist();
 
 
   --Now larger rejection radius
@@ -133,14 +133,21 @@ function update()
 
   if phase~=3 and rhome < rClose and
      math.abs(attackBearing)<thClose then
-      walk.stop();
-      phase=3;
+    walk.stop();
+    phase=3;
   end
   --To prevent robot keep walking after falling down
   if phase==3 then
-      walk.stop();
+    walk.stop();
   end
 end
 
-function exit()
+local exit = function()
 end
+
+return {
+  _NAME = _NAME,
+  entry = entry,
+  update = update,
+  exit = exit,
+};

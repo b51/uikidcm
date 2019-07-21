@@ -1,3 +1,4 @@
+local _NAME = "stance";
 local Config = require('Config')
 local Body = require('Body')
 local Kinematics = require('Kinematics')
@@ -27,7 +28,7 @@ local pLLeg, pRLeg;
 local started;
 
 local entry = function()
-  print("Motion: stance entry");
+  print("Motion: ".._NAME.." entry");
 
   -- Final stance foot position6D
   pTorsoTarget = vector.new({-mcm.get_footX(), 0, bodyHeight,
@@ -131,7 +132,7 @@ local exit = function()
 end
 
 return {
-  _NAME = "stance",
+  _NAME = _NAME,
   entry = entry,
   update = update,
   exit = exit,

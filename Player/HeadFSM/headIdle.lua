@@ -1,18 +1,16 @@
-module(..., package.seeall);
+local _NAME = "headIdle";
 
-require('Body')
-require('vcm')
-require('mcm')
+local Body = require('Body')
+local vcm = require('vcm')
+local mcm = require('mcm')
+local vector = require('vector')
 
-t0 = 0;
-timeout = 1.0;
+local t0_ = 0;
 
-function entry()
-  pitchBias =  mcm.get_headPitchBias();--robot specific head bias
-
-  print(_NAME.." entry");
-
-  t0 = Body.get_time();
+local entry = function()
+  print("HeadFSM: ".._NAME.." entry");
+  local pitchBias = mcm.get_headPitchBias();--robot specific head bias
+  t0_ = Body.get_time();
 
   -- set head to default position
   local yaw = 0;
@@ -26,8 +24,15 @@ function entry()
   vcm.set_camera_command(-1);
 end
 
-function update()
+local update = function()
 end
 
-function exit()
+local exit = function()
 end
+
+return {
+  _NAME = _NAME,
+  entry = entry,
+  update = update,
+  exit = exit,
+};

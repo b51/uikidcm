@@ -1,8 +1,8 @@
+local Body = require('Body')
 local fsm = require('fsm')
 local mcm = require('mcm')
 local gcm = require('gcm')
 local vector = require('vector')
-local Body = require('Body')
 local Config = require('Config')
 
 -- Motion FSMs
@@ -22,13 +22,12 @@ local dive = require('dive')
 -- Aux
 local grip = require('grip')
 
-local sm = {};
-
 -- TODO(b51): Motion FSM needs to be recontructed.
 --            Some variable I change to local may cause the Motion
 --            fsm this variable belongs to cannot exit loop
 
 local fallAngle = Config.fallAngle or 30*math.pi/180;
+local sm = {};
 sm = fsm.new(relax);
 sm:add_state(stance);
 sm:add_state(nullstate);
@@ -109,6 +108,19 @@ local stillTime = 0;
 local stillTime0 = 0;
 local wasStill = false;
 
+local update_shm = function()
+  local util = require('util');
+  -- Update the shared memory
+  mcm.set_walk_bodyOffset(walk.get_body_offset());
+  mcm.set_walk_uLeft(walk.uLeft);
+  mcm.set_walk_uRight(walk.uRight);
+  mcm.set_walk_stillTime(stillTime);
+end
+
+local event = function(e)
+  sm:add_event(e);
+end
+
 local entry = function()
   Body.set_state_sensorEnable(1);--123456传感器常开
   Body.set_state_torqueEnable(1);--123456舵机使能
@@ -157,22 +169,11 @@ local exit = function()
   sm:exit();
 end
 
-local event = function(e)
-  sm:add_event(e);
-end
-
-local update_shm = function()
-  -- Update the shared memory
-  mcm.set_walk_bodyOffset(walk.get_body_offset());
-  mcm.set_walk_uLeft(walk.uLeft);
-  mcm.set_walk_uRight(walk.uRight);
-  mcm.set_walk_stillTime(stillTime);
-end
-
 return {
+  update_shm = update_shm,
+  event = event,
   entry = entry,
   update = update,
   exit = exit,
-  event = event,
-  update_shm = update_shm,
+  sm = sm,
 };

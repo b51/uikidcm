@@ -1,22 +1,21 @@
-module(..., package.seeall);
+local _NAME = "gameSet";
 
-require('Body')
-require('walk')
-require('Speak')
-require('vector')
-require('gcm')
-require('wcm')
-require('BodyFSM')
-require('HeadFSM')
+local Body = require('Body')
+local walk = require('walk')
+local vector = require('vector')
+local gcm = require('gcm')
+local wcm = require('wcm')
+local BodyFSM = require('BodyFSM')
+local HeadFSM = require('HeadFSM')
 
-t0 = 0;
-timeout = 5.0;
+local t0_ = 0;
+local timeout_ = 5.0;
 
-function entry()
-  print(_NAME..' entry');
+local entry = function()
+  print('GameFSM: '.._NAME..' entry');
 
   mcm.set_motion_fall_check(0) --disable fall
-  t0 = Body.get_time();
+  t0_ = Body.get_time();
 
   -- stop walking and wait for game to start
   BodyFSM.sm:set_state('bodyStop');
@@ -28,15 +27,13 @@ function entry()
   Body.set_indicator_state({1,1,0});
 end
 
-function update()
-
-  t = Body.get_time();
+local update = function()
+  local t = Body.get_time();
   --Update kickoff timer
   if gcm.get_game_kickoff()>0 then
     wcm.set_kick_tKickOff(t);
     wcm.set_kick_kickOff(1);
   end
-
 
   local state = gcm.get_game_state();
 
@@ -59,6 +56,13 @@ function update()
   end
 end
 
-function exit()
+local exit = function()
   mcm.set_motion_fall_check(1) --re-enable fall
 end
+
+return {
+  _NAME = _NAME,
+  entry = entry,
+  update = update,
+  exit = exit,
+};

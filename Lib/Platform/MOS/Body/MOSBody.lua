@@ -4,7 +4,10 @@ local dcm = require('dcm');
 local util = require('util');
 
 local MOSBody = {};
-local _ENV = {print = print, pairs = pairs, type = type,};
+local _ENV = {print = print,
+              pairs = pairs,
+              type = type,
+              table = table,};
 
 for k,v in pairs(dcm) do
   _ENV[k] = v;
@@ -36,27 +39,27 @@ end
 -- setup convience functions
 MOSBody.get_head_position = function()
   local q = get_sensor_position();
-  return {unpack(q, indexHead, indexHead+nJointHead-1)};
+  return {table.unpack(q, indexHead, indexHead+nJointHead-1)};
 end
 
 MOSBody.get_larm_position = function()
   local q = get_sensor_position();
-  return {unpack(q, indexLArm, indexLArm+nJointLArm-1)};
+  return {table.unpack(q, indexLArm, indexLArm+nJointLArm-1)};
 end
 
 MOSBody.get_rarm_position = function()
   local q = get_sensor_position();
-  return {unpack(q, indexRArm, indexRArm+nJointRArm-1)};
+  return {table.unpack(q, indexRArm, indexRArm+nJointRArm-1)};
 end
 
 MOSBody.get_lleg_position = function()
   local q = get_sensor_position();
-  return {unpack(q, indexLLeg, indexLLeg+nJointLLeg-1)};
+  return {table.unpack(q, indexLLeg, indexLLeg+nJointLLeg-1)};
 end
 
 MOSBody.get_rleg_position = function()
   local q = get_sensor_position();
-  return {unpack(q, indexRLeg, indexRLeg+nJointRLeg-1)};
+  return {table.unpack(q, indexRLeg, indexRLeg+nJointRLeg-1)};
 end
 
 MOSBody.set_waist_hardness = function(val)
@@ -64,9 +67,9 @@ end
 
 MOSBody.set_lleg_pid = function(val)
   --Usage: {P gain, I gain, D gain}
-  p_param = val[1]*vector.ones(nJointLLeg);
-  i_param = val[2]*vector.ones(nJointLLeg);
-  d_param = val[3]*vector.ones(nJointLLeg);
+  local p_param = val[1]*vector.ones(nJointLLeg);
+  local i_param = val[2]*vector.ones(nJointLLeg);
+  local d_param = val[3]*vector.ones(nJointLLeg);
 
   set_actuator_p_param(p_param,indexLLeg);
   set_actuator_i_param(i_param,indexLLeg);
@@ -76,9 +79,9 @@ end
 
 MOSBody.set_rleg_pid = function(val)
   --Usage: {P gain, I gain, D gain}
-  p_param = val[1]*vector.ones(nJointRLeg);
-  i_param = val[2]*vector.ones(nJointRLeg);
-  d_param = val[3]*vector.ones(nJointRLeg);
+  local p_param = val[1]*vector.ones(nJointRLeg);
+  local i_param = val[2]*vector.ones(nJointRLeg);
+  local d_param = val[3]*vector.ones(nJointRLeg);
 
   set_actuator_p_param(p_param,indexRLeg);
   set_actuator_i_param(i_param,indexRLeg);
@@ -251,7 +254,7 @@ MOSBody.set_indicator_goal = function(color)
 end
 
 MOSBody.get_battery_level = function()
-  batt=get_sensor_battery();
+  local batt = get_sensor_battery();
   return batt[1]/10;
 end
 

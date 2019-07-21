@@ -1,15 +1,14 @@
-module(..., package.seeall);
+local fsm = require('fsm')
+local gcm = require('gcm')
 
-require('fsm')
-require('gcm')
+local gameInitial = require('gameInitial')
+local gameReady = require('gameReady')
+local gameSet = require('gameSet')
+local gamePlaying = require('gamePlaying')
+local gamePenalized = require('gamePenalized')
+local gameFinished = require('gameFinished')
 
-require('gameInitial')
-require('gameReady')
-require('gameSet')
-require('gamePlaying')
-require('gamePenalized')
-require('gameFinished')
-
+local sm = {};
 sm = fsm.new(gameInitial);
 sm:add_state(gameReady);
 sm:add_state(gameSet);
@@ -53,14 +52,20 @@ sm:set_transition(gameFinished, "playing", gamePlaying);
 -- set state debug handle to shared memory settor
 sm:set_state_debug_handle(gcm.set_fsm_game_state);
 
-function entry()
+local entry = function()
   sm:entry()
 end
 
-function update()
+local update = function()
   sm:update();
 end
 
-function exit()
+local exit = function()
   sm:exit();
 end
+
+return {
+  entry = entry,
+  update = update,
+  exit = exit,
+};

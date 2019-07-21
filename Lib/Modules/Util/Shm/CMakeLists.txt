@@ -23,7 +23,10 @@ add_library(${LIBRARY_NAME} SHARED
 set_target_properties(${LIBRARY_NAME} PROPERTIES PREFIX "")
 
 # link to rt for shared memory ipc
-target_link_libraries(${LIBRARY_NAME} rt)
+target_link_libraries(${LIBRARY_NAME}
+  glog
+  rt
+)
 
 install(TARGETS ${LIBRARY_NAME}
   LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}

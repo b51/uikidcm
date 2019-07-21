@@ -23,7 +23,7 @@ local qLArm = Config.stance.qLArmSit;
 local qRArm = Config.stance.qRArmSit;
 
 local tStartWait = 0.2;
-local tStart=0;
+local tStart=Body.get_time();
 
 local entry = function()
   print("Motion: sit entry");

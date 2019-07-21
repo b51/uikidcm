@@ -1,27 +1,22 @@
-module(..., package.seeall);
+local _NAME = "gamePenalized";
 
-require('HeadFSM')
-require('BodyFSM')
-require('Speak')
-require('vector')
-require('util')
-require('gcm')
-require('BodyFSM')
-require('HeadFSM')
+local HeadFSM = require('HeadFSM')
+local BodyFSM = require('BodyFSM')
+local vector = require('vector')
+local util = require('util')
+local gcm = require('gcm')
 
-function entry()
-  print(_NAME..' entry');
+local entry = function()
+  print('GameFSM: '.._NAME..' entry');
 
   HeadFSM.sm:set_state('headIdle');
   BodyFSM.sm:set_state('bodyIdle');
-
-  Speak.talk('Penalized');
 
   -- set indicator
   Body.set_indicator_state({1,0,0});
 end
 
-function update()
+local update = function()
   local state = gcm.get_game_state();
   -- check for penalty
   if not gcm.in_penalty() then
@@ -39,5 +34,12 @@ function update()
   end
 end
 
-function exit()
+local exit = function()
 end
+
+return {
+  _NAME = _NAME,
+  entry = entry,
+  update = update,
+  exit = exit,
+};

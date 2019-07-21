@@ -1,49 +1,48 @@
-module(..., package.seeall);
---SJ: IK based lookGoal to take account of bodytilt
+local _NAME = "headLookLandmarks";
+local Body = require('Body')
+local Config = require('Config')
+local vcm = require('vcm')
 
+local t0_ = 0;
+local yawSweep_ = Config.fsm.headLookGoal.yawSweep;
+local yawMax_ = Config.head.yawMax;
+local dist_ = Config.fsm.headReady.dist;
+local tScan_ = Config.fsm.headLookGoal.tScan;
+local yaw0_;
 
-require('Body')
-require('Config')
-require('vcm')
+local entry = function()
+  print("HeadFSM: ".._NAME.." entry");
 
-t0 = 0;
-yawSweep = Config.fsm.headLookGoal.yawSweep;
-yawMax = Config.head.yawMax;
-dist = Config.fsm.headReady.dist;
-tScan = Config.fsm.headLookGoal.tScan;
-
-function entry()
-  print(_NAME.." entry");
-
-  t0 = Body.get_time();
-  attackAngle = wcm.get_attack_angle();
-  defendAngle = wcm.get_defend_angle();
-  attackClosest = math.abs(attackAngle) < math.abs(defendAngle);
+  t0_ = Body.get_time();
+  local attackAngle = wcm.get_attack_angle();
+  local defendAngle = wcm.get_defend_angle();
+  local attackClosest = math.abs(attackAngle) < math.abs(defendAngle);
   if attackClosest then
-    yaw0 = wcm.get_attack_angle();
+    yaw0_ = wcm.get_attack_angle();
   else
-    yaw0 = wcm.get_defend_angle();
+    yaw0_ = wcm.get_defend_angle();
   end
 end
 
-function update()
+local update = function()
   local t = Body.get_time();
-  local tpassed=t-t0;
-  local ph= tpassed/tScan;
-  local yawbias = (ph-0.5)* yawSweep;
+  local tpassed=t-t0_;
+  local ph= tpassed/tScan_;
+  local yawbias = (ph-0.5)* yawSweep_;
 
-  height=vcm.get_camera_height();
+  local height = vcm.get_camera_height();
 
-  yaw1 = math.min(math.max(yaw0+yawbias, -yawMax), yawMax);
-  local yaw, pitch =HeadTransform.ikineCam(
-	dist*math.cos(yaw1),dist*math.sin(yaw1), height);
+  local yaw1 = math.min(math.max(yaw0_ + yawbias, -yawMax_), yawMax_);
+  local yaw, pitch = HeadTransform.ikineCam(dist_ * math.cos(yaw1),
+                                            dist_ * math.sin(yaw1),
+                                            height);
   Body.set_head_command({yaw, pitch});
   Body.set_para_headpos(vector.new({yaw, pitch}));--123456î^²¿
   Body.set_state_headValid(1);--123456î^²¿
 
-  if (t - t0 > tScan) then
-    tGoal = wcm.get_goal_t();
-    if (tGoal - t0 > 0) then
+  if (t - t0_ > tScan_) then
+    local tGoal = wcm.get_goal_t();
+    if (tGoal - t0_ > 0) then
       return 'timeout';
     else
       return 'lost';
@@ -51,5 +50,12 @@ function update()
   end
 end
 
-function exit()
+local exit = function()
 end
+
+return {
+  _NAME = _NAME,
+  entry = entry,
+  update = update,
+  exit = exit,
+};

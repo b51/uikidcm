@@ -1,43 +1,34 @@
-module(..., package.seeall);
+local _NAME = "bodyPosition";
+local Body = require('Body')
+local wcm = require('wcm')
+local util = require('util')
+local vector = require('vector')
+local Config = require('Config')
+local Team = require('Team')
+local walk = require('walk')
 
-require('Body')
-require('World')
-require('walk')
-require('vector')
-require('wcm')
-require('Config')
-require('Team')
-require('util')
-require('walk')
+local behavior = require('behavior')
+local position = require('position')
 
-require('behavior')
-require('position')
+local t0 = 0;
 
-t0 = 0;
+local tLost = Config.fsm.bodyPosition.tLost;
+local timeout = Config.fsm.bodyPosition.timeout;
+local thClose = Config.fsm.bodyPosition.thClose;
+local rClose= Config.fsm.bodyPosition.rClose;
+local fast_approach=Config.fsm.fast_approach or 0;
 
-
-tLost = Config.fsm.bodyPosition.tLost;
-timeout = Config.fsm.bodyPosition.timeout;
-thClose = Config.fsm.bodyPosition.thClose;
-rClose= Config.fsm.bodyPosition.rClose;
-fast_approach=Config.fsm.fast_approach or 0;
-
-function entry()
-  print(_NAME.." entry");
+local entry = function()
+  print("BodyFSM: ".._NAME.." entry");
   t0 = Body.get_time();
-  max_speed=0;
-  ball=wcm.get_ball();
-  ballR = math.sqrt(ball.x^2 + ball.y^2);
-  maxStep=maxStep1;
   behavior.update();
 end
 
-
-function update()
+local update = function()
   local t = Body.get_time();
-  ball=wcm.get_ball();
-  pose=wcm.get_pose();
-  ballR = math.sqrt(ball.x^2 + ball.y^2);
+  local ball=wcm.get_ball();
+  local pose=wcm.get_pose();
+  local ballR = math.sqrt(ball.x^2 + ball.y^2);
 
   --recalculate approach path when ball is far away
   if ballR>0.60 then
@@ -45,44 +36,25 @@ function update()
     behavior.update();
   end
 
-  --Current cordinate origin: midpoint of uLeft and uRight
-  --Calculate ball position from future origin
-  --Assuming we stop at next step
-  if fast_approach ==1 then
-    uLeft = walk.uLeft;
-    uRight = walk.uRight;
-    uFoot = util.se2_interpolate(0.5,uLeft,uRight); --Current origin
-    if walk.supportLeg ==0 then --left support
-      uRight2 = walk.uRight2;
-      uLeft2 = util.pose_global({0,2*walk.footY,0},uRight2);
-    else --Right support
-      uLeft2 = walk.uLeft2;
-      uRight2 = util.pose_global({0,-2*walk.footY,0},uLeft2);
-    end
-    uFoot2 = util.se2_interpolate(0.5,uLeft2,uRight2); --Projected origin
-    uMovement = util.pose_relative(uFoot2,uFoot);
-    uBall2 = util.pose_relative({ball.x,ball.y,0},uMovement);
-    ball.x=uBall2[1];
-    ball.y=uBall2[2];
-  else
-  end
-
-  role = gcm.get_team_role();
-  kickDir = wcm.get_kick_dir();
+  local role = gcm.get_team_role();
+  local kickDir = wcm.get_kick_dir();
 
   --Force attacker for demo code
-  if Config.fsm.playMode==1 then role=1; end
-  if role==0 then return "goalie";  end
+  if Config.fsm.playMode==1
+    then role=1;
+    end
+  if role==0 then
+    return "goalie";
+  end
 
+  local homePose;
   if (role == 2) then
     homePose = position.getDefenderHomePose();
   elseif (role==3) then
     homePose = position.getSupporterHomePose();
   else
     if Config.fsm.playMode~=3 or kickDir~=1 then --We don't care to turn when we do sidekick
-
       homePose = position.getAttackerHomePose();
-
 --      homePose = position.getDirectAttackerHomePose();
     else
       homePose = position.getAttackerHomePose();
@@ -90,17 +62,17 @@ function update()
   end
 
   --Field player cannot enter our penalty box
+  --SJ:  We replace this with potential field around goalie
 
---SJ:  We replace this with potential field around goalie
+  --[[
+    if role~=0 then
+      goalDefend = wcm.get_goal_defend();
+      homePose[1]=util.sign(goalDefend[1])*
+      math.min(2.2,homePose[1]*util.sign(goalDefend[1]));
+    end
+  --]]
 
---[[
-  if role~=0 then
-    goalDefend = wcm.get_goal_defend();
-    homePose[1]=util.sign(goalDefend[1])*
-	math.min(2.2,homePose[1]*util.sign(goalDefend[1]));
-  end
---]]
-
+  local vx, vy, va;
   if role==1 then
     vx,vy,va=position.setAttackerVelocity(homePose);
   else
@@ -108,29 +80,24 @@ function update()
   end
 
   --Get pushed away if other robots are around
-  obstacle_num = wcm.get_obstacle_num();
-  obstacle_x = wcm.get_obstacle_x();
-  obstacle_y = wcm.get_obstacle_y();
-  obstacle_dist = wcm.get_obstacle_dist();
-  obstacle_role = wcm.get_obstacle_role();
+  local obstacle_num = wcm.get_obstacle_num();
+  local obstacle_x = wcm.get_obstacle_x();
+  local obstacle_y = wcm.get_obstacle_y();
+  local obstacle_dist = wcm.get_obstacle_dist();
+  local obstacle_role = wcm.get_obstacle_role();
 
-  avoid_own_team = Config.team.avoid_own_team or 0;
+  local avoid_own_team = Config.team.avoid_own_team or 0;
+  local r_reject = 0;
 
   if avoid_own_team then
    for i=1,obstacle_num do
-
     --Role specific rejection radius
     if role==0 then --Goalie has the highest priority
       r_reject = 0.4;
-
-
-
     elseif role==1 then --Attacker
       if obstacle_role[i]==0 then --Our goalie
 --        r_reject = 1.0;
         r_reject = 0.5;
-
-
       elseif obstacle_role[i]<4 then --Our team
         r_reject = 0.001;
       else
@@ -166,11 +133,10 @@ function update()
     return "timeout";
   end
 
-  tBall=0.5;
+  local tBall=0.5;
 
   if Config.fsm.playMode~=3 then
     if ballR<rClose then
-      print("bodyPosition ballClose")
       return "ballClose";
     end
   end
@@ -183,14 +149,13 @@ function update()
 --    print("VEL: ",veltype)
 --  end
 
-  attackAngle = wcm.get_goal_attack_angle2();
-  daPost = wcm.get_goal_daPost2();
-  daPostMargin = 15 * math.pi/180;
-  daPost1 = math.max(thClose[3],daPost/2 - daPostMargin);
+  local daPost = wcm.get_goal_daPost2();
+  local daPostMargin = 15 * math.pi/180;
+  local daPost1 = math.max(thClose[3],daPost/2 - daPostMargin);
 
-  uPose=vector.new({pose.x,pose.y,pose.a})
-  homeRelative = util.pose_relative(homePose, uPose);
-  angleToTurn = math.max(0, homeRelative[3] - daPost1);
+  local uPose=vector.new({pose.x,pose.y,pose.a})
+  local homeRelative = util.pose_relative(homePose, uPose);
+  local angleToTurn = math.max(0, homeRelative[3] - daPost1);
 
 --	homeRelative[1] = homeRelative[1]/2;
 --	print(math.abs(homeRelative[1]),thClose[1]);
@@ -199,15 +164,23 @@ function update()
 --	print(ballR,rClose);
 
   if math.abs(homeRelative[1])<thClose[1] and
-    math.abs(homeRelative[2])<thClose[2] and
-    math.abs(homeRelative[3])<daPost1 and
-    ballR<rClose and
-    t-ball.t<tBall then
-      print("homeRelative, ballR :",homeRelative[1], homeRelative[2], homeRelative[3]*180/math.pi, ballR);
-      print("bodyPosition done")
-      return "done";
+      math.abs(homeRelative[2])<thClose[2] and
+      math.abs(homeRelative[3])<daPost1 and
+      ballR<rClose and t-ball.t<tBall then
+    print("homeRelative done, ballR :", homeRelative[1],
+                                        homeRelative[2],
+                                        homeRelative[3]*180/math.pi,
+                                        ballR);
+    return "done";
   end
 end
 
-function exit()
+local exit = function()
 end
+
+return {
+  _NAME = _NAME,
+  entry = entry,
+  update = update,
+  exit = exit,
+};

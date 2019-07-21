@@ -1,7 +1,9 @@
+local _NAME = "relax";
 local vector = require('vector')
 local Body = require('Body')
 local Config = require('Config')
--- TODO(b51): Actually this file does nothing for MOS
+local Kinematics = require('Kinematics')
+-- TODO(b51): Actually this file does nothing in MOS
 
 local t0 = 0;
 local timeout = 1.0;
@@ -16,7 +18,7 @@ local ankle_pitch_target = -105*math.pi/180;
 local knee_pitch_target = 120*math.pi/180;
 
 local entry = function()
-  print("relax entry");
+  print("Motion: ".._NAME.." entry");
 
   t0 = Body.get_time();
   Body.set_head_hardness(0);
@@ -64,7 +66,7 @@ local exit = function()
 end
 
 return {
-  _NAME = "relax",
+  _NAME = _NAME,
   entry = entry,
   update = update,
   exit = exit,
