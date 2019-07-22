@@ -36,22 +36,22 @@ local ncount=200;
 
 local t_timing=unix.time();
 while (loop) do
-   count = count + 1;
-   local t1 = unix.time();
-   local tPassed=math.max(math.min(t1 - t_timing,0.010), 0); --Check for timer overflow
-   local readtype = actuatorShm:get('readType') ;
-   if readtype == 0 then ncount=200;
-     else ncount = 40;
-   end
+  count = count + 1;
+  local t1 = unix.time();
+  local tPassed=math.max(math.min(t1 - t_timing,0.010), 0); --Check for timer overflow
+  local readtype = actuatorShm:get('readType') ;
+  if readtype == 0 then ncount=200;
+    else ncount = 40;
+  end
 
-   t_timing=t1;
-   dcm.update()
+  t_timing=t1;
+  dcm.update()
 
-   if (count % ncount == 0) then
-      os.execute("clear")
-      t0 = t1;
-   end
-   unix.usleep(5000);
+  if (count % ncount == 0) then
+    os.execute("clear")
+    t0 = t1;
+  end
+  unix.usleep(5000);
 end
 
 dcm.exit()

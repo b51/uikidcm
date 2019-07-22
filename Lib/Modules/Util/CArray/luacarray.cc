@@ -53,8 +53,7 @@ static int lua_carray_new(lua_State *L) {
       ud->ptr = new char[size];
   }
 
-  luaL_getmetatable(L, "carray_mt");
-  lua_setmetatable(L, -2);
+  luaL_setmetatable(L, "carray_mt");
   return 1;
 }
 
@@ -67,8 +66,7 @@ static int lua_carray_cast(lua_State *L) {
   ud->type = type[0];
   ud->own = 0;
 
-  luaL_getmetatable(L, "carray_mt");
-  lua_setmetatable(L, -2);
+  luaL_setmetatable(L, "carray_mt");
   return 1;
 }
 
@@ -77,7 +75,6 @@ static int lua_carray_delete(lua_State* L) {
   if (p->own) {
     free((void*)p->ptr);
   }
-
   return 0;
 }
 
@@ -116,30 +113,29 @@ static int lua_carray_set(lua_State *L) {
   return 0;
 }
 
-static int lua_carray_get(lua_State *L) {
-  structCArray *p = lua_checkcarray(L, 1);
+static int lua_carray_get(lua_State* L) {
+  structCArray* p = lua_checkcarray(L, 1);
   // Convert lua 1-index to C 0-index
   int index = luaL_checkinteger(L, 2) - 1;
   double val;
-
   switch (p->type) {
     case 'c':
-      val = ((char *)p->ptr)[index];
+      val = ((char*)p->ptr)[index];
       break;
     case 's':
-      val = ((short *)p->ptr)[index];
+      val = ((short*)p->ptr)[index];
       break;
     case 'i':
-      val = ((int *)p->ptr)[index];
+      val = ((int*)p->ptr)[index];
       break;
     case 'u':
-      val = ((unsigned int *)p->ptr)[index];
+      val = ((unsigned int*)p->ptr)[index];
       break;
     case 'f':
-      val = ((float *)p->ptr)[index];
+      val = ((float*)p->ptr)[index];
       break;
     case 'd':
-      val = ((double *)p->ptr)[index];
+      val = ((double*)p->ptr)[index];
       break;
     default:
       lua_pushnil(L);
@@ -162,7 +158,7 @@ static int lua_carray_pointer(lua_State *L) {
 static int lua_carray_tostring(lua_State *L) {
   structCArray *p = lua_checkcarray(L, 1);
   lua_pushfstring(L, "carray(%p): '%c' type, %d len, %d own",
-		  p->ptr, p->type, p->size, p->own);
+                  p->ptr, p->type, p->size, p->own);
   return 1;
 }
 

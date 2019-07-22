@@ -2,10 +2,12 @@
 local shm = require("shm");
 local carray = require("carray");
 
-local sensorShm = shm.open('dcmSensor');
-local actuatorShm = shm.open('dcmActuator');
-local stateShm = shm.open('dcmState');--123456
-local paraShm = shm.open('dcmParameter');--123456
+local _ENV = {print = print, type = type,};
+
+sensorShm = shm.open('dcmSensor');
+actuatorShm = shm.open('dcmActuator');
+stateShm = shm.open('dcmState');--123456
+paraShm = shm.open('dcmParameter');--123456
 
 local dcm = {};
 local sensor = {};
@@ -81,8 +83,6 @@ local set_para_shm = function(shmkey, val, index)--123456
     end
   end
 end--123456
-
-local _ENV = {print = print,};
 
 for k,v in sensorShm.next, sensorShm do
   sensor[k] = carray.cast(sensorShm:pointer(k));

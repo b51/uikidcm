@@ -100,7 +100,6 @@ static int lua_shm_set(lua_State* L) {
   managed_shared_memory* shm = lua_checkshm(L, 1);
 
   const char* key = luaL_checkstring(L, 2);
-  std::cout << "set " << key << std::endl;
   int nval = 0;
   std::vector<value_t> val(1);
 
@@ -167,11 +166,9 @@ static int lua_shm_set(lua_State* L) {
 static int lua_shm_get(lua_State* L) {
   managed_shared_memory* shm = lua_checkshm(L, 1);
   const char* key = luaL_checkstring(L, 2);
-  std::cout << "get key: " << key << std::endl;
 
   std::pair<value_t*, std::size_t> ret;
   ret = shm->find<value_t>(key);
-  std::cout << "get first: " << ret.first << " second: " << ret.second << std::endl;
   value_t* pr = ret.first;
   int n = ret.second;
   if ((pr == NULL) || (n == 0)) {
