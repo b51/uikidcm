@@ -13,12 +13,13 @@
     + [X] update run_cognition.lua
         - [X] update Vision
         - [X] update World
+    + [ ] Test all upgraded modules on robot
 * [ ] Update variables with rules
+* [ ] Update team communication
 * [ ] Update localization
 * [ ] May should make some modules as global variables, such as Config
 
 ### Variable Name Rules
-TODO(b51):
 local variables in a lua module(file) will named with _ after it
 ```lua
 eg.
