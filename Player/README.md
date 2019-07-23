@@ -15,9 +15,21 @@
         - [X] update World
     + [ ] Test all upgraded modules on robot
 * [ ] Update variables with rules
-* [ ] Update team communication
+* [ ] Remove deprecated modules & codes
+* [ ] Update detections
+    + [ ] Fix goal detection
+    + [ ] Add circle/line/spot detection
+    + [ ] Add robot detection
 * [ ] Update localization
-* [ ] May should make some modules as global variables, such as Config
+    + [ ] Find a more reliable way to localize robot
+    + [ ] Add obstacle avoidence
+    + [ ] Add path planning
+    + [ ] Add speed control
+* [ ] Update team communication
+* [ ] Add ROS support
+    + [ ] Add mainly shm data -> ROS msgs
+    + [ ] Make a host pc as shm receiver and convert team shm data -> ROS msgs
+    + [ ] Make data displayable on rviz
 
 ### Variable Name Rules
 local variables in a lua module(file) will named with _ after it
