@@ -22,7 +22,7 @@
     + [ ] Add robot detection
 * [ ] Update localization
     + [ ] Find a more reliable way to localize robot
-    + [ ] Add obstacle avoidence
+    + [ ] Add obstacle avoidance
     + [ ] Add path planning
     + [ ] Add speed control
 * [ ] Update team communication
