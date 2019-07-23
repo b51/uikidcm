@@ -15,7 +15,7 @@ endif()
 
 set(MOS_COMPONENTS
   Modules/Comm
-  #Modules/DLDetection
+  Modules/DLDetection
   Modules/ImagePreProc
   Modules/Util
   Platform/MOS

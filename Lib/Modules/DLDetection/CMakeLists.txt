@@ -31,11 +31,14 @@ if (USE_GPU)
   find_library(CURAND curand "${CUDA_root}/lib64")
   find_library(CUDNN cudnn "${CUDA_root}/lib64")
   set(CUDA_LIBS ${CUDART} ${CUBLAS} ${CURAND} ${CUDNN})
+  set(Darknet_LIB
+    ${PROJECT_SOURCE_DIR}/lib/libdarknet.so
+  )
+else()
+  set(Darknet_LIB
+    ${PROJECT_SOURCE_DIR}/lib/libdarknet_cpu.so
+  )
 endif(USE_GPU)
-
-set(Darknet_LIB
-  ${PROJECT_SOURCE_DIR}/lib/libdarknet.so
-)
 
 ###########
 ## Build ##
@@ -57,14 +60,24 @@ add_library(${PROJECT_NAME} SHARED
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 
-target_link_libraries(${PROJECT_NAME}
-  ${OpenCV_LIBS}
-  ${Darknet_LIB}
-  ${CUDA_LIBS}
-  lua
-  glog
-  -Wl,--no-whole-archive
-)
+if (USE_GPU)
+  target_link_libraries(${PROJECT_NAME}
+    ${OpenCV_LIBS}
+    ${Darknet_LIB}
+    ${CUDA_LIBS}
+    lua
+    glog
+    -Wl,--no-whole-archive
+  )
+else ()
+  target_link_libraries(${PROJECT_NAME}
+    ${OpenCV_LIBS}
+    ${Darknet_LIB}
+    lua
+    glog
+    -Wl,--no-whole-archive
+  )
+endif(USE_GPU)
 
 install(TARGETS ${PROJECT_NAME}
   LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}

@@ -71,6 +71,7 @@ bool DarknetDetector::Detect(const cv::Mat& image, int ori_w, int ori_h,
   }
   frame_count_++;
   free(net_input);
+  return true;
 }
 
 void DarknetDetector::LoadModel(std::string prototxt, std::string model,
