@@ -227,7 +227,7 @@ local init_shm_segment = function(fenv, name, shared, shsize)
         -- setup accessors for a number/vector
         fenv['get_'..shtable..'_'..k] =
           function()
-            val = shmHandle:get(k);
+            local val = shmHandle:get(k);
             if type(val) == 'table' then
               val = vector.new(val);
             end

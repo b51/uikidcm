@@ -1,6 +1,3 @@
-local Config = require('Config');
+local Config = require('Config')
 
-local Camera = require(Config.dev.camera);
-Camera.init(Config.camera.width, Config.camera.height);
-
-return Camera;
+return require(Config.dev.camera)

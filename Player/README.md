@@ -10,9 +10,9 @@
         - [X] update BodyFSM
         - [X] update HeadFSM
         - [X] update GameFSM
-    + [ ] update run_cognition.lua
-        - [ ] update Vision
-        - [ ] update World
+    + [X] update run_cognition.lua
+        - [X] update Vision
+        - [X] update World
 * [ ] Update variables with rules
 * [ ] Update localization
 * [ ] May should make some modules as global variables, such as Config

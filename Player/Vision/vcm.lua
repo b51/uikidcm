@@ -1,194 +1,203 @@
-local shm = require("shm");
-local util = require("util");
-local vector = require("vector");
-local Config = require('Config');
+local shm = require("shm")
+local util = require("util")
+local vector = require("vector")
+local Config = require('Config')
 
 -- shared properties
 -- (TODO)b51: should make vcm as a global variable to avoid multi require?
-local vcm = {};
-local shared = {};
-local shsize = {};
+local vcm = {}
+local shared = {}
+local shsize = {}
 
-shared.camera = {};
-shared.camera.select = vector.zeros(1);
-shared.camera.command = vector.zeros(1);
-shared.camera.ncamera = vector.zeros(1);
+shared.camera = {}
+shared.camera.select = vector.zeros(1)
+shared.camera.command = vector.zeros(1)
+shared.camera.ncamera = vector.zeros(1)
 
---bodyTilt and height can be changed by sit/stand
-shared.camera.height = vector.zeros(1);
-shared.camera.bodyTilt = vector.zeros(1);
-shared.camera.bodyHeight = vector.zeros(1);
-shared.camera.rollAngle = vector.zeros(1);--how much image is tilted
+-- bodyTilt and height can be changed by sit/stand
+shared.camera.height = vector.zeros(1)
+shared.camera.bodyTilt = vector.zeros(1)
+shared.camera.bodyHeight = vector.zeros(1)
+shared.camera.rollAngle = vector.zeros(1) -- how much image is tilted
 
---Now we use shm to enable broadcasting from test_vision
-shared.camera.broadcast = vector.zeros(1);
-shared.camera.teambroadcast = vector.zeros(1);
+-- Now we use shm to enable broadcasting from test_vision
+shared.camera.broadcast = vector.zeros(1)
+shared.camera.teambroadcast = vector.zeros(1)
 
-shared.image = {};
-shared.image.select = vector.zeros(1);
-shared.image.count = vector.zeros(1);
-shared.image.time = vector.zeros(1);
-shared.image.headAngles = vector.zeros(2);
-shared.image.fps = vector.zeros(1);
+shared.image = {}
+shared.image.select = vector.zeros(1)
+shared.image.count = vector.zeros(1)
+shared.image.time = vector.zeros(1)
+shared.image.headAngles = vector.zeros(2)
+shared.image.fps = vector.zeros(1)
 -- TODO(b51): check horizon removable or not
-shared.image.horizonA = vector.zeros(1);
-shared.image.horizonB = vector.zeros(1);
-shared.image.horizonDir = vector.zeros(4); -- Angle of horizon line rotation
+shared.image.horizonA = vector.zeros(1)
+shared.image.horizonB = vector.zeros(1)
+shared.image.horizonDir = vector.zeros(4) -- Angle of horizon line rotation
 
 -- 3 bytes per pixel (24 bits describes 1 pixels)
-shared.image.rgb = 3*Config.camera.width*Config.camera.height;
-shared.image.rzdrgb = 3*Config.net.width*Config.net.height;
-shared.image.save = vector.zeros(1);
+shared.image.rgb = 3 * Config.camera.width * Config.camera.height
+shared.image.rzdrgb = 3 * Config.net.width * Config.net.height
+shared.image.save = vector.zeros(1)
 
-shared.image.width = vector.zeros(1);
-shared.image.height = vector.zeros(1);
-shared.image.scaleB = vector.zeros(1);
+shared.image.width = vector.zeros(1)
+shared.image.height = vector.zeros(1)
+shared.image.scaleB = vector.zeros(1)
 
 -- calculate image shm size
-shsize.image = shared.image.rgb + shared.image.rzdrgb + 2^16;
+shsize.image = shared.image.rgb + shared.image.rzdrgb + 2 ^ 16
 
-shared.ball = {};
-shared.ball.detect = vector.zeros(1);
-shared.ball.score = vector.zeros(1);
-shared.ball.x = vector.zeros(1);
-shared.ball.y = vector.zeros(1);
-shared.ball.w = vector.zeros(1);
-shared.ball.h = vector.zeros(1);
-shared.ball.v = vector.zeros(4); --3D position of ball wrt body
-shared.ball.r = vector.zeros(1); --distance to ball (planar)
-shared.ball.dr = vector.zeros(1);
-shared.ball.da = vector.zeros(1);
+shared.ball = {}
+shared.ball.detect = vector.zeros(1)
+shared.ball.score = vector.zeros(1)
+shared.ball.x = vector.zeros(1)
+shared.ball.y = vector.zeros(1)
+shared.ball.w = vector.zeros(1)
+shared.ball.h = vector.zeros(1)
+shared.ball.v = vector.zeros(4) -- 3D position of ball wrt body
+shared.ball.r = vector.zeros(1) -- distance to ball (planar)
+shared.ball.dr = vector.zeros(1)
+shared.ball.da = vector.zeros(1)
 
-shared.goal = {};
-shared.goal.detect = vector.zeros(1);
-shared.goal.color = vector.zeros(1);
-shared.goal.type = vector.zeros(1);
-shared.goal.v1 = vector.zeros(4);
-shared.goal.v2 = vector.zeros(4);
-shared.goal.postBoundingBox1 = vector.zeros(4);
-shared.goal.postBoundingBox2 = vector.zeros(4);
+shared.goal = {}
+shared.goal.detect = vector.zeros(1)
+shared.goal.color = vector.zeros(1)
+shared.goal.type = vector.zeros(1)
+shared.goal.v1 = vector.zeros(4)
+shared.goal.v2 = vector.zeros(4)
+shared.goal.postBoundingBox1 = vector.zeros(4)
+shared.goal.postBoundingBox2 = vector.zeros(4)
 
+-- Multiple line detection
+local max_line_num = 12
 
---Multiple line detection
-local max_line_num = 12;
+shared.line = {}
+shared.line.detect = vector.zeros(1)
+shared.line.nLines = vector.zeros(1)
+shared.line.v1x = vector.zeros(max_line_num)
+shared.line.v1y = vector.zeros(max_line_num)
+shared.line.v2x = vector.zeros(max_line_num)
+shared.line.v2y = vector.zeros(max_line_num)
+shared.line.real_length = vector.zeros(max_line_num)
+shared.line.endpoint11 = vector.zeros(max_line_num)
+shared.line.endpoint12 = vector.zeros(max_line_num)
+shared.line.endpoint21 = vector.zeros(max_line_num)
+shared.line.endpoint22 = vector.zeros(max_line_num)
+shared.line.xMean = vector.zeros(max_line_num)
+shared.line.yMean = vector.zeros(max_line_num)
 
-shared.line = {};
-shared.line.detect = vector.zeros(1);
-shared.line.nLines = vector.zeros(1);
-shared.line.v1x = vector.zeros(max_line_num);
-shared.line.v1y = vector.zeros(max_line_num);
-shared.line.v2x = vector.zeros(max_line_num);
-shared.line.v2y = vector.zeros(max_line_num);
-shared.line.real_length = vector.zeros(max_line_num);
-shared.line.endpoint11 = vector.zeros(max_line_num);
-shared.line.endpoint12 = vector.zeros(max_line_num);
-shared.line.endpoint21 = vector.zeros(max_line_num);
-shared.line.endpoint22 = vector.zeros(max_line_num);
-shared.line.xMean = vector.zeros(max_line_num);
-shared.line.yMean = vector.zeros(max_line_num);
+-- for best line
+shared.line.v = vector.zeros(4)
+shared.line.angle = vector.zeros(1)
+shared.line.lengthB = vector.zeros(1)
 
---for best line
-shared.line.v=vector.zeros(4);
-shared.line.angle=vector.zeros(1);
-shared.line.lengthB=vector.zeros(1);
+-- Circle detectin
+shared.circle = {}
+shared.circle.detect = vector.zeros(1)
+shared.circle.x = vector.zeros(1)
+shared.circle.y = vector.zeros(1)
+shared.circle.var = vector.zeros(1)
+shared.circle.angle = vector.zeros(1)
 
---Circle detectin
-shared.circle = {};
-shared.circle.detect = vector.zeros(1);
-shared.circle.x = vector.zeros(1);
-shared.circle.y = vector.zeros(1);
-shared.circle.var = vector.zeros(1);
-shared.circle.angle = vector.zeros(1);
+-- Corner detection
+shared.corner = {}
+shared.corner.detect = vector.zeros(1)
+shared.corner.type = vector.zeros(1)
+shared.corner.vc0 = vector.zeros(4)
+shared.corner.v10 = vector.zeros(4)
+shared.corner.v20 = vector.zeros(4)
+shared.corner.v = vector.zeros(4)
+shared.corner.v1 = vector.zeros(4)
+shared.corner.v2 = vector.zeros(4)
 
---Corner detection
-shared.corner = {};
-shared.corner.detect = vector.zeros(1);
-shared.corner.type = vector.zeros(1);
-shared.corner.vc0 = vector.zeros(4);
-shared.corner.v10 = vector.zeros(4);
-shared.corner.v20 = vector.zeros(4);
-shared.corner.v = vector.zeros(4);
-shared.corner.v1 = vector.zeros(4);
-shared.corner.v2 = vector.zeros(4);
+shared.spot = {}
+shared.spot.detect = vector.zeros(1)
+shared.spot.color = vector.zeros(1)
+shared.spot.v = vector.zeros(4)
+shared.spot.bboxB = vector.zeros(4)
+shared.spot.centroid1 = vector.zeros(2)
+shared.spot.centroid2 = vector.zeros(2)
+shared.spot.centroid3 = vector.zeros(2)
 
-shared.spot = {};
-shared.spot.detect = vector.zeros(1);
-shared.spot.color = vector.zeros(1);
-shared.spot.v = vector.zeros(4);
-shared.spot.bboxB = vector.zeros(4);
-shared.spot.centroid1 = vector.zeros(2);
-shared.spot.centroid2 = vector.zeros(2);
-shared.spot.centroid3 = vector.zeros(2);
+local enable_robot_detection = Config.vision.enable_robot_detection or 0
 
-local enable_robot_detection = Config.vision.enable_robot_detection or 0;
+shared.robot = {}
+shared.robot.detect = vector.zeros(1)
 
-shared.robot={};
-shared.robot.detect=vector.zeros(1);
-
-if enable_robot_detection>0 then
-  --SJ: Don't define the arrays if they are not used
-  --As they will occupy monitor bandwidth
-  local map_div = Config.vision.robot.map_div;
-  --Global map
-  shared.robot.lowpoint = vector.zeros(Config.camera.width/Config.vision.scaleB);
-  shared.robot.map=vector.zeros(6*4*Config.vision.robot.map_div*Config.vision.robot.map_div); --60 by 40 map
+if enable_robot_detection > 0 then
+  -- SJ: Don't define the arrays if they are not used
+  -- As they will occupy monitor bandwidth
+  local map_div = Config.vision.robot.map_div
+  -- Global map
+  shared.robot.lowpoint = vector.zeros(Config.camera.width /
+                                           Config.vision.scaleB)
+  shared.robot.map = vector.zeros(6 * 4 * Config.vision.robot.map_div *
+                                      Config.vision.robot.map_div) -- 60 by 40 map
 end
 
-local enable_freespace_detection = Config.vision.enable_freespace_detection or 0;
+local enable_freespace_detection = Config.vision.enable_freespace_detection or 0
 
-shared.freespace = {};
-shared.freespace.detect = vector.zeros(1);
+shared.freespace = {}
+shared.freespace.detect = vector.zeros(1)
 
-shared.boundary = {};
-shared.boundary.detect = vector.zeros(1);
+shared.boundary = {}
+shared.boundary.detect = vector.zeros(1)
 
-if enable_freespace_detection>0 then
-  shared.freespace.block = vector.zeros(1);
-  shared.freespace.nCol = vector.zeros(1);
-  shared.freespace.nRow = vector.zeros(1);
-  --shared.freespace.vboundA = vector.zeros(2*Config.camera.width);
-  --shared.freespace.pboundA = vector.zeros(2*Config.camera.width);
-  --shared.freespace.tboundA = vector.zeros(Config.camera.width);
-  shared.freespace.vboundB = vector.zeros(2*Config.camera.width/(Config.vision.scaleB));
-  shared.freespace.pboundB = vector.zeros(2*Config.camera.width/(Config.vision.scaleB));
-  shared.freespace.tboundB = vector.zeros(Config.camera.width/(Config.vision.scaleB));
+if enable_freespace_detection > 0 then
+  shared.freespace.block = vector.zeros(1)
+  shared.freespace.nCol = vector.zeros(1)
+  shared.freespace.nRow = vector.zeros(1)
+  -- shared.freespace.vboundA = vector.zeros(2*Config.camera.width);
+  -- shared.freespace.pboundA = vector.zeros(2*Config.camera.width);
+  -- shared.freespace.tboundA = vector.zeros(Config.camera.width);
+  shared.freespace.vboundB = vector.zeros(
+                                 2 * Config.camera.width /
+                                     (Config.vision.scaleB))
+  shared.freespace.pboundB = vector.zeros(
+                                 2 * Config.camera.width /
+                                     (Config.vision.scaleB))
+  shared.freespace.tboundB = vector.zeros(
+                                 Config.camera.width / (Config.vision.scaleB))
 
-  shared.boundary.top = vector.zeros(2*Config.camera.width/Config.vision.scaleB);
-  shared.boundary.bottom = vector.zeros(2*Config.camera.width/Config.vision.scaleB);
+  shared.boundary.top = vector.zeros(2 * Config.camera.width /
+                                         Config.vision.scaleB)
+  shared.boundary.bottom = vector.zeros(2 * Config.camera.width /
+                                            Config.vision.scaleB)
 end
 
-shared.debug = {};
-shared.debug.enable_shm_copy = vector.zeros(1);
-shared.debug.store_goal_detections = vector.zeros(1);
-shared.debug.store_ball_detections = vector.zeros(1);
-shared.debug.store_all_images = vector.zeros(1);
-shared.debug.message='';
+shared.debug = {}
+shared.debug.enable_shm_copy = vector.zeros(1)
+shared.debug.store_goal_detections = vector.zeros(1)
+shared.debug.store_ball_detections = vector.zeros(1)
+shared.debug.store_all_images = vector.zeros(1)
+shared.debug.message = ''
 
-local _ENV = {print = print};
-util.init_shm_segment(_ENV, "vcm", shared, shsize);
-vcm = _ENV;
+local _ENV = {print = print}
+util.init_shm_segment(_ENV, "vcm", shared, shsize)
+vcm = _ENV
 
-local debug_message='';
---For vision debugging
-vcm.refresh_debug_message = function()
-  if string.len(debug_message)==0 then
-    --it is not updated for whatever reason
-    --just keep the latest message
+local debug_message = ''
+-- For vision debugging
+local refresh_debug_message = function()
+  if string.len(debug_message) == 0 then
+    -- it is not updated for whatever reason
+    -- just keep the latest message
   else
-    --Update SHM
-    set_debug_message(debug_message);
-    debug_message='';
+    -- Update SHM
+    set_debug_message(debug_message)
+    debug_message = ''
   end
 end
 
-vcm.add_debug_message = function(message)
-  if string.len(debug_message)>1000 then
-    --something is wrong, just reset it
-    debug_message='';
+local add_debug_message = function(message)
+  if string.len(debug_message) > 1000 then
+    -- something is wrong, just reset it
+    debug_message = ''
   end
-  debug_message=debug_message..message;
+  debug_message = debug_message .. message
 end
 
-print("***************");
+vcm.refresh_debug_message = refresh_debug_message
+vcm.add_debug_message = add_debug_message
 
-return vcm;
+return vcm

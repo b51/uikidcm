@@ -776,7 +776,7 @@ function zmp_com(ph)
 end
 --]]
 
-entry();
+--entry();
 
 return {
   _NAME = _NAME,

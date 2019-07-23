@@ -1,22 +1,26 @@
-module(... or "", package.seeall)
+package.cpath = './Lib/?.so;' .. package.cpath
+package.path = './Util/?.lua;' .. package.path
+package.path = './Config/?.lua;' .. package.path
 
-require('cognition')
+local Config = require('Config')
+local cognition = require('cognition')
 
-maxFPS = Config.vision.maxFPS;
-tperiod = 1.0/maxFPS;
+local maxFPS_ = Config.vision.maxFPS
+local tperiod_ = 1.0 / maxFPS_
 
-cognition.entry();
+cognition.entry()
 
 while (true) do
-  tstart = unix.time();
+  local tstart = unix.time()
 
-  cognition.update();
+  cognition.update()
 
-  tloop = unix.time() - tstart;
+  local tloop = unix.time() - tstart
 
-  if (tloop < tperiod) then
-    unix.usleep((tperiod - tloop)*(1E6));
+  if (tloop < tperiod_) then
+    unix.usleep((tperiod_ - tloop) * (1E6))
   end
 end
 
-cognition.exit();
+cognition.exit()
+
