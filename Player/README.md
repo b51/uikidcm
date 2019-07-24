@@ -20,9 +20,13 @@
     + [ ] Fix goal detection
     + [ ] Add circle/line/spot detection
     + [ ] Add robot detection
+    + [ ] Speed up with tensor-RT to achieve real time detection
+          (now darknet 20 hz)
 * [ ] Update localization
     + [ ] Find a more reliable way to localize robot
     + [ ] Add obstacle avoidance
+    + [ ] Add feature detector, matcher and tracker
+* [ ] Update control system
     + [ ] Add path planning
     + [ ] Add speed control
 * [ ] Update team communication
