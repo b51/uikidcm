@@ -78,3 +78,5 @@ tempResult
 
 !libdarknet.so
 *.weights
+
+Tools/lua-5.1.4/*
