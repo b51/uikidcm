@@ -16,6 +16,9 @@ TOP=`pwd`/../
 cd $TOP/Lib/Modules/ImagePreProc
 if [ ! -d "build" ]; then
   mkdir build
+else
+  rm -rf build
+  mkdir build
 fi
 cd build && cmake .. && make -j4
 cp libImagePreProc.so $TOP/Player/Lib/ImagePreProc.so
@@ -24,6 +27,9 @@ cp libImagePreProc.so $TOP/Player/Lib/ImagePreProc.so
 cd $TOP/Lib/Modules/DLDetection
 if [ ! -d "build" ]; then
   mkdir build
+else
+  rm -rf build
+  mkdir build
 fi
 cd build && cmake .. && make -j4
 cp libDLDetection.so $TOP/Player/Lib/DLDetection.so
@@ -31,6 +37,9 @@ cp libDLDetection.so $TOP/Player/Lib/DLDetection.so
 # Build OPCam
 cd $TOP/Lib/Platform/OP/Camera
 if [ ! -d "build" ]; then
+  mkdir build
+else
+  rm -rf build
   mkdir build
 fi
 cd build && cmake .. && make -j4
